@@ -1526,7 +1526,7 @@ input:focus, select:focus, textarea:focus {
 @media (max-width: 900px) {
   .app-main { padding: 16px; }
   .servicios-layout { grid-template-columns: 1fr; }
-  .chat-layout { grid-template-columns: 1fr; height: auto; }
+  .chat-layout { grid-template-columns: 1fr; height: auto; min-height: 400px; }
   .chat-sidebar { max-height: 280px; }
   .navbar-tabs { gap: 0; }
   .nav-tab { padding: 8px 10px; font-size: 12px; }
@@ -1536,4 +1536,70 @@ input:focus, select:focus, textarea:focus {
   .stats-row { grid-template-columns: repeat(2, 1fr); }
   .admin-layout { grid-template-columns: 1fr; }
   .productos-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+}
+
+@media (max-width: 600px) {
+  .app-navbar {
+    padding: 0 16px;
+    height: auto;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding-top: 12px;
+    gap: 8px;
+  }
+  
+  .navbar-tabs {
+    width: 100%;
+    justify-content: center;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .stats-row {
+    grid-template-columns: 1fr;
+  }
+
+  .detalle-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .servicio-card-header {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .producto-fila {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .header-actions {
+    width: 100%;
+    margin-top: 12px;
+    justify-content: stretch;
+  }
+  
+  .header-actions button {
+    flex: 1;
+  }
+
+  .notif-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .chat-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .mensaje-wrapper {
+    max-width: 90%;
+  }
+
+  .auth-card {
+    padding: 24px 20px;
+  }
 }
