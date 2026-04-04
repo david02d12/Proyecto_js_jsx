@@ -4,13 +4,7 @@ import axios from 'axios';
 const API = 'http://localhost:3000';
 
 const iconoMap = {
-  '✅': { bg: '#dcfce7', color: '#16a34a' },
-  '🔧': { bg: '#dbeafe', color: '#2563eb' },
-  '⏳': { bg: '#fef9c3', color: '#ca8a04' },
-  '💬': { bg: '#f3e8ff', color: '#9333ea' },
-  '📊': { bg: '#e0f2fe', color: '#0284c7' },
-  '👤': { bg: '#f1f5f9', color: '#475569' },
-  default: { bg: '#f1f5f9', color: '#475569' }
+  'default': { bg: '#e0f2fe', color: '#0284c7' }
 };
 
 function ListaNotif({ notificaciones, leidas, onMarcar, onChatClick }) {
@@ -29,8 +23,7 @@ function ListaNotif({ notificaciones, leidas, onMarcar, onChatClick }) {
   if (notificaciones.length === 0) {
     return (
       <div className="empty-state">
-        <span>🔔</span>
-        <p>Sin notificaciones en esta categoría 🎉</p>
+        <p>Bandeja temporalmente vacia.</p>
       </div>
     );
   }
@@ -38,7 +31,7 @@ function ListaNotif({ notificaciones, leidas, onMarcar, onChatClick }) {
   return (
     <div className="notif-lista">
       {notificaciones.map(n => {
-        const estilo = iconoMap[n.icono] || iconoMap.default;
+        const estilo = iconoMap.default;
         const leida = estaLeida(n);
         return (
           <div
@@ -49,7 +42,7 @@ function ListaNotif({ notificaciones, leidas, onMarcar, onChatClick }) {
               if (n.chatId && onChatClick) onChatClick();
             }}
           >
-            <div className="notif-icono" style={{ backgroundColor: estilo.bg, color: estilo.color }}>{n.icono}</div>
+            <div className="notif-icono" style={{ backgroundColor: estilo.bg, color: estilo.color }}>!</div>
             <div className="notif-content">
               <div className="notif-header-row">
                 <span className="notif-tipo">{n.tipo}</span>
@@ -68,7 +61,7 @@ function ListaNotif({ notificaciones, leidas, onMarcar, onChatClick }) {
                   <span className="notif-progress-label">{n.etapa}%</span>
                 </div>
               )}
-              {n.chatId && <div className="notif-link">Ver chat →</div>}
+              {n.chatId && <div className="notif-link">Abrir enlace</div>}
             </div>
             {!leida && <div className="notif-punto-azul" />}
           </div>
@@ -78,7 +71,6 @@ function ListaNotif({ notificaciones, leidas, onMarcar, onChatClick }) {
   );
 }
 
-// ─── CLIENTE: solo sus servicios y mensajes ─────────────────────────────────────
 function NotifCliente({ token, userId, onChatClick }) {
   const [notificaciones, setNotificaciones] = useState([]);
   const [leidas, setLeidas] = useState(new Set());
@@ -91,7 +83,7 @@ function NotifCliente({ token, userId, onChatClick }) {
     try {
       const res = await axios.get(`${API}/api/notificaciones/usuario/${userId}`, cfg);
       setNotificaciones(res.data);
-    } catch (e) { console.error(e); }
+    } catch (e) { }
     setCargando(false);
   };
 
@@ -118,28 +110,27 @@ function NotifCliente({ token, userId, onChatClick }) {
       <div className="page-header">
         <div className="header-row">
           <div className="rol-banner cliente-banner" style={{ flex: 1 }}>
-            <span className="rol-icono">🔔</span>
             <div>
               <h2 className="section-title">
                 Mis Notificaciones
                 {sinLeerCount > 0 && <span className="notif-badge-title">{sinLeerCount}</span>}
               </h2>
-              <p className="section-sub">Estado de tus servicios y mensajes</p>
+              <p className="section-sub">Información relevante de tu cuenta</p>
             </div>
           </div>
           <div className="header-actions">
-            <button className="btn-outline" onClick={cargar}>↻</button>
-            {sinLeerCount > 0 && <button className="btn-ghost" onClick={marcarTodas}>✓ Marcar todas como leídas</button>}
+            <button className="btn-outline" onClick={cargar}>Recargar local</button>
+            {sinLeerCount > 0 && <button className="btn-ghost" onClick={marcarTodas}>Borrar alertas de aviso</button>}
           </div>
         </div>
       </div>
 
       <div className="notif-filtros">
         {[
-          { key: 'todas', label: 'Todas', count: notificaciones.length },
-          { key: 'sin_leer', label: 'Sin leer', count: sinLeerCount },
-          { key: 'servicios', label: '🔧 Mis servicios', count: notificaciones.filter(n => n.tipo !== 'Nuevo Mensaje').length },
-          { key: 'mensajes', label: '💬 Mensajes', count: notificaciones.filter(n => n.tipo === 'Nuevo Mensaje').length },
+          { key: 'todas', label: 'Todos', count: notificaciones.length },
+          { key: 'sin_leer', label: 'Nuevos', count: sinLeerCount },
+          { key: 'servicios', label: 'Cambios de fase', count: notificaciones.filter(n => n.tipo !== 'Nuevo Mensaje').length },
+          { key: 'mensajes', label: 'Chat', count: notificaciones.filter(n => n.tipo === 'Nuevo Mensaje').length },
         ].map(f => (
           <button key={f.key} className={`filtro-btn ${filtro === f.key ? 'activo' : ''}`} onClick={() => setFiltro(f.key)}>
             {f.label}
@@ -149,7 +140,7 @@ function NotifCliente({ token, userId, onChatClick }) {
       </div>
 
       {cargando && notificaciones.length === 0 ? (
-        <div className="loading-state">Cargando notificaciones...</div>
+        <div className="loading-state">Desplegando lista...</div>
       ) : (
         <ListaNotif notificaciones={filtradas} leidas={leidas} onMarcar={marcar} onChatClick={onChatClick} />
       )}
@@ -157,7 +148,6 @@ function NotifCliente({ token, userId, onChatClick }) {
   );
 }
 
-// ─── TÉCNICO: mensajes pendientes + servicios por atender ──────────────────────
 function NotifTecnico({ token, onChatClick }) {
   const [notificaciones, setNotificaciones] = useState([]);
   const [leidas, setLeidas] = useState(new Set());
@@ -170,7 +160,7 @@ function NotifTecnico({ token, onChatClick }) {
     try {
       const res = await axios.get(`${API}/api/notificaciones/tecnico`, cfg);
       setNotificaciones(res.data);
-    } catch (e) { console.error(e); }
+    } catch (e) { }
     setCargando(false);
   };
 
@@ -197,28 +187,27 @@ function NotifTecnico({ token, onChatClick }) {
       <div className="page-header">
         <div className="header-row">
           <div className="rol-banner tecnico-banner" style={{ flex: 1 }}>
-            <span className="rol-icono">🔔</span>
             <div>
               <h2 className="section-title">
-                Panel de Alertas Técnico
-                {sinLeerCount > 0 && <span className="notif-badge-title">{sinLeerCount} pendientes</span>}
+                Notificaciones Sistema Empleado
+                {sinLeerCount > 0 && <span className="notif-badge-title">{sinLeerCount} registro de espera</span>}
               </h2>
-              <p className="section-sub">Mensajes de clientes y servicios por atender</p>
+              <p className="section-sub">Datos por requerir intervención</p>
             </div>
           </div>
           <div className="header-actions">
-            <button className="btn-outline" onClick={cargar}>↻ Actualizar</button>
-            {sinLeerCount > 0 && <button className="btn-ghost" onClick={marcarTodas}>✓ Marcar todo</button>}
+            <button className="btn-outline" onClick={cargar}>Re-sincronizar</button>
+            {sinLeerCount > 0 && <button className="btn-ghost" onClick={marcarTodas}>Lectura masiva</button>}
           </div>
         </div>
       </div>
 
       <div className="notif-filtros">
         {[
-          { key: 'todas', label: 'Todas', count: notificaciones.length },
-          { key: 'sin_leer', label: 'Pendientes', count: sinLeerCount },
-          { key: 'mensajes', label: '💬 Mensajes clientes', count: notificaciones.filter(n => n.tipo === 'Nuevo Mensaje de Cliente').length },
-          { key: 'servicios', label: '🔧 Servicios activos', count: notificaciones.filter(n => n.tipo === 'Servicio Pendiente').length },
+          { key: 'todas', label: 'Cualquiera', count: notificaciones.length },
+          { key: 'sin_leer', label: 'No revisados', count: sinLeerCount },
+          { key: 'mensajes', label: 'Mensajes a soporte', count: notificaciones.filter(n => n.tipo === 'Nuevo Mensaje de Cliente').length },
+          { key: 'servicios', label: 'Tickets generados', count: notificaciones.filter(n => n.tipo === 'Servicio Pendiente').length },
         ].map(f => (
           <button key={f.key} className={`filtro-btn ${filtro === f.key ? 'activo' : ''}`} onClick={() => setFiltro(f.key)}>
             {f.label}
@@ -228,7 +217,7 @@ function NotifTecnico({ token, onChatClick }) {
       </div>
 
       {cargando && notificaciones.length === 0 ? (
-        <div className="loading-state">Cargando alertas...</div>
+        <div className="loading-state">Procesando cola...</div>
       ) : (
         <ListaNotif notificaciones={filtradas} leidas={leidas} onMarcar={marcar} onChatClick={onChatClick} />
       )}
@@ -236,7 +225,6 @@ function NotifTecnico({ token, onChatClick }) {
   );
 }
 
-// ─── ADMINISTRADOR: resumen del sistema ────────────────────────────────────────
 function NotifAdmin({ token, userId }) {
   const [notificaciones, setNotificaciones] = useState([]);
   const [usuarios, setUsuarios] = useState([]);
@@ -253,7 +241,7 @@ function NotifAdmin({ token, userId }) {
       ]);
       setNotificaciones(rNotif.data);
       setUsuarios(rUsers.data);
-    } catch (e) { console.error(e); }
+    } catch (e) { }
     setCargando(false);
   };
 
@@ -268,15 +256,15 @@ function NotifAdmin({ token, userId }) {
     try {
       await axios.put(`${API}/api/usuarios/cambiar-rol`, { idUsuario, nuevoRol }, cfg);
       cargar();
-    } catch (e) { alert('Error al cambiar rol.'); }
+    } catch (e) { alert('Error modificando variable de DB.'); }
   };
 
   const eliminarUsuario = async (id) => {
-    if (!window.confirm('¿Eliminar este usuario?')) return;
+    if (!window.confirm('Eliminar entrada permanentemente?')) return;
     try {
       await axios.delete(`${API}/api/usuarios/eliminar/${id}`, cfg);
       cargar();
-    } catch (e) { alert('Error al eliminar usuario.'); }
+    } catch (e) { alert('Fallo query delete.'); }
   };
 
   const statUsers = {
@@ -289,35 +277,31 @@ function NotifAdmin({ token, userId }) {
     <div className="notif-container" style={{ maxWidth: '100%' }}>
       <div className="page-header">
         <div className="rol-banner admin-banner">
-          <span className="rol-icono">⚙️</span>
           <div>
-            <h2 className="section-title">Panel de Administración</h2>
-            <p className="section-sub">Resumen del sistema y gestión de usuarios</p>
+            <h2 className="section-title">Monitor de Control y Permisos</h2>
+            <p className="section-sub">Administración de niveles de acceso del sistema</p>
           </div>
         </div>
       </div>
 
-      {/* Stats de usuarios */}
       <div className="stats-row">
-        <div className="stat-card"><span className="stat-num">{usuarios.length}</span><span className="stat-label">Usuarios totales</span></div>
-        <div className="stat-card azul"><span className="stat-num">{statUsers.clientes}</span><span className="stat-label">Clientes</span></div>
-        <div className="stat-card verde"><span className="stat-num">{statUsers.tecnicos}</span><span className="stat-label">Técnicos</span></div>
-        <div className="stat-card amarillo"><span className="stat-num">{statUsers.admins}</span><span className="stat-label">Administradores</span></div>
+        <div className="stat-card"><span className="stat-num">{usuarios.length}</span><span className="stat-label">Cuentas vinculadas</span></div>
+        <div className="stat-card azul"><span className="stat-num">{statUsers.clientes}</span><span className="stat-label">Rol 2: Base</span></div>
+        <div className="stat-card verde"><span className="stat-num">{statUsers.tecnicos}</span><span className="stat-label">Rol 1: Personal</span></div>
+        <div className="stat-card amarillo"><span className="stat-num">{statUsers.admins}</span><span className="stat-label">Rol 3: Root</span></div>
       </div>
 
       <div className="admin-layout">
-        {/* Alertas del sistema */}
         <div>
-          <h3 className="section-subtitle">🔔 Alertas del sistema</h3>
-          {cargando ? <div className="loading-state">Cargando...</div> : (
+          <h3 className="section-subtitle">Tabla DB: Notificaciones</h3>
+          {cargando ? <div className="loading-state">Leyendo tabla...</div> : (
             <ListaNotif notificaciones={notificaciones} leidas={leidas} onMarcar={marcar} />
           )}
-          <button className="btn-outline" style={{ marginTop: 12 }} onClick={cargar}>↻ Actualizar</button>
+          <button className="btn-outline" style={{ marginTop: 12 }} onClick={cargar}>Call endpoint list</button>
         </div>
 
-        {/* Gestión de usuarios */}
         <div>
-          <h3 className="section-subtitle">👥 Gestión de usuarios</h3>
+          <h3 className="section-subtitle">Tabla DB: Cuentas</h3>
           <div className="usuarios-lista">
             {usuarios.map(u => (
               <div key={u.ID_Usuario} className="usuario-item">
@@ -326,25 +310,24 @@ function NotifAdmin({ token, userId }) {
                 </div>
                 <div className="usuario-info">
                   <div className="usuario-nombre">{u.Nombre}</div>
-                  <div className="usuario-meta">{u.Correo} · {u.Nombre_Documento}</div>
-                  <div className="usuario-doc">Doc: {u.ID_Usuario}</div>
+                  <div className="usuario-meta">{u.Correo} - {u.Nombre_Documento}</div>
+                  <div className="usuario-doc">Doc_ID: {u.ID_Usuario}</div>
                 </div>
                 <div className="usuario-actions">
                   <span className={`rol-tag rol-${u.Codigo_Rol}`}>
-                    {u.Codigo_Rol === 1 ? '🔧 Técnico' : u.Codigo_Rol === 3 ? '⚙️ Admin' : '👤 Cliente'}
+                    {u.Codigo_Rol === 1 ? 'Nivel Medio' : u.Codigo_Rol === 3 ? 'Nivel Alto' : 'Nivel Bajo'}
                   </span>
                   <select
                     className="rol-select"
                     value={u.Codigo_Rol}
                     onChange={e => cambiarRol(u.ID_Usuario, Number(e.target.value))}
-                    title="Cambiar rol"
                   >
-                    <option value={2}>Cliente</option>
-                    <option value={1}>Técnico</option>
-                    <option value={3}>Administrador</option>
+                    <option value={2}>Cliente 2</option>
+                    <option value={1}>Trabajador 1</option>
+                    <option value={3}>SuperUser 3</option>
                   </select>
                   <button className="btn-eliminar" style={{ padding: '4px 10px', fontSize: 12 }} onClick={() => eliminarUsuario(u.ID_Usuario)}>
-                    🗑️
+                    Drop Row
                   </button>
                 </div>
               </div>
@@ -356,7 +339,6 @@ function NotifAdmin({ token, userId }) {
   );
 }
 
-// ─── ENRUTADOR ─────────────────────────────────────────────────────────────────
 export default function Notificaciones({ token, userId, rol, onChatClick }) {
   if (rol === 1) return <NotifTecnico token={token} onChatClick={onChatClick} />;
   if (rol === 3) return <NotifAdmin token={token} userId={userId} />;

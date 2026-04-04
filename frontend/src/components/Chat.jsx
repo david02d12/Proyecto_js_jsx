@@ -3,7 +3,6 @@ import axios from 'axios';
 
 const API = 'http://localhost:3000';
 
-// ─── LÓGICA COMPARTIDA DE MENSAJES ─────────────────────────────────────────────
 function PanelMensajes({ chat, token, userId, onVolver }) {
   const [mensajes, setMensajes] = useState([]);
   const [texto, setTexto] = useState('');
@@ -17,7 +16,7 @@ function PanelMensajes({ chat, token, userId, onVolver }) {
       const res = await axios.get(`${API}/api/mensajes/${chat.Codigo_Chat}`, cfg);
       setMensajes(res.data);
       await axios.put(`${API}/api/mensajes/leer/${chat.Codigo_Chat}`, { idUsuario: userId }, cfg);
-    } catch (e) { console.error(e); }
+    } catch (e) { }
   };
 
   useEffect(() => {
@@ -49,26 +48,24 @@ function PanelMensajes({ chat, token, userId, onVolver }) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      {/* Header */}
       <div className="chat-header">
         {onVolver && (
-          <button className="btn-volver" onClick={onVolver}>←</button>
+          <button className="btn-volver" onClick={onVolver}>Volver</button>
         )}
         <div className="chat-avatar grande">{(chat.Nombre_Usuario || 'U').charAt(0).toUpperCase()}</div>
         <div className="chat-header-info">
           <div className="chat-header-nombre">{chat.Nombre_Usuario || chat.ID_Usuario}</div>
-          <div className="chat-header-servicio">📱 {chat.Movil_Nombre} — {chat.Descripcion_Servicio}</div>
+          <div className="chat-header-servicio">{chat.Movil_Nombre} - {chat.Descripcion_Servicio}</div>
           <div className="chat-header-etapa">
             <span className="etapa-dot" style={{ backgroundColor: chat.Etapa >= 100 ? '#22c55e' : chat.Etapa >= 50 ? '#3b82f6' : '#f59e0b' }} />
-            Etapa {chat.Etapa}%
+            Etapa proceso: {chat.Etapa}%
           </div>
         </div>
       </div>
 
-      {/* Mensajes */}
       <div className="mensajes-area">
         {mensajes.length === 0 ? (
-          <div className="sin-mensajes">No hay mensajes. ¡Escribe el primero!</div>
+          <div className="sin-mensajes">No hay comunicacion previa registrada</div>
         ) : mensajes.map((m, i) => {
           const esMio = String(m.ID_Usuario) === String(userId);
           return (
@@ -78,7 +75,7 @@ function PanelMensajes({ chat, token, userId, onVolver }) {
                 <div className="burbuja-texto">{m.Mensaje}</div>
                 <div className="burbuja-meta">
                   {formatFecha(m.Fecha_Mensaje)}
-                  {esMio && <span className={`tick ${m.Estado === 1 ? 'leido' : ''}`}>{m.Estado === 1 ? ' ✓✓' : ' ✓'}</span>}
+                  {esMio && <span className={`tick ${m.Estado === 1 ? 'leido' : ''}`}>{m.Estado === 1 ? ' Leido' : ' '}</span>}
                 </div>
               </div>
             </div>
@@ -87,26 +84,24 @@ function PanelMensajes({ chat, token, userId, onVolver }) {
         <div ref={endRef} />
       </div>
 
-      {/* Input */}
       <div className="mensaje-input-area">
         <textarea
           className="mensaje-input"
           rows={2}
-          placeholder="Escribe un mensaje... (Enter para enviar)"
+          placeholder="Escribir comunicacion nueva..."
           value={texto}
           onChange={e => setTexto(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); enviar(); } }}
           disabled={enviando}
         />
         <button className={`btn-enviar ${enviando ? 'enviando' : ''}`} onClick={enviar} disabled={enviando || !texto.trim()}>
-          {enviando ? '...' : '➤'}
+          {enviando ? '...' : 'Enviar'}
         </button>
       </div>
     </div>
   );
 }
 
-// ─── LISTA DE CHATS COMPARTIDA ──────────────────────────────────────────────────
 function ListaChats({ chats, chatActivo, onSeleccionar, busqueda, onBusqueda }) {
   const filtrados = chats.filter(c =>
     c.Nombre_Usuario?.toLowerCase().includes(busqueda.toLowerCase()) ||
@@ -117,11 +112,11 @@ function ListaChats({ chats, chatActivo, onSeleccionar, busqueda, onBusqueda }) 
   return (
     <aside className="chat-sidebar">
       <div className="chat-search-box">
-        <input className="search-input" placeholder="🔍 Buscar chats..." value={busqueda} onChange={e => onBusqueda(e.target.value)} />
+        <input className="search-input" placeholder="Buscar conversacion..." value={busqueda} onChange={e => onBusqueda(e.target.value)} />
       </div>
       <div className="chat-list">
         {filtrados.length === 0 ? (
-          <div className="empty-chats">Sin conversaciones</div>
+          <div className="empty-chats">Registro vacio en conversaciones</div>
         ) : filtrados.map(chat => (
           <div
             key={chat.Codigo_Chat}
@@ -134,7 +129,7 @@ function ListaChats({ chats, chatActivo, onSeleccionar, busqueda, onBusqueda }) 
                 <span className="chat-usuario">{chat.Nombre_Usuario || chat.ID_Usuario}</span>
                 {chat.Mensajes_Sin_Leer > 0 && <span className="badge-unread">{chat.Mensajes_Sin_Leer}</span>}
               </div>
-              <div className="chat-movil">📱 {chat.Movil_Nombre}</div>
+              <div className="chat-movil">{chat.Movil_Nombre}</div>
               <div className="chat-servicio-desc">{chat.Descripcion_Servicio}</div>
             </div>
           </div>
@@ -144,7 +139,6 @@ function ListaChats({ chats, chatActivo, onSeleccionar, busqueda, onBusqueda }) 
   );
 }
 
-// ─── VISTA CLIENTE ─────────────────────────────────────────────────────────────
 function ChatCliente({ token, userId }) {
   const [chats, setChats] = useState([]);
   const [chatActivo, setChatActivo] = useState(null);
@@ -155,9 +149,8 @@ function ChatCliente({ token, userId }) {
     const cargar = async () => {
       try {
         const res = await axios.get(`${API}/api/chat/listar`, cfg);
-        // Cliente solo ve sus chats
         setChats(res.data.filter(c => String(c.ID_Usuario) === String(userId)));
-      } catch (e) { console.error(e); }
+      } catch (e) { }
     };
     cargar();
   }, []);
@@ -166,10 +159,9 @@ function ChatCliente({ token, userId }) {
     <div className="chat-container">
       <div className="page-header">
         <div className="rol-banner cliente-banner">
-          <span className="rol-icono">💬</span>
           <div>
-            <h2 className="section-title">Mis Conversaciones</h2>
-            <p className="section-sub">Comunícate con el técnico sobre tu dispositivo</p>
+            <h2 className="section-title">Canal de Conversación</h2>
+            <p className="section-sub">Atención personalizada con el técnico de servicio</p>
           </div>
         </div>
       </div>
@@ -178,9 +170,8 @@ function ChatCliente({ token, userId }) {
         <main className="chat-main">
           {!chatActivo ? (
             <div className="chat-placeholder">
-              <div className="chat-placeholder-icon">💬</div>
-              <h3>Selecciona una conversación</h3>
-              <p>Habla directamente con el técnico sobre tu reparación</p>
+              <h3>Panel interactivo</h3>
+              <p>Seleccionar historial requerido a la izquierda</p>
             </div>
           ) : (
             <PanelMensajes chat={chatActivo} token={token} userId={userId} />
@@ -191,7 +182,6 @@ function ChatCliente({ token, userId }) {
   );
 }
 
-// ─── VISTA TÉCNICO ─────────────────────────────────────────────────────────────
 function ChatTecnico({ token, userId }) {
   const [chats, setChats] = useState([]);
   const [chatActivo, setChatActivo] = useState(null);
@@ -203,7 +193,7 @@ function ChatTecnico({ token, userId }) {
     try {
       const res = await axios.get(`${API}/api/chat/listar`, cfg);
       setChats(res.data);
-    } catch (e) { console.error(e); }
+    } catch (e) { }
   };
 
   useEffect(() => { cargar(); }, []);
@@ -225,26 +215,24 @@ function ChatTecnico({ token, userId }) {
     <div className="chat-container">
       <div className="page-header">
         <div className="rol-banner tecnico-banner">
-          <span className="rol-icono">🔧</span>
           <div>
             <h2 className="section-title">
-              Chat Técnico
-              {totalSinLeer > 0 && <span className="notif-badge-title">{totalSinLeer} sin leer</span>}
+              Atención a clientes
+              {totalSinLeer > 0 && <span className="notif-badge-title">{totalSinLeer} notificaciones</span>}
             </h2>
-            <p className="section-sub">Atiende las consultas de los clientes sobre sus reparaciones</p>
+            <p className="section-sub">Consultas activas con usuarios registrados</p>
           </div>
         </div>
       </div>
 
-      {/* Filtros rápidos */}
       <div className="notif-filtros" style={{ marginBottom: 12 }}>
-        {[['todos','Todos'],['sin_leer','Sin leer'],['activos','En reparación'],['completados','Completados']].map(([k,v]) => (
+        {[['todos','Todos'],['sin_leer','Pendientes'],['activos','Trabajo activo'],['completados','Finalizados']].map(([k,v]) => (
           <button key={k} className={`filtro-btn ${filtro === k ? 'activo' : ''}`} onClick={() => setFiltro(k)}>
             {v}
             {k === 'sin_leer' && totalSinLeer > 0 && <span className="filtro-count">{totalSinLeer}</span>}
           </button>
         ))}
-        <button className="btn-outline" style={{ marginLeft: 'auto' }} onClick={cargar}>↻</button>
+        <button className="btn-outline" style={{ marginLeft: 'auto' }} onClick={cargar}>Refrescar tabla</button>
       </div>
 
       <div className="chat-layout">
@@ -252,12 +240,11 @@ function ChatTecnico({ token, userId }) {
         <main className="chat-main">
           {!chatActivo ? (
             <div className="chat-placeholder">
-              <div className="chat-placeholder-icon">🔧</div>
-              <h3>Selecciona una conversación</h3>
-              <p>Responde a los clientes sobre el estado de sus equipos</p>
+              <h3>Panel principal de respuesta</h3>
+              <p>Dar clic a un elemento lateral para interactuar</p>
               {totalSinLeer > 0 && (
                 <div className="alerta-sin-leer">
-                  ⚠️ Tienes <strong>{totalSinLeer}</strong> mensaje{totalSinLeer !== 1 ? 's' : ''} sin responder
+                  Hay <strong>{totalSinLeer}</strong> contacto(s) en espera de resolucion
                 </div>
               )}
             </div>
@@ -270,19 +257,18 @@ function ChatTecnico({ token, userId }) {
   );
 }
 
-// ─── VISTA ADMINISTRADOR ────────────────────────────────────────────────────────
 function ChatAdmin({ token, userId }) {
   const [chats, setChats] = useState([]);
   const [chatActivo, setChatActivo] = useState(null);
   const [busqueda, setBusqueda] = useState('');
-  const [vista, setVista] = useState('lista'); // lista | chat
+  const [vista, setVista] = useState('lista');
   const cfg = { headers: { Authorization: `Bearer ${token}` } };
 
   const cargar = async () => {
     try {
       const res = await axios.get(`${API}/api/chat/listar`, cfg);
       setChats(res.data);
-    } catch (e) { console.error(e); }
+    } catch (e) { }
   };
 
   useEffect(() => { cargar(); }, []);
@@ -304,20 +290,18 @@ function ChatAdmin({ token, userId }) {
     <div className="chat-container">
       <div className="page-header">
         <div className="rol-banner admin-banner">
-          <span className="rol-icono">⚙️</span>
           <div>
-            <h2 className="section-title">Administración de Chats</h2>
-            <p className="section-sub">Supervisión de todas las conversaciones del sistema</p>
+            <h2 className="section-title">Vista General de Interacciones</h2>
+            <p className="section-sub">Inspeccion global de los flujos de texto del personal</p>
           </div>
         </div>
       </div>
 
-      {/* Stats */}
       <div className="stats-row">
-        <div className="stat-card"><span className="stat-num">{stats.total}</span><span className="stat-label">Total chats</span></div>
-        <div className="stat-card rojo"><span className="stat-num">{stats.sinLeer}</span><span className="stat-label">Sin responder</span></div>
-        <div className="stat-card amarillo"><span className="stat-num">{stats.activos}</span><span className="stat-label">En reparación</span></div>
-        <div className="stat-card verde"><span className="stat-num">{stats.completados}</span><span className="stat-label">Completados</span></div>
+        <div className="stat-card"><span className="stat-num">{stats.total}</span><span className="stat-label">Total logs</span></div>
+        <div className="stat-card rojo"><span className="stat-num">{stats.sinLeer}</span><span className="stat-label">No contestados</span></div>
+        <div className="stat-card amarillo"><span className="stat-num">{stats.activos}</span><span className="stat-label">Pendientes</span></div>
+        <div className="stat-card verde"><span className="stat-num">{stats.completados}</span><span className="stat-label">Finalizados</span></div>
       </div>
 
       <div className="chat-layout">
@@ -325,10 +309,9 @@ function ChatAdmin({ token, userId }) {
         <main className="chat-main">
           {!chatActivo ? (
             <div className="chat-placeholder">
-              <div className="chat-placeholder-icon">⚙️</div>
-              <h3>Panel de administración</h3>
-              <p>Selecciona un chat para supervisar la conversación</p>
-              <button className="btn-outline" style={{ marginTop: 12 }} onClick={cargar}>↻ Recargar chats</button>
+              <h3>Sección administrativa</h3>
+              <p>Seleccionar nodo izquierdo para visualización</p>
+              <button className="btn-outline" style={{ marginTop: 12 }} onClick={cargar}>F5 Recargar</button>
             </div>
           ) : (
             <PanelMensajes
@@ -344,7 +327,6 @@ function ChatAdmin({ token, userId }) {
   );
 }
 
-// ─── ENRUTADOR POR ROL ──────────────────────────────────────────────────────────
 export default function Chat({ token, userId, userName, rol }) {
   if (rol === 2) return <ChatCliente token={token} userId={userId} />;
   if (rol === 1) return <ChatTecnico token={token} userId={userId} />;

@@ -13,7 +13,7 @@ function App() {
   const [modoRegistro, setModoRegistro] = useState(false);
   const [loginUser, setLoginUser] = useState('');
   const [loginPass, setLoginPass] = useState('');
-  const [userData, setUserData] = useState(null); // { id, nombre, rol }
+  const [userData, setUserData] = useState(null); 
   const [tabActivo, setTabActivo] = useState('servicios');
   const [notifCount, setNotifCount] = useState(0);
 
@@ -25,7 +25,6 @@ function App() {
   const token = () => localStorage.getItem('token');
   const cfg = () => ({ headers: { Authorization: `Bearer ${token()}` } });
 
-  // Restaurar sesión
   useEffect(() => {
     const t = localStorage.getItem('token');
     const u = localStorage.getItem('userData');
@@ -33,13 +32,10 @@ function App() {
       const parsed = JSON.parse(u);
       setUserData(parsed);
       setLogueado(true);
-      // Tab inicial por rol
-      if (parsed.rol === 2) setTabActivo('servicios');
-      else setTabActivo('servicios');
+      setTabActivo('servicios');
     }
   }, []);
 
-  // Badge notificaciones
   useEffect(() => {
     if (!logueado || !userData) return;
     const fetchNotif = async () => {
@@ -52,7 +48,7 @@ function App() {
         const res = await axios.get(endpoint, cfg());
         const sinLeer = res.data.filter(n => !n.leido).length;
         setNotifCount(sinLeer);
-      } catch (e) { /* silencioso */ }
+      } catch (e) { }
     };
     fetchNotif();
     const intervalo = setInterval(fetchNotif, 20000);
@@ -81,7 +77,7 @@ function App() {
       return alert('Completa los campos obligatorios.');
     try {
       await axios.post(`${API}/api/registro`, formReg);
-      alert('¡Registro exitoso! Ya puedes iniciar sesión.');
+      alert('Registro exitoso. Ya puedes iniciar sesión.');
       setModoRegistro(false);
     } catch (e) { alert('Error al registrar. Verifica que el documento no esté en uso.'); }
   };
@@ -94,25 +90,21 @@ function App() {
     setNotifCount(0);
   };
 
-  // ── TABS POR ROL ─────────────────────────────────────────────────────────────
   const getTabs = (rol) => {
     const base = [
-      { key: 'servicios', label: '🔧 Servicios', id: 'tab-servicios' },
-      { key: 'chat', label: '💬 Chat', id: 'tab-chat' },
+      { key: 'servicios', label: 'Servicios', id: 'tab-servicios' },
+      { key: 'chat', label: 'Chat', id: 'tab-chat' },
     ];
-    // Clientes y admins ven catálogo
     if (rol !== 1) {
-      base.push({ key: 'catalogo', label: '🛍️ Catálogo', id: 'tab-catalogo' });
+      base.push({ key: 'catalogo', label: 'Catálogo', id: 'tab-catalogo' });
     }
-    // Técnicos también ven catálogo para gestión
     if (rol === 1) {
-      base.push({ key: 'catalogo', label: '📦 Inventario', id: 'tab-catalogo' });
+      base.push({ key: 'catalogo', label: 'Inventario', id: 'tab-catalogo' });
     }
-    base.push({ key: 'notificaciones', label: `${rol === 3 ? '⚙️ Admin' : '🔔 Alertas'}`, id: 'tab-notificaciones', badge: notifCount });
+    base.push({ key: 'notificaciones', label: `${rol === 3 ? 'Administracion' : 'Alertas'}`, id: 'tab-notificaciones', badge: notifCount });
     return base;
   };
 
-  // ── REGISTRO ──────────────────────────────────────────────────────────────────
   if (modoRegistro) {
     const tiposDoc = [
       { id: '1', nombre: 'Cédula' }, { id: '2', nombre: 'Tarjeta de Identidad' },
@@ -122,7 +114,6 @@ function App() {
       <div className="auth-screen">
         <div className="auth-card">
           <div className="auth-logo">
-            <div className="auth-logo-icon">📱</div>
             <h1 className="auth-brand">CELUACCEL</h1>
             <p className="auth-sub">Crear cuenta nueva</p>
           </div>
@@ -163,21 +154,19 @@ function App() {
             </div>
           </div>
           <button className="btn-auth" onClick={registrarUsuario}>Crear Cuenta</button>
-          <button className="btn-auth-ghost" onClick={() => setModoRegistro(false)}>← Volver al inicio de sesión</button>
+          <button className="btn-auth-ghost" onClick={() => setModoRegistro(false)}>Volver al inicio de sesión</button>
         </div>
       </div>
     );
   }
 
-  // ── LOGIN ─────────────────────────────────────────────────────────────────────
   if (!logueado) {
     return (
       <div className="auth-screen">
         <div className="auth-card">
           <div className="auth-logo">
-            <div className="auth-logo-icon">📱</div>
             <h1 className="auth-brand">CELUACCEL</h1>
-            <p className="auth-sub">Sistema de gestión de servicios técnicos</p>
+            <p className="auth-sub">Sistema de gestión de servicios</p>
           </div>
           <div className="campo">
             <label>Número de documento</label>
@@ -197,31 +186,21 @@ function App() {
           </div>
           <button className="btn-auth" id="btn-login" onClick={acceder}>Iniciar Sesión</button>
           <button className="btn-auth-ghost" id="btn-registro" onClick={() => setModoRegistro(true)}>
-            ¿No tienes cuenta? Regístrate
+            Registrar cuenta
           </button>
-
-          <div className="login-hint">
-            <p>Cuentas de prueba:</p>
-            <p>📱 Cliente: <strong>10045612317</strong> / <strong>a9T3xL2q</strong></p>
-            <p>🔧 Técnico: <strong>67890123458</strong> / <strong>f9C3xV7n</strong></p>
-            <p>⚙️ Admin: <strong>91820473651</strong> / <strong>Y6p4nK3W</strong></p>
-          </div>
         </div>
       </div>
     );
   }
 
-  // ── HOME ──────────────────────────────────────────────────────────────────────
   const tabs = getTabs(userData?.rol);
   const rolLabel = userData?.rol === 1 ? 'Técnico' : userData?.rol === 3 ? 'Administrador' : 'Cliente';
   const rolColor = userData?.rol === 1 ? '#3b82f6' : userData?.rol === 3 ? '#f59e0b' : '#22c55e';
 
   return (
     <div className="app-wrapper">
-      {/* Navbar */}
       <nav className="app-navbar">
         <div className="navbar-brand">
-          <span className="navbar-icon">📱</span>
           <span className="navbar-title">CELUACCEL</span>
         </div>
 
@@ -240,17 +219,16 @@ function App() {
 
         <div className="navbar-user">
           <div className="user-avatar" style={{ backgroundColor: rolColor }}>
-            {userData?.nombre ? userData.nombre.charAt(0).toUpperCase() : '?'}
+            {userData?.nombre ? userData.nombre.charAt(0).toUpperCase() : ''}
           </div>
           <div className="user-info">
             <span className="user-nombre">{userData?.nombre || userData?.id}</span>
             <span className="user-rol" style={{ color: rolColor }}>{rolLabel}</span>
           </div>
-          <button className="btn-salir" id="btn-cerrar-sesion" onClick={cerrarSesion} title="Cerrar sesión">⏻</button>
+          <button className="btn-salir" id="btn-cerrar-sesion" onClick={cerrarSesion} title="Cerrar sesión">Salir</button>
         </div>
       </nav>
 
-      {/* Contenido */}
       <main className="app-main">
         {tabActivo === 'servicios' && (
           <Servicios token={token()} userId={userData?.id} rol={userData?.rol} />
