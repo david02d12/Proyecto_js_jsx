@@ -256,15 +256,15 @@ function NotifAdmin({ token, userId }) {
     try {
       await axios.put(`${API}/api/usuarios/cambiar-rol`, { idUsuario, nuevoRol }, cfg);
       cargar();
-    } catch (e) { alert('Error modificando variable de DB.'); }
+    } catch (e) { alert('Error al cambiar el nivel de acceso.'); }
   };
 
   const eliminarUsuario = async (id) => {
-    if (!window.confirm('Eliminar entrada permanentemente?')) return;
+    if (!window.confirm('¿Estás seguro de que deseas eliminar permanentemente esta cuenta?')) return;
     try {
       await axios.delete(`${API}/api/usuarios/eliminar/${id}`, cfg);
       cargar();
-    } catch (e) { alert('Fallo query delete.'); }
+    } catch (e) { alert('Hubo un error al intentar eliminar la cuenta.'); }
   };
 
   const statUsers = {
@@ -286,22 +286,22 @@ function NotifAdmin({ token, userId }) {
 
       <div className="stats-row">
         <div className="stat-card"><span className="stat-num">{usuarios.length}</span><span className="stat-label">Cuentas vinculadas</span></div>
-        <div className="stat-card azul"><span className="stat-num">{statUsers.clientes}</span><span className="stat-label">Rol 2: Base</span></div>
-        <div className="stat-card verde"><span className="stat-num">{statUsers.tecnicos}</span><span className="stat-label">Rol 1: Personal</span></div>
-        <div className="stat-card amarillo"><span className="stat-num">{statUsers.admins}</span><span className="stat-label">Rol 3: Root</span></div>
+        <div className="stat-card azul"><span className="stat-num">{statUsers.clientes}</span><span className="stat-label">Clientes</span></div>
+        <div className="stat-card verde"><span className="stat-num">{statUsers.tecnicos}</span><span className="stat-label">Técnicos</span></div>
+        <div className="stat-card amarillo"><span className="stat-num">{statUsers.admins}</span><span className="stat-label">Administradores</span></div>
       </div>
 
       <div className="admin-layout">
         <div>
-          <h3 className="section-subtitle">Tabla DB: Notificaciones</h3>
-          {cargando ? <div className="loading-state">Leyendo tabla...</div> : (
+          <h3 className="section-subtitle">Últimas Notificaciones del Sistema</h3>
+          {cargando ? <div className="loading-state">Cargando datos...</div> : (
             <ListaNotif notificaciones={notificaciones} leidas={leidas} onMarcar={marcar} />
           )}
-          <button className="btn-outline" style={{ marginTop: 12 }} onClick={cargar}>Call endpoint list</button>
+          <button className="btn-outline" style={{ marginTop: 12 }} onClick={cargar}>Refrescar Centro de Alertas</button>
         </div>
 
         <div>
-          <h3 className="section-subtitle">Tabla DB: Cuentas</h3>
+          <h3 className="section-subtitle">Listado de Usuarios Activos</h3>
           <div className="usuarios-lista">
             {usuarios.map(u => (
               <div key={u.ID_Usuario} className="usuario-item">
@@ -311,23 +311,23 @@ function NotifAdmin({ token, userId }) {
                 <div className="usuario-info">
                   <div className="usuario-nombre">{u.Nombre}</div>
                   <div className="usuario-meta">{u.Correo} - {u.Nombre_Documento}</div>
-                  <div className="usuario-doc">Doc_ID: {u.ID_Usuario}</div>
+                  <div className="usuario-doc">Nro. Documento: {u.ID_Usuario}</div>
                 </div>
                 <div className="usuario-actions">
                   <span className={`rol-tag rol-${u.Codigo_Rol}`}>
-                    {u.Codigo_Rol === 1 ? 'Nivel Medio' : u.Codigo_Rol === 3 ? 'Nivel Alto' : 'Nivel Bajo'}
+                    {u.Codigo_Rol === 1 ? 'Técnico' : u.Codigo_Rol === 3 ? 'Administrador' : 'Cliente'}
                   </span>
                   <select
                     className="rol-select"
                     value={u.Codigo_Rol}
                     onChange={e => cambiarRol(u.ID_Usuario, Number(e.target.value))}
                   >
-                    <option value={2}>Cliente 2</option>
-                    <option value={1}>Trabajador 1</option>
-                    <option value={3}>SuperUser 3</option>
+                    <option value={2}>Hacer Cliente</option>
+                    <option value={1}>Hacer Técnico</option>
+                    <option value={3}>Dar Admin</option>
                   </select>
                   <button className="btn-eliminar" style={{ padding: '4px 10px', fontSize: 12 }} onClick={() => eliminarUsuario(u.ID_Usuario)}>
-                    Drop Row
+                    Borrar Cuenta
                   </button>
                 </div>
               </div>

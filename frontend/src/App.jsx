@@ -16,6 +16,7 @@ function App() {
   const [userData, setUserData] = useState(null); 
   const [tabActivo, setTabActivo] = useState('servicios');
   const [notifCount, setNotifCount] = useState(0);
+  const [menuMovilAbierto, setMenuMovilAbierto] = useState(false);
 
   const [formReg, setFormReg] = useState({
     ID_Usuario: '', Codigo_Documento: '1', Nombre: '', Fecha_Nacimiento: '',
@@ -201,15 +202,16 @@ function App() {
     <div className="app-wrapper">
       <nav className="app-navbar">
         <div className="navbar-brand">
+          <button className="btn-sandwich" onClick={() => setMenuMovilAbierto(!menuMovilAbierto)}>☰</button>
           <span className="navbar-title">CELUACCEL</span>
         </div>
 
-        <div className="navbar-tabs">
+        <div className={`navbar-tabs ${menuMovilAbierto ? 'abierto' : ''}`}>
           {tabs.map(t => (
             <button
               key={t.key} id={t.id}
               className={`nav-tab ${tabActivo === t.key ? 'nav-tab-activo' : ''}`}
-              onClick={() => setTabActivo(t.key)}
+              onClick={() => { setTabActivo(t.key); setMenuMovilAbierto(false); }}
             >
               {t.label}
               {t.badge > 0 && <span className="nav-badge">{t.badge}</span>}

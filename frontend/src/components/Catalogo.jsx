@@ -80,7 +80,7 @@ function CatalogoCliente({ token }) {
       <div className="productos-grid">
         {filtrados.length === 0 ? (
           <div className="empty-state full-span">
-            <p>Lista o parametro vacio de la DB</p>
+            <p>No hay productos disponibles por el momento</p>
           </div>
         ) : filtrados.map(p => (
           <div key={p.Codigo_Producto} className="producto-card" onClick={() => setProductoSeleccionado(p)}>
@@ -94,7 +94,7 @@ function CatalogoCliente({ token }) {
               <span className="producto-precio">${Number(p.Precio).toLocaleString('es-CO')}</span>
               <span className="producto-stock">{p.Cantidad} UNDS</span>
             </div>
-            <div className="producto-preguntar-hint">Acceder modal</div>
+            <div className="producto-preguntar-hint">Ver Detalles complets</div>
           </div>
         ))}
       </div>
@@ -109,27 +109,27 @@ function CatalogoCliente({ token }) {
             <div className="modal-body">
               <div className="producto-modal-img">PREVIEW</div>
               <div className="detalle-grid">
-                <div className="detalle-item"><span>Sección param</span><strong>{productoSeleccionado.Nombre_Categoria}</strong></div>
-                <div className="detalle-item"><span>Valor Venta</span><strong className="precio-verde">${Number(productoSeleccionado.Precio).toLocaleString('es-CO')}</strong></div>
-                <div className="detalle-item" style={{ gridColumn: '1 / -1' }}><span>Resumen DB</span><strong>{productoSeleccionado.Descripcion}</strong></div>
-                <div className="detalle-item"><span>Almacen global</span><strong>{productoSeleccionado.Cantidad} items</strong></div>
+                <div className="detalle-item"><span>Categoría</span><strong>{productoSeleccionado.Nombre_Categoria}</strong></div>
+                <div className="detalle-item"><span>Precio de Venta</span><strong className="precio-verde">${Number(productoSeleccionado.Precio).toLocaleString('es-CO')}</strong></div>
+                <div className="detalle-item" style={{ gridColumn: '1 / -1' }}><span>Descripción General</span><strong>{productoSeleccionado.Descripcion}</strong></div>
+                <div className="detalle-item"><span>Disponibles en inventario</span><strong>{productoSeleccionado.Cantidad} unidades</strong></div>
               </div>
 
               <div className="pregunta-section">
-                <h4>Sector QA Interactivo</h4>
-                <p>Uso de endpoint POST de modulo a API para envio seguro</p>
+                <h4>Resolución de Dudas</h4>
+                <p>Envía tu consulta sobre este repuesto u accesorio</p>
                 {preguntaEnviada ? (
-                  <div className="alert-ok">Formulario 200 OK. Resolucion correcta guardada en Backend.</div>
+                  <div className="alert-ok">Formulario enviado. Tu pregunta será revisada por nuestro equipo técnico pronto.</div>
                 ) : (
                   <>
                     <textarea
                       className="pregunta-input"
-                      placeholder="Input de texto plano...."
+                      placeholder="Escribe tu duda aquí..."
                       rows="3"
                       value={pregunta}
                       onChange={e => setPregunta(e.target.value)}
                     />
-                    <button className="btn-primary w-full" onClick={enviarPregunta}>POST text</button>
+                    <button className="btn-primary w-full" onClick={enviarPregunta}>Enviar Pregunta</button>
                   </>
                 )}
               </div>
@@ -179,7 +179,7 @@ function CatalogoAdmin({ token, rol }) {
   };
 
   const eliminar = async (cod) => {
-    if (!window.confirm('Delete local PK index?')) return;
+    if (!window.confirm('¿Confirmas que deseas eliminar permanentemente este producto del catálogo?')) return;
     try {
       await axios.delete(`${API}/api/productos/eliminar/${cod}`, cfg);
       cargarDatos();
@@ -206,7 +206,7 @@ function CatalogoAdmin({ token, rol }) {
         <div className={`rol-banner ${esTecnico ? 'tecnico-banner' : 'admin-banner'}`}>
           <div>
             <h2 className="section-title">Editor Global BD Productos</h2>
-            <p className="section-sub">{esTecnico ? 'Lectura en modo OnlyRead' : 'CRUD completo y edicion estructural interna'}</p>
+            <p className="section-sub">{esTecnico ? 'Lectura en modo "Solo Visualización" del inventario' : 'Herramienta de Gestión, Creación y Borrado Total de elementos'}</p>
           </div>
         </div>
       </div>
@@ -214,8 +214,8 @@ function CatalogoAdmin({ token, rol }) {
       <div className="servicios-layout">
         <main className="table-panel">
           <div className="toolbar">
-            <input className="search-input" placeholder="Query ID searcher..." value={busqueda} onChange={e => setBusqueda(e.target.value)} />
-            <button className="btn-outline" onClick={cargarDatos}>Run fetch</button>
+            <input className="search-input" placeholder="Buscar por código paramétrico..." value={busqueda} onChange={e => setBusqueda(e.target.value)} />
+            <button className="btn-outline" onClick={cargarDatos}>Actualizar Rejilla</button>
           </div>
 
           <div className="productos-tabla">
@@ -226,7 +226,7 @@ function CatalogoAdmin({ token, rol }) {
                     <span className="producto-codigo">{p.Codigo_Producto}</span>
                     <span className="cat-pill">{p.Nombre_Categoria}</span>
                     <span className={`estado-pill ${p.Activo_Catalogo ? 'activo' : 'inactivo'}`}>
-                      {p.Activo_Catalogo ? 'True State' : 'False State'}
+                      {p.Activo_Catalogo ? 'Disponible' : 'Oculto al Cliente'}
                     </span>
                   </div>
                   <div className="producto-fila-nombre">{p.Nombre}</div>
@@ -240,10 +240,10 @@ function CatalogoAdmin({ token, rol }) {
                 {!esTecnico && (
                   <div className="producto-fila-actions" style={{ flexDirection: 'column' }}>
                     <button className="btn-outline" style={{ fontSize: 11, padding: '4px 8px' }} onClick={() => toggleEstado(p)}>
-                      {p.Activo_Catalogo ? 'State: false' : 'State: true'}
+                      {p.Activo_Catalogo ? 'Ocultar' : 'Re-Activar'}
                     </button>
-                    <button className="btn-editar" onClick={() => { setEditando(true); setForm(p); }}>Patch</button>
-                    <button className="btn-eliminar" onClick={() => eliminar(p.Codigo_Producto)}>Drop</button>
+                    <button className="btn-editar" onClick={() => { setEditando(true); setForm(p); }}>Modificar</button>
+                    <button className="btn-eliminar" onClick={() => eliminar(p.Codigo_Producto)}>Remover Item</button>
                   </div>
                 )}
               </div>
@@ -254,37 +254,37 @@ function CatalogoAdmin({ token, rol }) {
         <aside className="form-panel">
           {!esTecnico && (
             <div className="panel-card" style={{ marginBottom: 20 }}>
-              <h4 className="panel-title">{editando ? 'Metodo Edit' : 'Metodo Create'}</h4>
-              <div className="campo"><label>Input string param 1</label>
+              <h4 className="panel-title">{editando ? 'Herramienta de Edición' : 'Módulo de Nuevo Ingreso'}</h4>
+              <div className="campo"><label>Cod o PK interno de tienda</label>
                 <input value={form.Codigo_Producto} onChange={e => setForm({...form, Codigo_Producto: e.target.value})} disabled={editando} />
               </div>
-              <div className="campo"><label>String config param2</label>
+              <div className="campo"><label>Asignación de nombre</label>
                 <input value={form.Nombre} onChange={e => setForm({...form, Nombre: e.target.value})} />
               </div>
-              <div className="campo"><label>Number value category FK</label>
+              <div className="campo"><label>Sub-Categorización</label>
                 <select value={form.ID_Categoria} onChange={e => setForm({...form, ID_Categoria: e.target.value})}>
-                  <option value="">None null</option>
+                  <option value="">-- Sin Especificar --</option>
                   {categorias.map(c => <option key={c.ID_Categoria} value={c.ID_Categoria}>{c.Nombre_Categoria}</option>)}
                 </select>
               </div>
-              <div className="campo"><label>Number value general</label>
+              <div className="campo"><label>Precio de Coste Final (COP)</label>
                 <input type="number" value={form.Precio} onChange={e => setForm({...form, Precio: e.target.value})} />
               </div>
-              <div className="campo"><label>Number param 5</label>
+              <div className="campo"><label>Inventario Base</label>
                 <input type="number" value={form.Cantidad} onChange={e => setForm({...form, Cantidad: e.target.value})} />
               </div>
-              <div className="campo"><label>Body content</label>
+              <div className="campo"><label>Cuerpo Descriptivo de la pieza</label>
                 <textarea rows="2" value={form.Descripcion} onChange={e => setForm({...form, Descripcion: e.target.value})} />
               </div>
-              <button className="btn-primary w-full" onClick={guardar}>{editando ? 'Push Patch' : 'Push Post'}</button>
-              {editando && <button className="btn-ghost w-full mt-2" onClick={limpiar}>Escape block</button>}
+              <button className="btn-primary w-full" onClick={guardar}>{editando ? 'Guardar Cambios Parciales' : 'Subir a Producción'}</button>
+              {editando && <button className="btn-ghost w-full mt-2" onClick={limpiar}>Reset Menu</button>}
             </div>
           )}
 
           <div className="panel-card">
-            <h4 className="panel-title">Tabla Preguntas</h4>
+            <h4 className="panel-title">Tabla Historial de Consultas</h4>
             <div className="preguntas-lista">
-              {preguntas.length === 0 ? <div className="empty-state" style={{ padding: 10 }}>Ninguna row interna detectada</div> :
+              {preguntas.length === 0 ? <div className="empty-state" style={{ padding: 10 }}>Pizarra de preguntas vacía.</div> :
                 preguntas.map((pr, i) => (
                   <div key={i} className="pregunta-item">
                     <div className="pregunta-header">
@@ -294,7 +294,7 @@ function CatalogoAdmin({ token, rol }) {
                       </div>
                       <span className="pregunta-fecha">{new Date(pr.Fecha).toLocaleDateString('es-CO')}</span>
                     </div>
-                    <div className="pregunta-texto">String content: "{pr.Pregunta}"</div>
+                    <div className="pregunta-texto">Extracto: "{pr.Pregunta}"</div>
                   </div>
                 ))
               }
