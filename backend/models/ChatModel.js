@@ -11,7 +11,7 @@ class ChatModel {
                 s.Movil_Nombre,
                 s.Descripcion as Descripcion_Servicio,
                 s.Etapa,
-                (SELECT COUNT(*) FROM Mensaje m WHERE m.Codigo_Chat = c.Codigo_Chat AND m.Estado = 0 AND m.ID_Usuario != c.ID_Usuario) as Mensajes_Sin_Leer
+                (SELECT COUNT(*) FROM Mensajes m WHERE m.Codigo_Chat = c.Codigo_Chat AND m.Estado = 0 AND m.ID_Usuario != c.ID_Usuario) as Mensajes_Sin_Leer
             FROM Chat c
             LEFT JOIN Usuario u ON c.ID_Usuario = u.ID_Usuario
             LEFT JOIN Servicio s ON c.ID_Servicio = s.ID_Servicio
@@ -23,7 +23,7 @@ class ChatModel {
     static getMensajes(idChat, callback) {
         const sql = `
             SELECT m.*, u.Nombre as Nombre_Remitente 
-            FROM Mensaje m
+            FROM Mensajes m
             LEFT JOIN Usuario u ON m.ID_Usuario = u.ID_Usuario
             WHERE m.Codigo_Chat = ? 
             ORDER BY m.Fecha_Mensaje ASC
@@ -33,12 +33,12 @@ class ChatModel {
 
     static enviarMensaje(data, callback) {
         const { Codigo_Chat, ID_Usuario, Mensaje } = data;
-        const sql = `INSERT INTO Mensaje (Codigo_Chat, ID_Usuario, Mensaje, Estado) VALUES (?, ?, ?, 0)`;
+        const sql = `INSERT INTO Mensajes (Codigo_Chat, ID_Usuario, Mensaje, Fecha_Mensaje, Estado) VALUES (?, ?, ?, NOW(), 0)`;
         db.query(sql, [Codigo_Chat, ID_Usuario, Mensaje], callback);
     }
 
     static leerMensajes(idChat, idLector, callback) {
-        const sql = `UPDATE Mensaje SET Estado = 1 WHERE Codigo_Chat = ? AND ID_Usuario != ? AND Estado = 0`;
+        const sql = `UPDATE Mensajes SET Estado = 1 WHERE Codigo_Chat = ? AND ID_Usuario != ? AND Estado = 0`;
         db.query(sql, [idChat, idLector], callback);
     }
 }

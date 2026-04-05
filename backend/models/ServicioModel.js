@@ -14,7 +14,7 @@ class ServicioModel {
                         FROM Servicio s 
                         LEFT JOIN Usuario u ON s.ID_Usuario = u.ID_Usuario 
                         WHERE s.ID_Servicio = ?`;
-        const sqlHist = `SELECT * FROM Historial_Servicio WHERE ID_Servicio = ? ORDER BY Fecha_Evento DESC`;
+        const sqlHist = `SELECT * FROM Historial_Servicios WHERE ID_Servicio = ? ORDER BY Fecha_Evento DESC`;
 
         db.query(sqlSrv, [idServicio], (err, resultsSrv) => {
             if (err) return callback(err, null);
@@ -37,9 +37,9 @@ class ServicioModel {
             if (err) return callback(err, null);
             
             const insertId = result.insertId;
-            const sqlHist = `INSERT INTO Historial_Servicio (ID_Servicio, Descripcion_Evento, Transicion_Etapa, Estado)
-                             VALUES (?, 'Creación de la orden de servicio', ?, 1)`;
-            db.query(sqlHist, [insertId, `${Etapa || 0}%`], () => {
+            const sqlHist = `INSERT INTO Historial_Servicios (ID_Historial, ID_Servicio, Fecha_Evento, Descripcion_Evento, Estado)
+                             VALUES (UUID(), ?, NOW(), 'Creación de la orden de servicio', '1')`;
+            db.query(sqlHist, [insertId], () => {
                 const sqlChat = `INSERT INTO Chat (ID_Usuario, ID_Servicio) VALUES (?, ?)`;
                 db.query(sqlChat, [ID_Usuario, insertId], () => {
                     callback(null, result);
@@ -63,9 +63,9 @@ class ServicioModel {
                 if (errUpdate) return callback(errUpdate, null);
                 
                 if (etapaAnterior !== (Etapa || 0)) {
-                    const sqlHist = `INSERT INTO Historial_Servicio (ID_Servicio, Descripcion_Evento, Transicion_Etapa, Estado)
-                                     VALUES (?, 'Actualización de etapa del servicio a ${Etapa}%', ?, 1)`;
-                    db.query(sqlHist, [ID_Servicio, `${etapaAnterior}% -> ${Etapa}%`], () => {
+                    const sqlHist = `INSERT INTO Historial_Servicios (ID_Historial, ID_Servicio, Fecha_Evento, Descripcion_Evento, Estado)
+                                     VALUES (UUID(), ?, NOW(), ?, '1')`;
+                    db.query(sqlHist, [ID_Servicio, `Etapa actualizada a ${Etapa}%`], () => {
                         callback(null, { message: "Servicio actualizado con historial" });
                     });
                 } else {
@@ -76,9 +76,9 @@ class ServicioModel {
     }
 
     static eliminar(idServicio, callback) {
-        const deleteMsg = `DELETE FROM Mensaje WHERE Codigo_Chat IN (SELECT Codigo_Chat FROM Chat WHERE ID_Servicio = ?)`;
+        const deleteMsg = `DELETE FROM Mensajes WHERE Codigo_Chat IN (SELECT Codigo_Chat FROM Chat WHERE ID_Servicio = ?)`;
         const deleteChat = `DELETE FROM Chat WHERE ID_Servicio = ?`;
-        const deleteHist = `DELETE FROM Historial_Servicio WHERE ID_Servicio = ?`;
+        const deleteHist = `DELETE FROM Historial_Servicios WHERE ID_Servicio = ?`;
         const deleteSrv = `DELETE FROM Servicio WHERE ID_Servicio = ?`;
 
         db.query(deleteMsg, [idServicio], () => {

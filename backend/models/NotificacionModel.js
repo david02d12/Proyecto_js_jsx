@@ -5,7 +5,7 @@ class NotificacionModel {
         const notificaciones = [];
         const q1 = `
             SELECT c.Codigo_Chat, s.Movil_Nombre, 
-                (SELECT COUNT(*) FROM Mensaje m WHERE m.Codigo_Chat = c.Codigo_Chat AND m.Estado=0 AND m.ID_Usuario != ?) as no_leidos
+                (SELECT COUNT(*) FROM Mensajes m WHERE m.Codigo_Chat = c.Codigo_Chat AND m.Estado=0 AND m.ID_Usuario != ?) as no_leidos
             FROM Chat c
             JOIN Servicio s ON c.ID_Servicio = s.ID_Servicio
             WHERE c.ID_Usuario = ?
@@ -57,7 +57,7 @@ class NotificacionModel {
         const notifs = [];
         const q1 = `
             SELECT c.Codigo_Chat, c.ID_Usuario, s.Movil_Nombre, 
-                (SELECT COUNT(*) FROM Mensaje m WHERE m.Codigo_Chat = c.Codigo_Chat AND m.Estado=0 AND m.ID_Usuario = c.ID_Usuario) as no_leidos
+                (SELECT COUNT(*) FROM Mensajes m WHERE m.Codigo_Chat = c.Codigo_Chat AND m.Estado=0 AND m.ID_Usuario = c.ID_Usuario) as no_leidos
             FROM Chat c
             JOIN Servicio s ON c.ID_Servicio = s.ID_Servicio
         `;
@@ -99,11 +99,11 @@ class NotificacionModel {
     }
 
     static getAdminNotif(callback) {
-        const sql = `SELECT * FROM Preguntas_Producto ORDER BY Fecha DESC LIMIT 50`;
+        const sql = `SELECT * FROM Pregunta ORDER BY Fecha DESC LIMIT 50`;
         db.query(sql, [], (err, res) => {
             if (err) return callback(err, null);
             const notifs = res.map(p => ({
-                id: `preg_${p.ID_Pregunta}`,
+                id: `preg_${p.ID_Consulta}`,
                 tipo: 'Pregunta Catálogo',
                 titulo: 'Nueva duda en producto',
                 descripcion: `Pregunta sobre Prod-${p.Codigo_Producto}: "${p.Pregunta}"`,

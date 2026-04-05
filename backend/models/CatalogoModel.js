@@ -40,16 +40,15 @@ class CatalogoModel {
         db.query(sql, [], callback);
     }
     static hacerPregunta(data, callback) {
-        const { Codigo_Producto, Pregunta } = data;
-        const { ID_Usuario } = data; 
-        const sql = `INSERT INTO Preguntas_Producto (Codigo_Producto, ID_Usuario, Pregunta, Fecha) 
-                     VALUES (?, ?, ?, NOW())`;
-        db.query(sql, [Codigo_Producto, ID_Usuario, Pregunta], callback);
+        const { Codigo_Producto, Pregunta, ID_Usuario } = data;
+        const sql = `INSERT INTO Pregunta (ID_Consulta, ID_Usuario, Codigo_Producto, Pregunta, Fecha) 
+                     VALUES (NULL, ?, ?, ?, NOW())`;
+        db.query(sql, [ID_Usuario, Codigo_Producto, Pregunta], callback);
     }
 
     static listarPreguntas(callback) {
         const sql = `SELECT pp.*, u.Nombre as Nombre_Usuario, p.Nombre as Nombre_Producto 
-                     FROM Preguntas_Producto pp
+                     FROM Pregunta pp
                      LEFT JOIN Usuario u ON pp.ID_Usuario = u.ID_Usuario
                      LEFT JOIN Producto p ON pp.Codigo_Producto = p.Codigo_Producto
                      ORDER BY pp.Fecha DESC`;

@@ -37,7 +37,7 @@ function CatalogoCliente({ token }) {
       setPreguntaEnviada(true);
       setPregunta('');
       setTimeout(() => setPreguntaEnviada(false), 3000);
-    } catch (e) { alert('Error con interconexion HTTP.'); }
+    } catch (e) { alert('Error de conexión al enviar la pregunta.'); }
   };
 
   const filtrados = productos.filter(p => {
@@ -168,14 +168,14 @@ function CatalogoAdmin({ token, rol }) {
 
   const guardar = async () => {
     if (!form.Codigo_Producto || !form.Nombre || !form.Precio || !form.Cantidad || !form.ID_Categoria) {
-      alert('Error: Data required por constrain de esquema.'); return;
+      alert('Por favor completa todos los campos del formulario.'); return;
     }
     try {
       if (editando) await axios.put(`${API}/api/productos/actualizar`, form, cfg);
       else await axios.post(`${API}/api/productos/agregar`, form, cfg);
       cargarDatos();
       limpiar();
-    } catch (e) { alert('Excepcion local atrapada.'); }
+    } catch (e) { alert('Ocurrió un error al guardar el producto.'); }
   };
 
   const eliminar = async (cod) => {
@@ -183,14 +183,14 @@ function CatalogoAdmin({ token, rol }) {
     try {
       await axios.delete(`${API}/api/productos/eliminar/${cod}`, cfg);
       cargarDatos();
-    } catch (e) { alert('Failure during call API'); }
+    } catch (e) { alert('No se pudo completar la eliminación.'); }
   };
 
   const toggleEstado = async (prod) => {
     try {
       await axios.put(`${API}/api/productos/actualizar`, { ...prod, Activo_Catalogo: prod.Activo_Catalogo ? 0 : 1 }, cfg);
       cargarDatos();
-    } catch (e) { alert('Error local.'); }
+    } catch (e) { alert('No se pudo cambiar el estado.'); }
   };
 
   const limpiar = () => {
