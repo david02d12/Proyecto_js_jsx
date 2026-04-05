@@ -23,7 +23,7 @@ db.connect(err => {
 // Clave secreta
 const SECRET_KEY = "mi_clave";
 
-//Middleware
+// Middleware
 const validarToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1]; 
@@ -97,6 +97,122 @@ app.delete('/api/servicios/eliminar/:id', validarToken, (req, res) => {
     db.query('DELETE FROM Servicio WHERE ID_Servicio = ?', [req.params.id], (err) => {
         if (err) return res.status(500).json(err);
         res.json({ message: "Eliminado" });
+    });
+});
+
+// --- ENDPOINTS PARA ROLES ---
+
+// Listar Roles
+app.get('/api/roles/listar', validarToken, (req, res) => {
+    db.query('SELECT * FROM Roles', (err, results) => {
+        if (err) return res.status(500).json(err);
+        res.json(results);
+    });
+});
+
+// Agregar Rol
+app.post('/api/roles/agregar', validarToken, (req, res) => {
+    const { Codigo_Rol, Descripcion_Rol } = req.body;
+    const sql = `INSERT INTO Roles (Codigo_Rol, Descripcion_Rol) VALUES (?, ?)`;
+    db.query(sql, [Codigo_Rol, Descripcion_Rol], (err) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.status(201).json({ message: "Rol guardado" });
+    });
+});
+
+// Actualizar Rol
+app.put('/api/roles/actualizar', validarToken, (req, res) => {
+    const { Codigo_Rol, Descripcion_Rol } = req.body;
+    const sql = `UPDATE Roles SET Descripcion_Rol=? WHERE Codigo_Rol=?`;
+    db.query(sql, [Descripcion_Rol, Codigo_Rol], (err) => {
+        if (err) return res.status(500).json(err);
+        res.json({ message: "Rol actualizado" });
+    });
+});
+
+// Eliminar Rol
+app.delete('/api/roles/eliminar/:id', validarToken, (req, res) => {
+    db.query('DELETE FROM Roles WHERE Codigo_Rol = ?', [req.params.id], (err) => {
+        if (err) return res.status(500).json(err);
+        res.json({ message: "Rol eliminado" });
+    });
+});
+
+
+// --- ENDPOINTS PARA HISTORIAL DE SERVICIOS ---
+
+// Listar Historial
+app.get('/api/historial/listar', validarToken, (req, res) => {
+    db.query('SELECT * FROM Historial_Servicios', (err, results) => {
+        if (err) return res.status(500).json(err);
+        res.json(results);
+    });
+});
+
+// Agregar Historial
+app.post('/api/historial/agregar', validarToken, (req, res) => {
+    const { ID_Historial, ID_Servicio, Fecha_Evento, Descripcion_Evento, Estado } = req.body;
+    const sql = `INSERT INTO Historial_Servicios (ID_Historial, ID_Servicio, Fecha_Evento, Descripcion_Evento, Estado) VALUES (?, ?, ?, ?, ?)`;
+    db.query(sql, [ID_Historial, ID_Servicio, Fecha_Evento, Descripcion_Evento, Estado], (err) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.status(201).json({ message: "Historial registrado" });
+    });
+});
+
+// Actualizar Historial
+app.put('/api/historial/actualizar', validarToken, (req, res) => {
+    const { ID_Servicio, Fecha_Evento, Descripcion_Evento, Estado, ID_Historial } = req.body;
+    const sql = `UPDATE Historial_Servicios SET ID_Servicio=?, Fecha_Evento=?, Descripcion_Evento=?, Estado=? WHERE ID_Historial=?`;
+    db.query(sql, [ID_Servicio, Fecha_Evento, Descripcion_Evento, Estado, ID_Historial], (err) => {
+        if (err) return res.status(500).json(err);
+        res.json({ message: "Historial actualizado" });
+    });
+});
+
+// Eliminar Historial
+app.delete('/api/historial/eliminar/:id', validarToken, (req, res) => {
+    db.query('DELETE FROM Historial_Servicios WHERE ID_Historial = ?', [req.params.id], (err) => {
+        if (err) return res.status(500).json(err);
+        res.json({ message: "Historial eliminado" });
+    });
+});
+
+
+// --- ENDPOINTS PARA TIPO DE DOCUMENTO ---
+
+// Listar Tipos de Documento
+app.get('/api/tipodocumento/listar', validarToken, (req, res) => {
+    db.query('SELECT * FROM Tipo_Documento', (err, results) => {
+        if (err) return res.status(500).json(err);
+        res.json(results);
+    });
+});
+
+// Agregar Tipo de Documento
+app.post('/api/tipodocumento/agregar', validarToken, (req, res) => {
+    const { Codigo_Documento, Nombre_Documento } = req.body;
+    const sql = `INSERT INTO Tipo_Documento (Codigo_Documento, Nombre_Documento) VALUES (?, ?)`;
+    db.query(sql, [Codigo_Documento, Nombre_Documento], (err) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.status(201).json({ message: "Tipo de documento guardado" });
+    });
+});
+
+// Actualizar Tipo de Documento
+app.put('/api/tipodocumento/actualizar', validarToken, (req, res) => {
+    const { Codigo_Documento, Nombre_Documento } = req.body;
+    const sql = `UPDATE Tipo_Documento SET Nombre_Documento=? WHERE Codigo_Documento=?`;
+    db.query(sql, [Nombre_Documento, Codigo_Documento], (err) => {
+        if (err) return res.status(500).json(err);
+        res.json({ message: "Tipo de documento actualizado" });
+    });
+});
+
+// Eliminar Tipo de Documento
+app.delete('/api/tipodocumento/eliminar/:id', validarToken, (req, res) => {
+    db.query('DELETE FROM Tipo_Documento WHERE Codigo_Documento = ?', [req.params.id], (err) => {
+        if (err) return res.status(500).json(err);
+        res.json({ message: "Tipo de documento eliminado" });
     });
 });
 
