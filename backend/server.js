@@ -2,6 +2,7 @@ const express = require('express');
 const mysql = require('mysql2');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
+const bcrypt = require('bcrypt');
 
 const app = express();
 app.use(express.json());
@@ -38,10 +39,15 @@ const validarToken = (req, res, next) => {
 };
 
 // Registro usuario
-app.post('/api/registro', (req, res) => {
+app.post('/api/registro', async (req, res) => { // SE AGREGÓ 'async'
     const { ID_Usuario, Codigo_Documento, Nombre, Fecha_Nacimiento, Direccion, Telefono, Correo, Clave } = req.body;
+    
+    //Contraseña encriptada
+    const saltRounds = 10;
+    const hashedClave = await bcrypt.hash(Clave, saltRounds);
+
     const sql = `INSERT INTO Usuario (ID_Usuario, Codigo_Documento, Nombre, Fecha_Nacimiento, Direccion, Telefono, Correo, Clave, Rol) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Admin')`;
-    db.query(sql, [ID_Usuario, Codigo_Documento, Nombre, Fecha_Nacimiento, Direccion, Telefono, Correo, Clave], (err) => {
+    db.query(sql, [ID_Usuario, Codigo_Documento, Nombre, Fecha_Nacimiento, Direccion, Telefono, Correo, hashedClave], (err) => {
         if (err) return res.status(500).json({ error: err.message });
         res.status(201).json({ message: "Usuario creado" });
     });
@@ -52,12 +58,20 @@ app.post('/api/login', (req, res) => {
     const user = req.body.user ? req.body.user.trim() : "";
     const password = req.body.password ? req.body.password.trim() : "";
 
-    const sql = "SELECT * FROM Usuario WHERE TRIM(ID_Usuario) = ? AND TRIM(Clave) = ?";
-    db.query(sql, [user, password], (err, results) => {
+
+    const sql = "SELECT * FROM Usuario WHERE TRIM(ID_Usuario) = ?";
+    db.query(sql, [user], async (err, results) => {
         if (err) return res.status(500).json(err);
+        
         if (results.length > 0) {
-            const token = jwt.sign({ id: results[0].ID_Usuario }, SECRET_KEY, { expiresIn: '2h' });
-            res.json({ auth: true, token, user: results[0].ID_Usuario });
+            const match = await bcrypt.compare(password, results[0].Clave);
+            
+            if (match) {
+                const token = jwt.sign({ id: results[0].ID_Usuario }, SECRET_KEY, { expiresIn: '2h' });
+                res.json({ auth: true, token, user: results[0].ID_Usuario });
+            } else {
+                res.status(401).json({ auth: false, message: "Credenciales incorrectas" });
+            }
         } else {
             res.status(401).json({ auth: false, message: "Credenciales incorrectas" });
         }
@@ -100,7 +114,6 @@ app.delete('/api/servicios/eliminar/:id', validarToken, (req, res) => {
     });
 });
 
-// --- ENDPOINTS PARA ROLES ---
 
 // Listar Roles
 app.get('/api/roles/listar', validarToken, (req, res) => {
@@ -139,7 +152,6 @@ app.delete('/api/roles/eliminar/:id', validarToken, (req, res) => {
 });
 
 
-// --- ENDPOINTS PARA HISTORIAL DE SERVICIOS ---
 
 // Listar Historial
 app.get('/api/historial/listar', validarToken, (req, res) => {
@@ -178,7 +190,6 @@ app.delete('/api/historial/eliminar/:id', validarToken, (req, res) => {
 });
 
 
-// --- ENDPOINTS PARA TIPO DE DOCUMENTO ---
 
 // Listar Tipos de Documento
 app.get('/api/tipodocumento/listar', validarToken, (req, res) => {
