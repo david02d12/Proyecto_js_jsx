@@ -26,13 +26,11 @@ const Registro = ({ setModoRegistro }) => {
         <h4 className="text-center mb-4">Registro de Usuarios</h4>
         
         {Object.keys(formReg).map(key => (
-          /* CAMBIO: Se cambió mb-2 por mb-3 para dar más espacio entre campos */
           <div className="mb-3" key={key}>
             <label className="form-label small mb-1 fw-bold text-uppercase" style={{fontSize: '0.75rem'}}>
                 {key.replace('_', ' ')}
             </label>
 
-            {/* CAMBIO: Lógica para renderizar SELECT si es Codigo_Documento, de lo contrario INPUT */}
             {key === 'Codigo_Documento' ? (
               <select 
                 className="form-select"

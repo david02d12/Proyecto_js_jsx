@@ -91,8 +91,8 @@ const Tipo = ({ cerrarSesion, setVista }) => {
           </div>
         </div>
       </div>
-
-        <div className="offcanvas offcanvas-start text-white" tabindex="-1" id="menuGlobal" style={{ backgroundColor: '#121212' }}>
+            {/*MENU DEL LADO*/}
+      <div className="offcanvas offcanvas-start text-white" tabindex="-1" id="menuGlobal" style={{ backgroundColor: '#121212' }}>
         <div className="offcanvas-header">
           <h5 className="offcanvas-title">Menú de Navegación</h5>
           <button type="button" className="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
@@ -103,6 +103,9 @@ const Tipo = ({ cerrarSesion, setVista }) => {
             <button className="btn text-white fw-bold" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('historial')}>Historial de Servicios</button>
             <button className="btn text-white fw-bold" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('tipo')}>Tipos de Documento</button>
             <button className="btn text-white fw-bold" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('servicios')}>Gestión de Servicios</button>
+            <button className="btn text-white fw-bold" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('productos')}>Gestión de Productos</button>
+            <button className="btn text-white fw-bold" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('categorias')}>Categorías de Productos</button>
+            <button className="btn text-white fw-bold" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('preguntas')}>Preguntas de Productos</button>
           </div>
         </div>
       </div>
