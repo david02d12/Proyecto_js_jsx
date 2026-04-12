@@ -11,6 +11,12 @@ const productoController = require('../controllers/productoController');
 const categoriaController = require('../controllers/categoriaController');
 const preguntaController = require('../controllers/preguntaController');
 
+// NUEVOS CONTROLLERS
+const chatController = require('../controllers/chatController');
+const comentarioController = require('../controllers/comentarioController');
+const mensajeController = require('../controllers/mensajeController');
+const notificacionController = require('../controllers/notificacionController');
+
 const { validarToken } = require('../middlewares/authMiddleware');
 
 // RUTAS DE AUTENTIFICACION
@@ -58,5 +64,31 @@ router.get('/preguntas/listar', validarToken, preguntaController.listar);
 router.post('/preguntas/agregar', validarToken, preguntaController.agregar);
 router.put('/preguntas/actualizar', validarToken, preguntaController.actualizar);
 router.delete('/preguntas/eliminar/:id', validarToken, preguntaController.eliminar);
+
+// --- NUEVAS RUTAS ---
+
+// Chats
+router.get('/chats/listar', validarToken, chatController.listar);
+router.post('/chats/agregar', validarToken, chatController.agregar);
+router.put('/chats/actualizar', validarToken, chatController.actualizar);
+router.delete('/chats/eliminar/:id', validarToken, chatController.eliminar);
+
+// Comentarios
+router.get('/comentarios/listar', validarToken, comentarioController.listar);
+router.post('/comentarios/agregar', validarToken, comentarioController.agregar);
+router.put('/comentarios/actualizar', validarToken, comentarioController.actualizar);
+router.delete('/comentarios/eliminar/:id', validarToken, comentarioController.eliminar);
+
+// Mensajes
+router.get('/mensajes/listar', validarToken, mensajeController.listar);
+router.post('/mensajes/agregar', validarToken, mensajeController.agregar);
+router.put('/mensajes/actualizar', validarToken, mensajeController.actualizar);
+router.delete('/mensajes/eliminar/:id', validarToken, mensajeController.eliminar);
+
+// Notificaciones
+router.get('/notificaciones/listar', validarToken, notificacionController.listar);
+router.post('/notificaciones/agregar', validarToken, notificacionController.agregar);
+router.put('/notificaciones/actualizar', validarToken, notificacionController.actualizar);
+router.delete('/notificaciones/eliminar/:id', validarToken, notificacionController.eliminar);
 
 module.exports = router;
