@@ -6,7 +6,7 @@ const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: '', 
-    database: 'servicios' 
+    database: 'celuaccel' 
 });
 
 db.connect(err => {
