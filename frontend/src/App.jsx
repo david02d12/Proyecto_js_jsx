@@ -10,11 +10,16 @@ import Tipo from './components/Tipo';
 import Productos from './components/Productos';
 import Categorias from './components/Categorias';
 import Preguntas from './components/Preguntas';
+import Chats from './components/Chats';
+import Comentarios from './components/Comentarios';
+import Mensajes from './components/Mensajes';
+import Notificaciones from './components/Notificaciones';
+import Usuarios from './components/Usuarios';
 
 function App() {
   const [logueado, setLogueado] = useState(false);
   const [modoRegistro, setModoRegistro] = useState(false);
-  // AQUI SE CAMBIA LA RUTA POR DEFECTO
+  
   const [vista, setVista] = useState(localStorage.getItem('ultimaVista') || 'servicios');
 
   useEffect(() => {
@@ -53,6 +58,17 @@ function App() {
       return <Categorias cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
     case 'preguntas': 
       return <Preguntas cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
+    case 'usuarios':
+      return <Usuarios cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
+    case 'chats':
+      return <Chats cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
+    case 'comentarios':
+      return <Comentarios cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
+    case 'mensajes':
+      return <Mensajes cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
+    case 'notificaciones':
+      return <Notificaciones cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
+
     default:
       return <Servicios cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
   }
