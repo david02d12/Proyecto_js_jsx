@@ -1,87 +1,135 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const Tipo = ({ cerrarSesion, setVista }) => {
-  const [datos, setDatos] = useState([]);
+const Notificaciones = ({ cerrarSesion, setVista }) => {
+  const [notificaciones, setNotificaciones] = useState([]);
   const [enEdicion, setEnEdicion] = useState(false);
   const [form, setForm] = useState({
-    Codigo_Documento: '', Nombre_Documento: ''
+    Codigo_Notificaciones: '',
+    Tipo_Notificacion: ''
   });
 
   const config = () => ({
     headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
   });
 
-  useEffect(() => { listar(); }, []);
+  useEffect(() => {
+    listar();
+  }, []);
 
   const listar = async () => {
     try {
-      const res = await axios.get('http://localhost:3000/api/tipodocumento/listar', config());
-      setDatos(res.data);
-    } catch (err) { console.error("Error al listar", err); }
+      const res = await axios.get('http://localhost:3000/api/notificaciones/listar', config());
+      setNotificaciones(res.data);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const guardar = async () => {
     try {
-      const url = enEdicion ? "actualizar" : "agregar";
+      const url = enEdicion ? 'actualizar' : 'agregar';
       const metodo = enEdicion ? 'put' : 'post';
-      await axios[metodo](`http://localhost:3000/api/tipodocumento/${url}`, form, config());
+      
+      await axios[metodo](`http://localhost:3000/api/notificaciones/${url}`, form, config());
+      
       listar();
       limpiar();
-    } catch (err) { alert("Error al procesar la solicitud."); }
+    } catch (err) {
+      alert("Error al procesar la notificación. Verifique que el código no esté duplicado.");
+    }
   };
 
   const eliminar = async (id) => {
-    if (window.confirm("¿Estás seguro de eliminar este registro?")) {
-      await axios.delete(`http://localhost:3000/api/tipodocumento/eliminar/${id}`, config());
-      listar();
+    if (window.confirm("¿Eliminar esta notificación?")) {
+      try {
+        await axios.delete(`http://localhost:3000/api/notificaciones/eliminar/${id}`, config());
+        listar();
+      } catch (err) {
+        alert("Error al eliminar la notificación");
+      }
     }
   };
 
   const limpiar = () => {
-    setForm({ Codigo_Documento: '', Nombre_Documento: '' });
+    setForm({ Codigo_Notificaciones: '', Tipo_Notificacion: '' });
     setEnEdicion(false);
   };
 
   return (
     <div>
+      {/* NAVBAR */}
       <nav className="navbar navbar-expand-lg navbar-dark p-3 shadow-sm" style={{ backgroundColor: '#DB0000' }}>
         <div className="container">
-          <button className="btn fw-bold text-white" style={{ backgroundColor: '#121212' }} type="button" data-bs-toggle="offcanvas" data-bs-target="#menuGlobal">
-            MENÚ
-          </button>
-          <span className="navbar-brand fw-bold">CELUACCEL de Tipos de Documentos</span>
-          <button className="btn btn-sm fw-bold text-white ms-3" style={{ backgroundColor: '#121212' }} onClick={cerrarSesion}>Cerrar Sesión</button>
+          <button className="btn fw-bold text-white" style={{ backgroundColor: '#121212' }} type="button" data-bs-toggle="offcanvas" data-bs-target="#menuGlobal">Menú</button>
+          <span className="navbar-brand fw-bold ms-3">Gestión de Notificaciones</span>
+          <button className="btn btn-sm fw-bold text-white" style={{ backgroundColor: '#121212' }} onClick={cerrarSesion}>Cerrar Sesión</button>
         </div>
       </nav>
 
       <div className="container mt-4">
         <div className="row">
+          {/* FORMULARIO */}
           <div className="col-md-4 mb-4">
             <div className="card p-3 shadow-sm border-0">
-              <h5 className="mb-3">{enEdicion ? "Editar Documento" : "Nuevo Documento"}</h5>
-              <input className="form-control mb-2" type="number" disabled={enEdicion} value={form.Codigo_Documento} placeholder="Código Documento" onChange={e => setForm({...form, Codigo_Documento: e.target.value})} />
-              <input className="form-control mb-3" value={form.Nombre_Documento} placeholder="Nombre Documento" onChange={e => setForm({...form, Nombre_Documento: e.target.value})} />
-              <button className="btn w-100 text-white fw-bold" style={{ backgroundColor: '#DB0000' }} onClick={guardar}>
-                {enEdicion ? "Actualizar" : "Guardar Documento"}
+              <h5>{enEdicion ? "Editar Notificación" : "Nueva Notificación"}</h5>
+              <label className="small fw-bold">Código (Manual)</label>
+              <input 
+                className="form-control mb-2" 
+                type="number"
+                placeholder="Ej: 101" 
+                value={form.Codigo_Notificaciones} 
+                disabled={enEdicion}
+                onChange={e => setForm({...form, Codigo_Notificaciones: e.target.value})} 
+              />
+              <label className="small fw-bold">Tipo de Notificación</label>
+              <input 
+                className="form-control mb-2" 
+                placeholder="Ej: Alerta de Stock" 
+                value={form.Tipo_Notificacion} 
+                onChange={e => setForm({...form, Tipo_Notificacion: e.target.value})} 
+              />
+              
+              <button className="btn w-100 text-white fw-bold mt-2" style={{ backgroundColor: '#DB0000' }} onClick={guardar}>
+                {enEdicion ? "Actualizar" : "Guardar"}
               </button>
-              {enEdicion && <button className="btn btn-secondary w-100 mt-2" onClick={limpiar}>Cancelar</button>}
+              {enEdicion && (
+                <button className="btn btn-secondary w-100 mt-2" onClick={limpiar}>Cancelar</button>
+              )}
             </div>
           </div>
+
+          {/* TABLA DE DATOS */}
           <div className="col-md-8">
             <div className="card border-0 shadow-sm overflow-hidden">
               <table className="table table-hover mb-0">
                 <thead className="table-dark">
-                  <tr><th>Código</th><th>Nombre Documento</th><th>Acciones</th></tr>
+                  <tr>
+                    <th>Código</th>
+                    <th>Tipo de Notificación</th>
+                    <th>Acciones</th>
+                  </tr>
                 </thead>
                 <tbody className="bg-white">
-                  {datos.map(d => (
-                    <tr key={d.Codigo_Documento}>
-                      <td className="fw-bold">{d.Codigo_Documento}</td>
-                      <td>{d.Nombre_Documento}</td>
+                  {notificaciones.map(n => (
+                    <tr key={n.Codigo_Notificaciones}>
+                      <td className="fw-bold">{n.Codigo_Notificaciones}</td>
+                      <td>{n.Tipo_Notificacion}</td>
                       <td>
-                        <button className="btn btn-sm me-1 text-white fw-bold" style={{ backgroundColor: '#121212' }} onClick={() => { setEnEdicion(true); setForm(d); }}>Editar</button>
-                        <button className="btn btn-sm text-white fw-bold" style={{ backgroundColor: '#DB0000' }} onClick={() => eliminar(d.Codigo_Documento)}>Borrar</button>
+                        <button 
+                          className="btn btn-sm me-1 text-white" 
+                          style={{ backgroundColor: '#121212' }} 
+                          onClick={() => { setForm(n); setEnEdicion(true); }}
+                        >
+                          Editar
+                        </button>
+                        <button 
+                          className="btn btn-sm text-white" 
+                          style={{ backgroundColor: '#DB0000' }} 
+                          onClick={() => eliminar(n.Codigo_Notificaciones)}
+                        >
+                          Borrar
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -131,4 +179,4 @@ const Tipo = ({ cerrarSesion, setVista }) => {
   );
 };
 
-export default Tipo;
+export default Notificaciones;

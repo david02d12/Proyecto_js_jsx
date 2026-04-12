@@ -1,79 +1,148 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const Preguntas = ({ cerrarSesion, setVista }) => {
-  const [preguntas, setPreguntas] = useState([]);
+const Chats = ({ cerrarSesion, setVista }) => {
+  const [chats, setChats] = useState([]);
   const [enEdicion, setEnEdicion] = useState(false);
-  const [form, setForm] = useState({ ID_Consulta: '', ID_Usuario: '', Codigo_Producto: '', Pregunta: '', Fecha: '' });
+  const [form, setForm] = useState({
+    Codigo_Chat: '',
+    ID_Usuario: '',
+    ID_Servicio: ''
+  });
 
-  const config = () => ({ headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } });
+  const config = () => ({
+    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+  });
 
-  useEffect(() => { listar(); }, []);
+  useEffect(() => {
+    listar();
+  }, []);
 
   const listar = async () => {
-    const res = await axios.get('http://localhost:3000/api/preguntas/listar', config());
-    setPreguntas(res.data);
-  };
-
-  const guardar = async () => {
-    const url = enEdicion ? 'actualizar' : 'agregar';
-    const metodo = enEdicion ? 'put' : 'post';
-    await axios[metodo](`http://localhost:3000/api/preguntas/${url}`, form, config());
-    listar();
-    limpiar();
-  };
-
-  const eliminar = async (id) => {
-    if (window.confirm("¿Eliminar pregunta?")) {
-      await axios.delete(`http://localhost:3000/api/preguntas/eliminar/${id}`, config());
-      listar();
+    try {
+      const res = await axios.get('http://localhost:3000/api/chats/listar', config());
+      setChats(res.data);
+    } catch (err) {
+      console.error(err);
     }
   };
 
-  const limpiar = () => { setForm({ ID_Consulta: '', ID_Usuario: '', Codigo_Producto: '', Pregunta: '', Fecha: '' }); setEnEdicion(false); };
+  const guardar = async () => {
+    try {
+      const url = enEdicion ? 'actualizar' : 'agregar';
+      const metodo = enEdicion ? 'put' : 'post';
+      
+      // En el backend, 'agregar' no requiere Codigo_Chat, pero 'actualizar' sí.
+      await axios[metodo](`http://localhost:3000/api/chats/${url}`, form, config());
+      
+      listar();
+      limpiar();
+    } catch (err) {
+      alert("Error al procesar el chat");
+    }
+  };
+
+  const eliminar = async (id) => {
+    if (window.confirm("¿Eliminar chat?")) {
+      try {
+        await axios.delete(`http://localhost:3000/api/chats/eliminar/${id}`, config());
+        listar();
+      } catch (err) {
+        alert("Error al eliminar chat");
+      }
+    }
+  };
+
+  const limpiar = () => {
+    setForm({ Codigo_Chat: '', ID_Usuario: '', ID_Servicio: '' });
+    setEnEdicion(false);
+  };
 
   return (
     <div>
+      {/* NAVBAR */}
       <nav className="navbar navbar-expand-lg navbar-dark p-3 shadow-sm" style={{ backgroundColor: '#DB0000' }}>
         <div className="container">
           <button className="btn fw-bold text-white" style={{ backgroundColor: '#121212' }} type="button" data-bs-toggle="offcanvas" data-bs-target="#menuGlobal">Menú</button>
-          <span className="navbar-brand fw-bold ms-3">Consultas de Usuarios</span>
+          <span className="navbar-brand fw-bold ms-3">Gestión de Chats</span>
           <button className="btn btn-sm fw-bold text-white" style={{ backgroundColor: '#121212' }} onClick={cerrarSesion}>Cerrar Sesión</button>
         </div>
       </nav>
 
       <div className="container mt-4">
         <div className="row">
+          {/* FORMULARIO */}
           <div className="col-md-4 mb-4">
             <div className="card p-3 shadow-sm border-0">
-              <h5>{enEdicion ? "Editar Consulta" : "Nueva Consulta"}</h5>
-              <input className="form-control mb-2" type="number" placeholder="ID Consulta" value={form.ID_Consulta} disabled={enEdicion} onChange={e => setForm({...form, ID_Consulta: e.target.value})} />
-              <input className="form-control mb-2" placeholder="ID Usuario" value={form.ID_Usuario} onChange={e => setForm({...form, ID_Usuario: e.target.value})} />
-              <input className="form-control mb-2" placeholder="Cód. Producto" value={form.Codigo_Producto} onChange={e => setForm({...form, Codigo_Producto: e.target.value})} />
-              <textarea className="form-control mb-2" placeholder="Pregunta" value={form.Pregunta} onChange={e => setForm({...form, Pregunta: e.target.value})} />
-              <input className="form-control mb-2" type="date" value={form.Fecha} onChange={e => setForm({...form, Fecha: e.target.value})} />
-              <button className="btn w-100 text-white fw-bold" style={{ backgroundColor: '#DB0000' }} onClick={guardar}>{enEdicion ? "Actualizar" : "Guardar"}</button>
-              {enEdicion && <button className="btn btn-secondary w-100 mt-2" onClick={limpiar}>Cancelar</button>}
+              <h5>{enEdicion ? "Editar Chat" : "Nuevo Chat"}</h5>
+              <input 
+                className="form-control mb-2" 
+                placeholder="Código Chat" 
+                value={form.Codigo_Chat} 
+                disabled 
+                readOnly 
+              />
+              <input 
+                className="form-control mb-2" 
+                placeholder="ID Usuario (Email/Username)" 
+                value={form.ID_Usuario} 
+                onChange={e => setForm({...form, ID_Usuario: e.target.value})} 
+              />
+              <input 
+                className="form-control mb-2" 
+                type="number" 
+                placeholder="ID Servicio" 
+                value={form.ID_Servicio} 
+                onChange={e => setForm({...form, ID_Servicio: e.target.value})} 
+              />
+              <button className="btn w-100 text-white fw-bold" style={{ backgroundColor: '#DB0000' }} onClick={guardar}>
+                {enEdicion ? "Actualizar" : "Guardar"}
+              </button>
+              {enEdicion && (
+                <button className="btn btn-secondary w-100 mt-2" onClick={limpiar}>Cancelar</button>
+              )}
             </div>
           </div>
+
+          {/* TABLA DE DATOS */}
           <div className="col-md-8">
-            <table className="table table-hover shadow-sm bg-white">
-              <thead className="table-dark"><tr><th>ID</th><th>Usuario</th><th>Prod</th><th>Pregunta</th><th>Acciones</th></tr></thead>
-              <tbody>
-                {preguntas.map(p => (
-                  <tr key={p.ID_Consulta}>
-                    <td>{p.ID_Consulta}</td>
-                    <td>{p.ID_Usuario}</td>
-                    <td>{p.Codigo_Producto}</td>
-                    <td>{p.Pregunta}</td>
-                    <td>
-                      <button className="btn btn-sm me-1 text-white" style={{ backgroundColor: '#121212' }} onClick={() => { setForm({...p, Fecha: p.Fecha.split('T')[0]}); setEnEdicion(true); }}>Editar</button>
-                      <button className="btn btn-sm text-white" style={{ backgroundColor: '#DB0000' }} onClick={() => eliminar(p.ID_Consulta)}>Borrar</button>
-                    </td>
+            <div className="card border-0 shadow-sm overflow-hidden">
+              <table className="table table-hover mb-0">
+                <thead className="table-dark">
+                  <tr>
+                    <th>Cod</th>
+                    <th>ID Usuario</th>
+                    <th>ID Servicio</th>
+                    <th>Acciones</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="bg-white">
+                  {chats.map(c => (
+                    <tr key={c.Codigo_Chat}>
+                      <td>{c.Codigo_Chat}</td>
+                      <td>{c.ID_Usuario}</td>
+                      <td>{c.ID_Servicio}</td>
+                      <td>
+                        <button 
+                          className="btn btn-sm me-1 text-white" 
+                          style={{ backgroundColor: '#121212' }} 
+                          onClick={() => { setForm(c); setEnEdicion(true); }}
+                        >
+                          Editar
+                        </button>
+                        <button 
+                          className="btn btn-sm text-white" 
+                          style={{ backgroundColor: '#DB0000' }} 
+                          onClick={() => eliminar(c.Codigo_Chat)}
+                        >
+                          Borrar
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
@@ -116,4 +185,5 @@ const Preguntas = ({ cerrarSesion, setVista }) => {
     </div>
   );
 };
-export default Preguntas;
+
+export default Chats;

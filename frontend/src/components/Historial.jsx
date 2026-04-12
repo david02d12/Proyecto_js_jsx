@@ -96,24 +96,42 @@ const Historial = ({ cerrarSesion, setVista }) => {
           </div>
         </div>
       </div>
-            {/*MENU DEL LADO*/}
-      <div className="offcanvas offcanvas-start text-white" tabindex="-1" id="menuGlobal" style={{ backgroundColor: '#121212' }}>
-        <div className="offcanvas-header">
-          <h5 className="offcanvas-title">Menú de Navegación</h5>
-          <button type="button" className="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
-        </div>
-        <div className="offcanvas-body">
-          <div className="d-grid gap-3">
-            <button className="btn text-white fw-bold" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('roles')}>Roles de Usuario</button>
-            <button className="btn text-white fw-bold" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('historial')}>Historial de Servicios</button>
-            <button className="btn text-white fw-bold" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('tipo')}>Tipos de Documento</button>
-            <button className="btn text-white fw-bold" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('servicios')}>Gestión de Servicios</button>
-            <button className="btn text-white fw-bold" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('productos')}>Gestión de Productos</button>
-            <button className="btn text-white fw-bold" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('categorias')}>Categorías de Productos</button>
-            <button className="btn text-white fw-bold" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('preguntas')}>Preguntas de Productos</button>
-          </div>
-        </div>
-      </div>
+{/* MENU DEL LADO */}
+<div className="offcanvas offcanvas-start text-white" tabIndex="-1" id="menuGlobal" style={{ backgroundColor: '#121212' }}>
+  <div className="offcanvas-header">
+    <h5 className="offcanvas-title fw-bold">Menú de Navegación</h5>
+    <button type="button" className="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+  </div>
+  <div className="offcanvas-body">
+    <div className="d-grid gap-3">
+      {/* Administración de Usuarios */}
+      <button className="btn text-white fw-bold text-start" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('usuarios')} data-bs-dismiss="offcanvas">👥 Gestión de Usuarios</button>
+      <button className="btn text-white fw-bold text-start" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('roles')} data-bs-dismiss="offcanvas">🔑 Roles de Usuario</button>
+      <button className="btn text-white fw-bold text-start" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('tipo')} data-bs-dismiss="offcanvas">📄 Tipos de Documento</button>
+      
+      <hr className="border-secondary" />
+
+      {/* Inventario */}
+      <button className="btn text-white fw-bold text-start" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('productos')} data-bs-dismiss="offcanvas">📦 Gestión de Productos</button>
+      <button className="btn text-white fw-bold text-start" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('categorias')} data-bs-dismiss="offcanvas">📁 Categorías de Productos</button>
+      <button className="btn text-white fw-bold text-start" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('preguntas')} data-bs-dismiss="offcanvas">❓ Preguntas de Productos</button>
+
+      <hr className="border-secondary" />
+
+      {/* Servicios y Soporte */}
+      <button className="btn text-white fw-bold text-start" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('servicios')} data-bs-dismiss="offcanvas">🛠️ Gestión de Servicios</button>
+      <button className="btn text-white fw-bold text-start" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('historial')} data-bs-dismiss="offcanvas">📜 Historial de Servicios</button>
+      <button className="btn text-white fw-bold text-start" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('chats')} data-bs-dismiss="offcanvas">💬 Gestión de Chats</button>
+      <button className="btn text-white fw-bold text-start" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('mensajes')} data-bs-dismiss="offcanvas">📨 Gestión de Mensajes</button>
+
+      <hr className="border-secondary" />
+
+      {/* Interacción y Sistema */}
+      <button className="btn text-white fw-bold text-start" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('comentarios')} data-bs-dismiss="offcanvas">⭐ Comentarios</button>
+      <button className="btn text-white fw-bold text-start" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('notificaciones')} data-bs-dismiss="offcanvas">🔔 Notificaciones</button>
+    </div>
+  </div>
+</div>
     </div>
   );
 };
