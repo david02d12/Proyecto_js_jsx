@@ -19,9 +19,12 @@ const notificacionController = require('../controllers/notificacionController');
 
 const { validarToken } = require('../middlewares/authMiddleware');
 
-// RUTAS DE AUTENTIFICACION
+// RUTAS DE AUTENTIFICACION Y USUARIOS
 router.post('/registro', authController.registro);
 router.post('/login', authController.login);
+router.get('/usuarios/listar', validarToken, authController.listar);
+router.put('/usuarios/actualizar', validarToken, authController.actualizar);
+router.delete('/usuarios/eliminar/:id', validarToken, authController.eliminar);
 
 // Servicios
 router.get('/servicios/listar', validarToken, servicioController.listar);
@@ -64,8 +67,6 @@ router.get('/preguntas/listar', validarToken, preguntaController.listar);
 router.post('/preguntas/agregar', validarToken, preguntaController.agregar);
 router.put('/preguntas/actualizar', validarToken, preguntaController.actualizar);
 router.delete('/preguntas/eliminar/:id', validarToken, preguntaController.eliminar);
-
-// --- NUEVAS RUTAS ---
 
 // Chats
 router.get('/chats/listar', validarToken, chatController.listar);
