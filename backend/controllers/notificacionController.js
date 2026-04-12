@@ -1,6 +1,5 @@
 const db = require('../config/db');
 
-// Listar todas las notificaciones
 exports.listar = (req, res) => {
     const sql = 'SELECT * FROM Notificaciones';
     db.query(sql, (err, results) => {
@@ -9,9 +8,7 @@ exports.listar = (req, res) => {
     });
 };
 
-// Agregar una nueva notificación
 exports.agregar = (req, res) => {
-    // Al no ser auto_increment, el Codigo_Notificaciones debe venir en el body
     const { Codigo_Notificaciones, Tipo_Notificacion } = req.body;
     const sql = `INSERT INTO Notificaciones (Codigo_Notificaciones, Tipo_Notificacion) VALUES (?, ?)`;
     
@@ -21,7 +18,6 @@ exports.agregar = (req, res) => {
     });
 };
 
-// Actualizar una notificación
 exports.actualizar = (req, res) => {
     const { Tipo_Notificacion, Codigo_Notificaciones } = req.body;
     const sql = `UPDATE Notificaciones SET Tipo_Notificacion = ? WHERE Codigo_Notificaciones = ?`;
@@ -32,9 +28,8 @@ exports.actualizar = (req, res) => {
     });
 };
 
-// Eliminar una notificación
 exports.eliminar = (req, res) => {
-    const { id } = req.params; // Se espera el Codigo_Notificaciones en la URL
+    const { id } = req.params;
     const sql = 'DELETE FROM Notificaciones WHERE Codigo_Notificaciones = ?';
     
     db.query(sql, [id], (err) => {
