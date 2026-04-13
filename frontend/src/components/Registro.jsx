@@ -58,7 +58,7 @@ const Registro = ({ setModoRegistro }) => {
 
       <div className="card p-4 mx-auto shadow-sm border-0" style={{ maxWidth: '480px' }}>
         <div className="text-center mb-4">
-          <div style={{ fontSize: '2rem', color: '#DB0000' }}></div>
+          <div style={{ fontSize: '2rem', color: '#DB0000' }}>📱</div>
           <h4 className="fw-bold" style={{ color: '#121212' }}>Registro en Celuaccel</h4>
           <p className="text-muted small">Crea tu cuenta para acceder al sistema</p>
         </div>

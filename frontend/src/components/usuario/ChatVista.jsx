@@ -230,7 +230,7 @@ const ChatVista = ({ cerrarSesion, setVista }) => {
                             {esMio && (
                               <small className="text-danger" style={{ cursor: 'pointer' }}
                                 onClick={() => eliminarMensaje(m.Codigo_Mensaje)}>
-                                
+                                🗑 Eliminar
                               </small>
                             )}
                           </div>

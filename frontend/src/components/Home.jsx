@@ -20,17 +20,21 @@ const Home = ({ cerrarSesion, setVista }) => {
   useEffect(() => {
     const cargarDatos = async () => {
       try {
-        const reqs = await Promise.allSettled([
+        // Construimos las peticiones según el rol para evitar llamadas prohibidas
+        const peticiones = [
           axios.get('http://localhost:3000/api/servicios/listar', config()),
-          axios.get('http://localhost:3000/api/usuarios/listar', config()),
           axios.get('http://localhost:3000/api/productos/listar', config()),
-          axios.get('http://localhost:3000/api/historial/listar', config()),
-        ]);
+          ...(role !== 2 ? [axios.get('http://localhost:3000/api/historial/listar', config())] : []),
+          ...(role === 3 ? [axios.get('http://localhost:3000/api/usuarios/listar', config())] : []),
+        ];
+        const reqs = await Promise.allSettled(peticiones);
+
+        // Índices: [0]=servicios, [1]=productos, [2]=historial(solo rol!=2), [3]=usuarios(solo rol==3)
         setStats({
-          servicios: reqs[0].status === 'fulfilled' ? reqs[0].value.data.length : 0,
-          usuarios: reqs[1].status === 'fulfilled' ? reqs[1].value.data.length : 0,
-          productos: reqs[2].status === 'fulfilled' ? reqs[2].value.data.length : 0,
-          historial: reqs[3].status === 'fulfilled' ? reqs[3].value.data.length : 0,
+          servicios: reqs[0]?.status === 'fulfilled' ? reqs[0].value.data.length : 0,
+          productos: reqs[1]?.status === 'fulfilled' ? reqs[1].value.data.length : 0,
+          historial: role !== 2 && reqs[2]?.status === 'fulfilled' ? reqs[2].value.data.length : 0,
+          usuarios:  role === 3  && reqs[3]?.status === 'fulfilled' ? reqs[3].value.data.length : 0,
         });
         if (reqs[0].status === 'fulfilled') setServiciosRecientes(reqs[0].value.data.slice(0, 5));
       } catch (err) {
@@ -47,15 +51,38 @@ const Home = ({ cerrarSesion, setVista }) => {
     return { texto: 'Listo', color: '#198754' };
   };
 
-  const menuAccesoFiltro = [
-    { label: ' Nuevo Servicio', vista: role === 2 ? 'miServicio' : 'servicios' },
-    { label: ' Mis Servicios', vista: 'miServicio' },
-    { label: ' Chat', vista: 'chatVista' },
-    { label: ' Catálogo', vista: 'catalogo' },
-    ...(role !== 2 ? [{ label: ' Notificaciones', vista: 'notificaciones' }] : []),
-    { label: ' Comentarios', vista: 'comentarios' },
-    ...(role !== 2 ? [{ label: ' Historial', vista: 'historial' }] : []),
-  ];
+  // Accesos rápidos diferenciados por rol — sin mezclar módulos de gestión con módulos de cliente
+  const menuAccesoFiltro = role === 2
+    // ── CLIENTE: solo su propio ecosistema ──
+    ? [
+        { label: '📋 Mis Servicios',     vista: 'miServicio' },
+        { label: '💬 Chat con Asesor',   vista: 'chatVista'  },
+        { label: '🛒 Catálogo',          vista: 'catalogo'   },
+        { label: '⭐ Comentarios',       vista: 'comentarios'},
+      ]
+    : role === 1
+    // ── TÉCNICO: módulos operativos ──
+    ? [
+        { label: '🔧 Gestión Servicios', vista: 'servicios'      },
+        { label: '📜 Historial',         vista: 'historial'      },
+        { label: '📦 Productos',         vista: 'productos'      },
+        { label: '🏷️ Categorías',        vista: 'categorias'     },
+        { label: '💬 Chats',             vista: 'chats'          },
+        { label: '🔔 Notificaciones',    vista: 'notificaciones' },
+        { label: '⭐ Comentarios',       vista: 'comentarios'    },
+        { label: '🛒 Catálogo',          vista: 'catalogo'       },
+      ]
+    // ── ADMINISTRADOR: acceso total ──
+    : [
+        { label: '🔧 Gestión Servicios', vista: 'servicios'      },
+        { label: '👥 Usuarios',          vista: 'usuarios'       },
+        { label: '📜 Historial',         vista: 'historial'      },
+        { label: '📦 Productos',         vista: 'productos'      },
+        { label: '🏷️ Categorías',        vista: 'categorias'     },
+        { label: '🔔 Notificaciones',    vista: 'notificaciones' },
+        { label: '🛡️ Roles',             vista: 'roles'          },
+        { label: '🪪 Tipos Documento',   vista: 'tipo'           },
+      ];
 
   return (
     <div>

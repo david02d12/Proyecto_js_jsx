@@ -6,6 +6,7 @@ import axios from 'axios';
 const Usuarios = ({ cerrarSesion, setVista }) => {
   const [usuarios, setUsuarios] = useState([]);
   const [busqueda, setBusqueda] = useState('');
+  const [toast, setToast] = useState({ visible: false, msg: '', ok: true });
   const [enEdicion, setEnEdicion] = useState(false);
   const [form, setForm] = useState({
     ID_Usuario: '',
@@ -22,6 +23,11 @@ const Usuarios = ({ cerrarSesion, setVista }) => {
   const config = () => ({
     headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
   });
+
+  const mostrarToast = (msg, ok = true) => {
+    setToast({ visible: true, msg, ok });
+    setTimeout(() => setToast({ visible: false, msg: '', ok: true }), 3500);
+  };
 
   useEffect(() => {
     listar();
@@ -44,11 +50,11 @@ const Usuarios = ({ cerrarSesion, setVista }) => {
       
       await axios[metodo](`http://localhost:3000/api/${url}`, form, config());
       
+      mostrarToast(enEdicion ? 'Usuario actualizado correctamente. ✔' : 'Usuario registrado en el sistema. ✔');
       listar();
       limpiar();
-      alert(enEdicion ? "Usuario actualizado" : "Usuario registrado");
     } catch (err) {
-      alert("Error al procesar usuario. Verifique los datos o si el ID ya existe.");
+      mostrarToast('Error al procesar usuario. Verifica los datos o si el ID ya existe.', false);
     }
   };
 
@@ -56,9 +62,10 @@ const Usuarios = ({ cerrarSesion, setVista }) => {
     if (window.confirm(`¿Está seguro de eliminar al usuario ${id}?`)) {
       try {
         await axios.delete(`http://localhost:3000/api/usuarios/eliminar/${id}`, config());
+        mostrarToast('Usuario eliminado del sistema.');
         listar();
       } catch (err) {
-        alert("Error al eliminar usuario");
+        mostrarToast('Error al eliminar usuario.', false);
       }
     }
   };
@@ -96,9 +103,24 @@ const Usuarios = ({ cerrarSesion, setVista }) => {
   return (
     <div>
       {/* NAVBAR */}
+      {toast.visible && (
+        <div className={`toast show position-fixed top-0 end-0 m-3 text-white ${toast.ok ? 'bg-success' : 'bg-danger'}`}
+          style={{ zIndex: 9999, minWidth: '280px' }} role="alert">
+          <div className="toast-body fw-bold">{toast.msg}</div>
+        </div>
+      )}
+
       <Navbar titulo="CELUACCEL — Directorio de Usuarios" cerrarSesion={cerrarSesion} />
 
-      <div className="container-fluid mt-4">
+      <div className="container mt-4">
+        <div className="mb-4 p-4 rounded-3 text-white d-flex justify-content-between align-items-center flex-wrap gap-2"
+          style={{ background: 'linear-gradient(135deg, #DB0000, #8B0000)' }}>
+          <div>
+            <h4 className="fw-bold mb-1">👥 Directorio de Usuarios</h4>
+            <p className="mb-0 opacity-75">Gestiona cuentas, roles y datos personales de cada persona en el sistema</p>
+          </div>
+          <span className="badge bg-light text-danger fw-bold fs-6">{usuarios.length} usuarios</span>
+        </div>
         <div className="row">
           {/* FORMULARIO */}
           <div className="col-md-4 mb-4">

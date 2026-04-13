@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const db = require('../config/db');
-const SECRET_KEY = "mi_clave";
+const SECRET_KEY = process.env.JWT_SECRET || 'CeluAccel_S3cr3t_K3y_2026!#Secure';
 
 // ─────────────────────────────────────────────
 // 401 → Sin token | 403 → Token inválido o rol insuficiente

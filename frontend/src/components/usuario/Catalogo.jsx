@@ -84,7 +84,7 @@ const Catalogo = ({ cerrarSesion, setVista }) => {
           <div className="col-md-8">
             <div className="input-group">
               <span className="input-group-text bg-white border-end-0">
-                
+                🔍
               </span>
               <input
                 type="text"
@@ -125,9 +125,15 @@ const Catalogo = ({ cerrarSesion, setVista }) => {
                   onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
                   onClick={() => setProductoSel(p)}>
                   
+                  {p.Imagen
+                    ? <img src={p.Imagen} alt={p.Nombre}
+                        style={{ height: '160px', width: '100%', objectFit: 'cover', borderRadius: '0.375rem 0.375rem 0 0' }}
+                        onError={e => { e.target.style.display='none'; e.target.nextSibling.style.display='flex'; }}
+                      />
+                    : null}
                   <div className="d-flex align-items-center justify-content-center"
-                    style={{ height: '160px', backgroundColor: '#f8f9fa', borderRadius: '0.375rem 0.375rem 0 0', fontSize: '3.5rem' }}>
-                    
+                    style={{ height: '160px', backgroundColor: '#f8f9fa', borderRadius: '0.375rem 0.375rem 0 0', fontSize: '3.5rem', display: p.Imagen ? 'none' : 'flex' }}>
+                    📱
                   </div>
                   <div className="card-body d-flex flex-column">
                     <span className="badge mb-2" style={{ backgroundColor: '#DB0000', width: 'fit-content' }}>
