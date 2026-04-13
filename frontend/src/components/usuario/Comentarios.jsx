@@ -158,7 +158,7 @@ const Comentarios = ({ cerrarSesion, setVista }) => {
             <div className="card border-0 bg-transparent">
               <div className="mb-4">
                 <input type="text" className="form-control form-control-lg shadow-sm border-0"
-                  placeholder="🔍 Buscar palabras, referencias o un nombre de cliente..."
+                  placeholder="Buscar palabras, referencias o un nombre de cliente..."
                   value={busqueda} onChange={e => setBusqueda(e.target.value)} />
               </div>
 

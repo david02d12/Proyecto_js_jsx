@@ -20,9 +20,13 @@ const Home = ({ cerrarSesion, setVista }) => {
   useEffect(() => {
     const cargarDatos = async () => {
       try {
-        // Construimos las peticiones según el rol para evitar llamadas prohibidas
+        // Para clientes: sus propios servicios; para técnico/admin: todos
+        const serviciosUrl = role === 2
+          ? `http://localhost:3000/api/servicios/mis-servicios/${usuario}`
+          : 'http://localhost:3000/api/servicios/listar';
+
         const peticiones = [
-          axios.get('http://localhost:3000/api/servicios/listar', config()),
+          axios.get(serviciosUrl, config()),
           axios.get('http://localhost:3000/api/productos/listar', config()),
           ...(role !== 2 ? [axios.get('http://localhost:3000/api/historial/listar', config())] : []),
           ...(role === 3 ? [axios.get('http://localhost:3000/api/usuarios/listar', config())] : []),
@@ -45,10 +49,14 @@ const Home = ({ cerrarSesion, setVista }) => {
   }, []);
 
   const etapaLabel = (etapa) => {
-    if (etapa <= 25) return { texto: 'Recibido', color: '#6c757d' };
-    if (etapa <= 50) return { texto: 'En Diagnóstico', color: '#0dcaf0' };
-    if (etapa <= 75) return { texto: 'En Reparación', color: '#ffc107' };
-    return { texto: 'Listo', color: '#198754' };
+    const e = Number(etapa);
+    if (e === -1)  return { texto: 'Cancelado',           color: '#6c757d' };
+    if (e === 0)   return { texto: 'Recibido',             color: '#0d6efd' };
+    if (e <= 25)   return { texto: 'En Diagn\u00f3stico', color: '#0dcaf0' };
+    if (e <= 50)   return { texto: 'En Reparaci\u00f3n',  color: '#ffc107' };
+    if (e <= 75)   return { texto: 'Control de Calidad',  color: '#fd7e14' };
+    if (e === 100) return { texto: 'Listo para Retirar',  color: '#198754' };
+    return { texto: `Etapa ${e}`, color: '#6c757d' };
   };
 
   // Accesos rápidos diferenciados por rol
@@ -89,7 +97,7 @@ const Home = ({ cerrarSesion, setVista }) => {
       <div className="container mt-4">
         {/* BIENVENIDA */}
         <div className="mb-4 p-4 rounded-3 text-white" style={{ background: 'linear-gradient(135deg, #DB0000, #8B0000)' }}>
-          <h4 className="fw-bold mb-1"> Bienvenido, {usuario}</h4>
+          <h4 className="fw-bold mb-1">Bienvenido, {usuario}</h4>
           <p className="mb-0 opacity-75">Este es tu panel del sistema Celuaccel.</p>
         </div>
 

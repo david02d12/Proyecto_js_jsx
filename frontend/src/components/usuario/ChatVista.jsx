@@ -12,6 +12,9 @@ const ChatVista = ({ cerrarSesion, setVista }) => {
   const [nuevoMensaje, setNuevoMensaje] = useState('');
   const [busquedaChat, setBusquedaChat] = useState('');
   const [cargando, setCargando] = useState(false);
+  const [cargandoChats, setCargandoChats] = useState(true);
+  const [servicios, setServicios] = useState([]);
+  const [iniciandoChat, setIniciandoChat] = useState(null); // ID servicio en proceso
   const mensajesEndRef = useRef(null);
   const usuario = localStorage.getItem('user') || 'Usuario';
   const role = Number(localStorage.getItem('role')) || 2;
@@ -33,8 +36,9 @@ const ChatVista = ({ cerrarSesion, setVista }) => {
   }, [mensajes]);
 
   const cargarChats = async () => {
+    setCargandoChats(true);
     try {
-      const res = await axios.get('http://localhost:3000/api/chats/listar', config());
+      const res = await axios.get('http://localhost:3000/api/chats/listar-mios', config());
       let chatsCargados = res.data;
 
       // Enlace Automático desde MiServicio
@@ -42,25 +46,56 @@ const ChatVista = ({ cerrarSesion, setVista }) => {
       if (chatInfoRaw) {
         const info = JSON.parse(chatInfoRaw);
         let chatExistente = chatsCargados.find(c => String(c.ID_Servicio) === String(info.ID_Servicio));
-        
+
         if (chatExistente) {
           setChatSel(chatExistente);
         } else {
           // Auto-crear sala de chat si es nuevo
           const payload = { ID_Usuario: usuario, ID_Servicio: info.ID_Servicio };
           await axios.post('http://localhost:3000/api/chats/agregar', payload, config());
-          
-          const resUpdated = await axios.get('http://localhost:3000/api/chats/listar', config());
+
+          const resUpdated = await axios.get('http://localhost:3000/api/chats/listar-mios', config());
           chatsCargados = resUpdated.data;
           chatExistente = chatsCargados.find(c => String(c.ID_Servicio) === String(info.ID_Servicio));
           if (chatExistente) setChatSel(chatExistente);
         }
-        localStorage.removeItem('chatInfo'); // Destruir maletín temporal
+        localStorage.removeItem('chatInfo');
       }
 
       setChats(chatsCargados);
+
+      // Si no hay chats, cargar los servicios del cliente para ofrecerle iniciar uno
+      if (chatsCargados.length === 0 && role === 2) {
+        const resSvc = await axios.get(`http://localhost:3000/api/servicios/mis-servicios/${usuario}`, config());
+        // Solo servicios activos (no cancelados ni completados)
+        const activos = resSvc.data.filter(s => Number(s.Etapa) !== -1);
+        setServicios(activos);
+      }
     } catch (err) {
       console.error('Error al cargar chats:', err);
+    } finally {
+      setCargandoChats(false);
+    }
+  };
+
+  // Inicia un chat asociado a un servicio específico
+  const iniciarChatDesdeServicio = async (idServicio) => {
+    setIniciandoChat(idServicio);
+    try {
+      // Verificar si ya existe un chat para ese servicio
+      let chatExistente = chats.find(c => String(c.ID_Servicio) === String(idServicio));
+      if (!chatExistente) {
+        await axios.post('http://localhost:3000/api/chats/agregar', { ID_Usuario: usuario, ID_Servicio: idServicio }, config());
+        const res = await axios.get('http://localhost:3000/api/chats/listar-mios', config());
+        setChats(res.data);
+        chatExistente = res.data.find(c => String(c.ID_Servicio) === String(idServicio));
+        setServicios([]); // ocultar panel de servicios al tener chats
+      }
+      if (chatExistente) setChatSel(chatExistente);
+    } catch (err) {
+      alert('Error al iniciar el chat. Intenta de nuevo.');
+    } finally {
+      setIniciandoChat(null);
     }
   };
 
@@ -119,6 +154,7 @@ const ChatVista = ({ cerrarSesion, setVista }) => {
     }
   };
 
+
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
       {/* NAVBAR */}
@@ -142,17 +178,47 @@ const ChatVista = ({ cerrarSesion, setVista }) => {
             />
           </div>
           <div style={{ overflowY: 'auto', flexGrow: 1 }}>
-            {chatsFiltrados.length === 0 ? (
-              <div className="text-center p-4">
-                <p className="text-muted small mb-2">No tienes chats activos.</p>
-                {role === 2 && (
-                  <button
-                    className="btn btn-sm text-white fw-bold"
-                    style={{ backgroundColor: '#DB0000' }}
-                    onClick={() => setVista('miServicio')}
-                  >
-                    Ir a Mis Servicios
-                  </button>
+            {cargandoChats ? (
+              <div className="text-center py-4">
+                <div className="spinner-border spinner-border-sm" style={{ color: '#DB0000' }} />
+                <p className="text-muted small mt-2">Cargando conversaciones...</p>
+              </div>
+            ) : chatsFiltrados.length === 0 ? (
+              <div className="text-center p-3">
+                {role === 2 && servicios.length > 0 ? (
+                  <>
+                    <p className="text-muted small mb-3">Selecciona un servicio para iniciar un chat con el asesor:</p>
+                    {servicios.map(s => (
+                      <div key={s.ID_Servicio}
+                        className="border rounded-3 p-2 mb-2 text-start"
+                        style={{ backgroundColor: '#fff', fontSize: '0.82rem' }}
+                      >
+                        <div className="fw-bold mb-1">Servicio #{s.ID_Servicio}</div>
+                        <div className="text-muted mb-2">{s.Movil_Nombre || 'Sin dispositivo'}</div>
+                        <button
+                          className="btn btn-sm text-white fw-bold w-100"
+                          style={{ backgroundColor: iniciandoChat === s.ID_Servicio ? '#8B0000' : '#DB0000' }}
+                          disabled={iniciandoChat === s.ID_Servicio}
+                          onClick={() => iniciarChatDesdeServicio(s.ID_Servicio)}
+                        >
+                          {iniciandoChat === s.ID_Servicio ? 'Iniciando...' : 'Iniciar Chat'}
+                        </button>
+                      </div>
+                    ))}
+                  </>
+                ) : (
+                  <>
+                    <p className="text-muted small mb-2">No tienes conversaciones activas.</p>
+                    {role === 2 && (
+                      <button
+                        className="btn btn-sm text-white fw-bold"
+                        style={{ backgroundColor: '#DB0000' }}
+                        onClick={() => setVista('miServicio')}
+                      >
+                        Ver Mis Servicios
+                      </button>
+                    )}
+                  </>
                 )}
               </div>
             ) : (
@@ -187,13 +253,17 @@ const ChatVista = ({ cerrarSesion, setVista }) => {
         {/* PANEL DERECHO — MENSAJES */}
         <div className="d-flex flex-column flex-grow-1" style={{ overflow: 'hidden', backgroundColor: '#fff' }}>
           {!chatSel ? (
-            <div className="d-flex flex-column align-items-center justify-content-center h-100 text-muted">
-              <div style={{ fontSize: '4rem' }}></div>
-              <h5 className="mt-3">Selecciona un chat</h5>
-              <p className="small text-center px-4">
-                {role === 2
-                  ? 'Elige una de tus conversaciones activas de la lista lateral.'
-                  : 'Elige una conversación de la lista lateral para ver los mensajes y responder al cliente.'}
+            <div className="d-flex flex-column align-items-center justify-content-center h-100 text-muted px-4">
+              <div style={{ fontSize: '3rem', color: '#DB0000', opacity: 0.4 }}>&#9993;</div>
+              <h5 className="mt-3 fw-bold" style={{ color: '#121212' }}>
+                {chats.length === 0 && role === 2 ? 'Inicia una conversación' : 'Selecciona un chat'}
+              </h5>
+              <p className="small text-center">
+                {chats.length === 0 && role === 2
+                  ? 'Elige uno de tus servicios de la lista lateral para chatear con tu asesor técnico.'
+                  : role === 2
+                    ? 'Elige una de tus conversaciones activas de la lista lateral.'
+                    : 'Elige una conversación de la lista lateral para ver los mensajes y responder al cliente.'}
               </p>
             </div>
           ) : (

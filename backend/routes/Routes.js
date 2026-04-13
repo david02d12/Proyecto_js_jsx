@@ -78,8 +78,9 @@ router.post('/preguntas/agregar', validarToken, preguntaController.agregar);
 router.put('/preguntas/actualizar', validarToken, validarRol(1, 3), preguntaController.actualizar);
 router.delete('/preguntas/eliminar/:id', validarToken, validarRol(1, 3), preguntaController.eliminar);
 
-// CHATS — todos consultan; técnico y admin eliminan
-router.get('/chats/listar', validarToken, chatController.listar);
+// CHATS — listarMios: solo los chats propios (clientes); listar: todos (técnico/admin)
+router.get('/chats/listar-mios', validarToken, chatController.listarMios);
+router.get('/chats/listar', validarToken, validarRol(1, 3), chatController.listar);
 router.post('/chats/agregar', validarToken, chatController.agregar);
 router.put('/chats/actualizar', validarToken, chatController.actualizar);
 router.delete('/chats/eliminar/:id', validarToken, validarRol(1, 3), chatController.eliminar);

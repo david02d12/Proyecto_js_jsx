@@ -145,8 +145,8 @@ const Mensajes = ({ cerrarSesion, setVista }) => {
                       <td>{m.ID_Usuario}</td>
                       <td className="small">{m.Mensaje}</td>
                       <td>
-                        <span className={`badge ${m.Estado === 1 ? 'bg-success' : 'bg-warning text-dark'}`}>
-                          {m.Estado === 1 ? 'Leído' : 'Pendiente'}
+                        <span className={`badge ${Number(m.Estado) === 1 ? 'bg-success' : 'bg-warning text-dark'}`}>
+                          {Number(m.Estado) === 1 ? 'Leído' : 'Pendiente'}
                         </span>
                       </td>
                       <td>
