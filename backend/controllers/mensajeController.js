@@ -43,10 +43,31 @@ exports.eliminar = (req, res) => {
     const { id } = req.params;
     if (!id) return res.status(400).json({ error: 'El ID del mensaje es obligatorio.' });
 
-    const sql = 'DELETE FROM Mensajes WHERE Codigo_Mensaje = ?';
-    db.query(sql, [id], (err, result) => {
-        if (err) return res.status(500).json({ error: 'Error al eliminar el mensaje.' });
-        if (result.affectedRows === 0) return res.status(404).json({ error: 'Mensaje no encontrado.' });
-        res.status(200).json({ message: 'Mensaje eliminado correctamente.' });
+    const userId = req.userId;
+
+    // Obtener el rol y el dueño del mensaje en una sola consulta
+    const checkSql = `
+        SELECT m.ID_Usuario AS dueno, u.Codigo_Rol AS rol
+        FROM Mensajes m
+        JOIN Usuario u ON u.ID_Usuario = ?
+        WHERE m.Codigo_Mensaje = ?
+    `;
+
+    db.query(checkSql, [userId, id], (err, rows) => {
+        if (err) return res.status(500).json({ error: 'Error al verificar el mensaje.' });
+        if (rows.length === 0) return res.status(404).json({ error: 'Mensaje no encontrado.' });
+
+        const { dueno, rol } = rows[0];
+
+        // Cliente solo puede borrar sus propios mensajes
+        if (rol === 2 && String(dueno) !== String(userId)) {
+            return res.status(403).json({ error: 'No puedes eliminar mensajes de otro usuario.' });
+        }
+
+        db.query('DELETE FROM Mensajes WHERE Codigo_Mensaje = ?', [id], (err2, result) => {
+            if (err2) return res.status(500).json({ error: 'Error al eliminar el mensaje.' });
+            if (result.affectedRows === 0) return res.status(404).json({ error: 'Mensaje no encontrado.' });
+            res.status(200).json({ message: 'Mensaje eliminado correctamente.' });
+        });
     });
 };

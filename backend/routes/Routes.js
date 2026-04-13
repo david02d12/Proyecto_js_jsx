@@ -84,11 +84,11 @@ router.post('/comentarios/agregar', validarToken, comentarioController.agregar);
 router.put('/comentarios/actualizar', validarToken, comentarioController.actualizar);
 router.delete('/comentarios/eliminar/:id', validarToken, comentarioController.eliminar);
 
-// MENSAJES — todos envían; técnico y admin eliminan
+// MENSAJES — todos envían y eliminan sus propios mensajes; validación de propiedad en el controller
 router.get('/mensajes/listar', validarToken, mensajeController.listar);
 router.post('/mensajes/agregar', validarToken, mensajeController.agregar);
 router.put('/mensajes/actualizar', validarToken, mensajeController.actualizar);
-router.delete('/mensajes/eliminar/:id', validarToken, validarRol(1, 3), mensajeController.eliminar);
+router.delete('/mensajes/eliminar/:id', validarToken, mensajeController.eliminar);
 
 // NOTIFICACIONES — todos ven; Técnico y Admin modifican
 router.get('/notificaciones/listar', validarToken, notificacionController.listar);
