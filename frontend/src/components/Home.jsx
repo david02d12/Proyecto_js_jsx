@@ -70,10 +70,10 @@ const Home = ({ cerrarSesion, setVista }) => {
     : role === 1
     ? [
         { label: 'Gestión de Servicios', vista: 'servicios'      },
+        { label: 'Chat de Soporte',      vista: 'chatVista'      },
         { label: 'Historial',            vista: 'historial'      },
         { label: 'Productos',            vista: 'productos'      },
         { label: 'Categorías',          vista: 'categorias'     },
-        { label: 'Chats',               vista: 'chats'          },
         { label: 'Notificaciones',      vista: 'notificaciones' },
         { label: 'Comentarios',         vista: 'comentarios'    },
         { label: 'Catálogo',           vista: 'catalogo'       },

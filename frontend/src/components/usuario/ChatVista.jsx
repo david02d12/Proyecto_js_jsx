@@ -38,10 +38,15 @@ const ChatVista = ({ cerrarSesion, setVista }) => {
   const cargarChats = async () => {
     setCargandoChats(true);
     try {
-      const res = await axios.get('http://localhost:3000/api/chats/listar-mios', config());
+      // Clientes: solo sus chats; Técnico/Admin: todos los chats
+      const url = role === 2
+        ? 'http://localhost:3000/api/chats/listar-mios'
+        : 'http://localhost:3000/api/chats/listar';
+
+      const res = await axios.get(url, config());
       let chatsCargados = res.data;
 
-      // Enlace Automático desde MiServicio
+      // Enlace Automático desde Servicios o MiServicio
       const chatInfoRaw = localStorage.getItem('chatInfo');
       if (chatInfoRaw) {
         const info = JSON.parse(chatInfoRaw);
@@ -49,12 +54,12 @@ const ChatVista = ({ cerrarSesion, setVista }) => {
 
         if (chatExistente) {
           setChatSel(chatExistente);
-        } else {
-          // Auto-crear sala de chat si es nuevo
+        } else if (role === 2) {
+          // Solo clientes auto-crean el chat
           const payload = { ID_Usuario: usuario, ID_Servicio: info.ID_Servicio };
           await axios.post('http://localhost:3000/api/chats/agregar', payload, config());
 
-          const resUpdated = await axios.get('http://localhost:3000/api/chats/listar-mios', config());
+          const resUpdated = await axios.get(url, config());
           chatsCargados = resUpdated.data;
           chatExistente = chatsCargados.find(c => String(c.ID_Servicio) === String(info.ID_Servicio));
           if (chatExistente) setChatSel(chatExistente);
@@ -64,10 +69,9 @@ const ChatVista = ({ cerrarSesion, setVista }) => {
 
       setChats(chatsCargados);
 
-      // Si no hay chats, cargar los servicios del cliente para ofrecerle iniciar uno
+      // Si el cliente no tiene chats, ofrecer sus servicios como punto de partida
       if (chatsCargados.length === 0 && role === 2) {
         const resSvc = await axios.get(`http://localhost:3000/api/servicios/mis-servicios/${usuario}`, config());
-        // Solo servicios activos (no cancelados ni completados)
         const activos = resSvc.data.filter(s => Number(s.Etapa) !== -1);
         setServicios(activos);
       }

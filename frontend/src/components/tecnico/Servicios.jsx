@@ -152,12 +152,26 @@ const Servicios = ({ cerrarSesion, setVista }) => {
                       <td className="text-success fw-bold">${s.Precio}</td>
                       <td><small>{etapaLabel(s.Etapa)}</small></td>
                       <td>
-                        <button className="btn btn-sm me-1 text-white fw-bold" style={{ backgroundColor: '#121212' }} onClick={() => {
-                          setEnEdicion(true);
-                          setIdServicioSel(s.ID_Servicio);
-                          setFormServicio({...s, Fecha: s.Fecha ? s.Fecha.split('T')[0] : '', Etapa: String(s.Etapa)});
-                        }}>Editar</button>
-                        <button className="btn btn-sm text-white fw-bold" style={{ backgroundColor: '#DB0000' }} onClick={() => eliminarServicio(s.ID_Servicio)}>Borrar</button>
+                        <div className="d-flex gap-1 flex-wrap">
+                          {/* Abrir chat con el cliente de este servicio */}
+                          <button
+                            className="btn btn-sm text-white fw-bold"
+                            style={{ backgroundColor: '#0d6efd' }}
+                            title="Chatear con el cliente"
+                            onClick={() => {
+                              localStorage.setItem('chatInfo', JSON.stringify({ ID_Servicio: s.ID_Servicio }));
+                              setVista('chatVista');
+                            }}
+                          >
+                            Chat
+                          </button>
+                          <button className="btn btn-sm text-white fw-bold" style={{ backgroundColor: '#121212' }} onClick={() => {
+                            setEnEdicion(true);
+                            setIdServicioSel(s.ID_Servicio);
+                            setFormServicio({...s, Fecha: s.Fecha ? s.Fecha.split('T')[0] : '', Etapa: String(s.Etapa)});
+                          }}>Editar</button>
+                          <button className="btn btn-sm text-white fw-bold" style={{ backgroundColor: '#DB0000' }} onClick={() => eliminarServicio(s.ID_Servicio)}>Borrar</button>
+                        </div>
                       </td>
                     </tr>
                   ))}
