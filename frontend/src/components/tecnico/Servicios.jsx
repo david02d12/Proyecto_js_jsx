@@ -24,6 +24,19 @@ const Servicios = ({ cerrarSesion, setVista }) => {
     Descripcion: '', ID_Usuario: '', Precio: '', Movil_Nombre: '',
     Movil_Especificacion: '', Fecha: '', Etapa: '0'
   });
+  // Modal de notificación
+  const [modalNotif, setModalNotif] = useState(null); // { ID_Usuario, ID_Servicio }
+  const [mensajeNotif, setMensajeNotif] = useState('');
+  const [enviandoNotif, setEnviandoNotif] = useState(false);
+
+  const MENSAJES_RAPIDOS = [
+    'Tu dispositivo ha sido recibido y registrado en el sistema.',
+    'Hemos iniciado el diagnóstico de tu equipo.',
+    'Tu dispositivo está en proceso de reparación.',
+    'Tu equipo está en control de calidad, casi listo.',
+    'Tu dispositivo está listo para retirar. Por favor acude a la tienda.',
+    'Se requiere tu aprobación para proceder con la reparación.',
+  ];
 
   const config = () => ({
     headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
@@ -69,6 +82,25 @@ const Servicios = ({ cerrarSesion, setVista }) => {
     setFormServicio({ Descripcion: '', ID_Usuario: '', Precio: '', Movil_Nombre: '', Movil_Especificacion: '', Fecha: '', Etapa: '0' });
     setEnEdicion(false);
     setIdServicioSel(null);
+  };
+
+  const enviarNotificacion = async () => {
+    if (!mensajeNotif.trim() || !modalNotif) return;
+    setEnviandoNotif(true);
+    try {
+      await axios.post('http://localhost:3000/api/notificaciones/enviar', {
+        ID_Usuario_Destino: modalNotif.ID_Usuario,
+        ID_Servicio: modalNotif.ID_Servicio,
+        Mensaje: mensajeNotif.trim()
+      }, config());
+      mostrarToast('Notificación enviada al cliente correctamente.');
+      setModalNotif(null);
+      setMensajeNotif('');
+    } catch (err) {
+      mostrarToast('Error al enviar la notificación.', false);
+    } finally {
+      setEnviandoNotif(false);
+    }
   };
 
   const etapaLabel = (val) => ETAPAS.find(e => e.valor === String(val))?.label || `Etapa ${val}`;
@@ -165,6 +197,15 @@ const Servicios = ({ cerrarSesion, setVista }) => {
                           >
                             Chat
                           </button>
+                          {/* Enviar notificación al cliente */}
+                          <button
+                            className="btn btn-sm text-white fw-bold"
+                            style={{ backgroundColor: '#198754' }}
+                            title="Enviar notificación al cliente"
+                            onClick={() => { setModalNotif({ ID_Usuario: s.ID_Usuario, ID_Servicio: s.ID_Servicio }); setMensajeNotif(''); }}
+                          >
+                            Notificar
+                          </button>
                           <button className="btn btn-sm text-white fw-bold" style={{ backgroundColor: '#121212' }} onClick={() => {
                             setEnEdicion(true);
                             setIdServicioSel(s.ID_Servicio);
@@ -189,6 +230,51 @@ const Servicios = ({ cerrarSesion, setVista }) => {
         </div>
         <Sidebar setVista={setVista} />
       </div>
+
+      {/* MODAL DE NOTIFICACIÓN AL CLIENTE */}
+      {modalNotif && (
+        <div className="modal d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)', position: 'fixed', inset: 0, zIndex: 9999 }}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content shadow-lg border-0 rounded-4">
+              <div className="modal-header text-white" style={{ backgroundColor: '#DB0000' }}>
+                <h5 className="modal-title fw-bold">Notificar al Cliente</h5>
+                <button className="btn-close btn-close-white" onClick={() => setModalNotif(null)} />
+              </div>
+              <div className="modal-body">
+                <p className="text-muted small mb-3">
+                  Enviando a: <strong>{modalNotif.ID_Usuario}</strong> &middot; Servicio <strong>#{modalNotif.ID_Servicio}</strong>
+                </p>
+                <p className="small fw-bold mb-2">Mensajes rápidos:</p>
+                <div className="d-flex flex-column gap-1 mb-3">
+                  {MENSAJES_RAPIDOS.map((m, i) => (
+                    <button key={i} className="btn btn-sm btn-outline-secondary text-start"
+                      onClick={() => setMensajeNotif(m)}>
+                      {m}
+                    </button>
+                  ))}
+                </div>
+                <textarea
+                  className="form-control"
+                  rows={3}
+                  placeholder="O escribe un mensaje personalizado..."
+                  value={mensajeNotif}
+                  onChange={e => setMensajeNotif(e.target.value)}
+                />
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-secondary" onClick={() => setModalNotif(null)}>Cancelar</button>
+                <button
+                  className="btn text-white fw-bold"
+                  style={{ backgroundColor: '#198754' }}
+                  disabled={!mensajeNotif.trim() || enviandoNotif}
+                  onClick={enviarNotificacion}>
+                  {enviandoNotif ? 'Enviando...' : 'Enviar Notificación'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

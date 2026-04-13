@@ -20,6 +20,7 @@ import Catalogo from './components/usuario/Catalogo';
 import ChatVista from './components/usuario/ChatVista';
 import MiServicio from './components/usuario/MiServicio';
 import Perfil from './components/usuario/Perfil';
+import MisNotificaciones from './components/usuario/MisNotificaciones';
 
 // RNF007 — Tiempo de inactividad antes del cierre automático de sesión (15 min)
 const INACTIVIDAD_MS = 15 * 60 * 1000;
@@ -110,6 +111,8 @@ function App() {
       return <Comentarios cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
     case 'perfil':
       return <Perfil cerrarSesion={cerrarSesion} setVista={cambiarVista} perfilObjetivoId={perfilTarget} />;
+    case 'misNotificaciones':
+      return <MisNotificaciones cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
 
     // TECNICO Y ADMINISTRADOR (Roles 1 y 3)
     case 'servicios':

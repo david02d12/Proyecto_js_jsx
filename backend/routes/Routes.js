@@ -97,10 +97,15 @@ router.post('/mensajes/agregar', validarToken, mensajeController.agregar);
 router.put('/mensajes/actualizar', validarToken, mensajeController.actualizar);
 router.delete('/mensajes/eliminar/:id', validarToken, mensajeController.eliminar);
 
-// NOTIFICACIONES — todos ven; Técnico y Admin modifican
+// NOTIFICACIONES — catálogo: todos ven; Técnico y Admin modifican
 router.get('/notificaciones/listar', validarToken, notificacionController.listar);
 router.post('/notificaciones/agregar', validarToken, validarRol(1, 3), notificacionController.agregar);
 router.put('/notificaciones/actualizar', validarToken, validarRol(1, 3), notificacionController.actualizar);
 router.delete('/notificaciones/eliminar/:id', validarToken, validarRol(1, 3), notificacionController.eliminar);
+
+// NOTIFICACIONES DIRIGIDAS — técnico envía, cliente recibe
+router.post('/notificaciones/enviar', validarToken, validarRol(1, 3), notificacionController.enviar);
+router.get('/notificaciones/mis-notificaciones', validarToken, notificacionController.misNotificaciones);
+router.patch('/notificaciones/marcar-leida/:id', validarToken, notificacionController.marcarLeida);
 
 module.exports = router;
