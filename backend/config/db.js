@@ -1,20 +1,23 @@
-const mysql = require('mysql2');
+const mysql = require("mysql2");
 
-//AQUI VA LA INFORMACION DE LA BASE DE DATOS
-
-const db = mysql.createConnection({
+const db = mysql.createPool({ 
     host: 'localhost',
     user: 'root',
-    password: '', 
-    database: 'celuaccel' 
+    password: '',
+    database: 'celuaccel',
+    port: 3306,
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
 });
 
-db.connect(err => {
+db.getConnection((err, connection) => {
     if (err) {
-        console.error("Error MySQL:", err.message);
-    } else {
-        console.log("Conectado a la base de datos celuaccel");
+        console.error('Error conectando a la base de datos:', err.message);
+        return;
     }
+    console.log('Conectado a la base de datos celuaccel');
+    connection.release(); 
 });
 
 module.exports = db;
