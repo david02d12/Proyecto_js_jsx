@@ -12,9 +12,16 @@ exports.misServicios = (req, res) => {
     const { idUsuario } = req.params;
     if (!idUsuario) return res.status(400).json({ error: 'El ID de usuario es obligatorio.' });
 
-    db.query('SELECT * FROM Servicio WHERE ID_Usuario = ? ORDER BY Fecha DESC', [idUsuario], (err, results) => {
-        if (err) return res.status(500).json({ error: 'Error al obtener tus servicios.' });
-        res.status(200).json(results);
+    db.query('SELECT Codigo_Rol FROM Usuario WHERE ID_Usuario = ?', [req.userId], (errRol, resRol) => {
+        const miRol = resRol && resRol.length > 0 ? resRol[0].Codigo_Rol : 2;
+        if (idUsuario !== req.userId && miRol !== 1 && miRol !== 3) {
+            return res.status(403).json({ error: 'Acceso denegado: IDOR bloqueado (Intento de lectura ajena).' });
+        }
+
+        db.query('SELECT * FROM Servicio WHERE ID_Usuario = ? ORDER BY Fecha DESC', [idUsuario], (err, results) => {
+            if (err) return res.status(500).json({ error: 'Error al obtener tus servicios.' });
+            res.status(200).json(results);
+        });
     });
 };
 
@@ -25,10 +32,17 @@ exports.agregar = (req, res) => {
         return res.status(400).json({ error: 'Los campos Descripcion e ID_Usuario son obligatorios.' });
     }
 
-    const sql = `INSERT INTO Servicio (Descripcion, ID_Usuario, Precio, Movil_Nombre, Movil_Especificacion, Fecha, Etapa) VALUES (?, ?, ?, ?, ?, ?, ?)`;
-    db.query(sql, [Descripcion, ID_Usuario, Precio, Movil_Nombre, Movil_Especificacion, Fecha, Etapa || 0], (err) => {
-        if (err) return res.status(500).json({ error: 'Error al registrar el servicio.' });
-        res.status(201).json({ message: 'Servicio registrado correctamente.' });
+    db.query('SELECT Codigo_Rol FROM Usuario WHERE ID_Usuario = ?', [req.userId], (errRol, resRol) => {
+        const miRol = resRol && resRol.length > 0 ? resRol[0].Codigo_Rol : 2;
+        if (ID_Usuario !== req.userId && miRol !== 1 && miRol !== 3) {
+            return res.status(403).json({ error: 'Acceso denegado: IDOR bloqueado (Intento de escritura ajena).' });
+        }
+
+        const sql = `INSERT INTO Servicio (Descripcion, ID_Usuario, Precio, Movil_Nombre, Movil_Especificacion, Fecha, Etapa) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+        db.query(sql, [Descripcion, ID_Usuario, Precio, Movil_Nombre, Movil_Especificacion, Fecha, Etapa || 0], (err) => {
+            if (err) return res.status(500).json({ error: 'Error al registrar el servicio.' });
+            res.status(201).json({ message: 'Servicio registrado correctamente.' });
+        });
     });
 };
 

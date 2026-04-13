@@ -16,7 +16,14 @@ const Navbar = ({ titulo, cerrarSesion, children }) => {
         <button className="btn fw-bold text-white" style={{ backgroundColor: '#121212' }} type="button" data-bs-toggle="offcanvas" data-bs-target="#menuGlobal">
           MENÚ
         </button>
-        <span className="navbar-brand fw-bold ms-3">{titulo}</span>
+        <span 
+          className="navbar-brand fw-bold ms-3" 
+          style={{ cursor: 'pointer' }}
+          title="Regresar al Panel Principal"
+          onClick={() => window.dispatchEvent(new CustomEvent('navigateHome'))}
+        >
+          {titulo}
+        </span>
         
         <div className="d-flex ms-auto align-items-center gap-3">
           {usuario && (

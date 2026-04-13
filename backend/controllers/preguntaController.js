@@ -14,10 +14,17 @@ exports.agregar = (req, res) => {
         return res.status(400).json({ error: 'Los campos ID_Usuario, Codigo_Producto y Pregunta son obligatorios.' });
     }
 
-    const sql = `INSERT INTO Pregunta VALUES (?, ?, ?, ?, ?)`;
-    db.query(sql, [ID_Consulta, ID_Usuario, Codigo_Producto, Pregunta, Fecha], (err) => {
-        if (err) return res.status(500).json({ error: 'Error al registrar la pregunta.' });
-        res.status(201).json({ message: 'Pregunta registrada correctamente.' });
+    db.query('SELECT Codigo_Rol FROM Usuario WHERE ID_Usuario = ?', [req.userId], (errRol, resRol) => {
+        const miRol = resRol && resRol.length > 0 ? resRol[0].Codigo_Rol : 2;
+        if (ID_Usuario !== req.userId && miRol !== 1 && miRol !== 3) {
+            return res.status(403).json({ error: 'Acceso denegado: IDOR bloqueado (Intento de pregunta ajena).' });
+        }
+
+        const sql = `INSERT INTO Pregunta VALUES (?, ?, ?, ?, ?)`;
+        db.query(sql, [ID_Consulta, ID_Usuario, Codigo_Producto, Pregunta, Fecha], (err) => {
+            if (err) return res.status(500).json({ error: 'Error al registrar la pregunta.' });
+            res.status(201).json({ message: 'Pregunta registrada correctamente.' });
+        });
     });
 };
 

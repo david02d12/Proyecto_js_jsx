@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Navbar from '../Navbar';
 import Sidebar from '../Sidebar';
 import axios from 'axios';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 const Comentarios = ({ cerrarSesion, setVista }) => {
   const miUsuario = localStorage.getItem('user') || '';
@@ -40,10 +42,12 @@ const Comentarios = ({ cerrarSesion, setVista }) => {
 
   const guardar = async () => {
     try {
+      if(!form.Comentario.trim()) return alert("El comentario no puede ir vacío.");
       const url = enEdicion ? 'actualizar' : 'agregar';
       const metodo = enEdicion ? 'put' : 'post';
-      
-      await axios[metodo](`http://localhost:3000/api/comentarios/${url}`, form, config());
+      // Forzar la fecha actual si no tiene
+      const datosFinales = { ...form, Fecha_Comentario: form.Fecha_Comentario || new Date().toISOString().split('T')[0] };
+      await axios[metodo](`http://localhost:3000/api/comentarios/${url}`, datosFinales, config());
       
       listar();
       limpiar();
@@ -53,12 +57,12 @@ const Comentarios = ({ cerrarSesion, setVista }) => {
   };
 
   const eliminar = async (id) => {
-    if (window.confirm("¿Eliminar comentario?")) {
+    if (window.confirm("¿Estás seguro de eliminar este comentario?")) {
       try {
         await axios.delete(`http://localhost:3000/api/comentarios/eliminar/${id}`, config());
         listar();
       } catch (err) {
-        alert("Error al eliminar comentario");
+        alert("Error al eliminar comentario: " + err.response?.data?.error || "Desconocido");
       }
     }
   };
@@ -68,95 +72,148 @@ const Comentarios = ({ cerrarSesion, setVista }) => {
     setEnEdicion(false);
   };
 
+  // Ícono de estrella SVG alta resolución
+  const Estrellas = () => (
+    <div className="d-flex mb-3 gap-1" style={{ color: '#FFD700' }}>
+      {[...Array(5)].map((_, i) => (
+        <svg key={i} width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+        </svg>
+      ))}
+    </div>
+  );
+
+  // Palomita SVG Verificado
+  const VerifiedBadge = () => (
+    <span className="d-inline-flex align-items-center ms-2" style={{ color: '#198754', fontSize: '0.85rem', fontWeight: '600' }}>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" className="me-1">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+      </svg>
+      Verificado
+    </span>
+  );
+
+  const comentariosFiltrados = comentarios.filter(c =>
+    String(c.ID_Usuario || '').toLowerCase().includes(busqueda.toLowerCase()) ||
+    String(c.Comentario || '').toLowerCase().includes(busqueda.toLowerCase())
+  );
+
   return (
     <div>
-      <Navbar titulo="CELUACCEL — Gestión" cerrarSesion={cerrarSesion} />
+      <Navbar titulo="CELUACCEL — Reseñas y Comentarios" cerrarSesion={cerrarSesion} />
 
       <div className="container mt-4">
+        {/* ENCABEZADO */}
+        <div className="mb-4 p-4 rounded-3 text-white text-center"
+          style={{ background: 'linear-gradient(135deg, #DB0000, #8B0000)' }}>
+          <h3 className="fw-bold mb-1">Muro de Testimonios</h3>
+          <p className="mb-0 opacity-75">Nuestra reputación construida a través de la confianza de nuestros clientes</p>
+        </div>
+
         <div className="row">
+          {/* PANEL DE FORMULARIO LATERAL */}
           <div className="col-md-4 mb-4">
-            <div className="card p-3 shadow-sm border-0">
-              <h5>{enEdicion ? "Editar Comentario" : "Nuevo Comentario"}</h5>
+            <div className="card p-4 shadow-sm border-0 position-sticky" style={{ top: '20px' }}>
+              <h5 className="fw-bold mb-3">{enEdicion ? "Editar Reseña" : "Dejar un Testimonio"}</h5>
+              <div className="text-muted small mb-3">
+                Tu opinión es vital. Comparte tu experiencia con nosotros para ayudar a la comunidad Celuaccel.
+              </div>
+              
               <input 
-                className="form-control mb-2" 
+                className="form-control mb-3 bg-light" 
                 placeholder="ID Usuario" 
                 value={form.ID_Usuario} 
                 disabled={enEdicion || miRol === 2}
                 onChange={e => setForm({...form, ID_Usuario: e.target.value})} 
               />
               <textarea 
-                className="form-control mb-2" 
-                placeholder="Escribe tu comentario..." 
+                className="form-control mb-3" 
+                placeholder="Escribe hasta el más mínimo detalle de tu grata experiencia aquí..." 
                 value={form.Comentario} 
                 onChange={e => setForm({...form, Comentario: e.target.value})}
-                rows="3"
+                rows="4"
               />
-              <input 
-                className="form-control mb-2" 
-                type="date" 
-                value={form.Fecha_Comentario} 
-                onChange={e => setForm({...form, Fecha_Comentario: e.target.value})} 
-              />
-              <button className="btn w-100 text-white fw-bold" style={{ backgroundColor: '#DB0000' }} onClick={guardar}>
-                {enEdicion ? "Actualizar" : "Guardar"}
+              {/* Ocultamos fecha al usuario, se genera sola, solo permitimos ver a los admin si quieren modificar */}
+              {miRol !== 2 && (
+                <input 
+                  className="form-control mb-3" 
+                  type="date" 
+                  title="Fecha Comentario"
+                  value={form.Fecha_Comentario} 
+                  onChange={e => setForm({...form, Fecha_Comentario: e.target.value})} 
+                />
+              )}
+              
+              <button className="btn w-100 text-white fw-bold py-2 shadow-sm" style={{ backgroundColor: '#DB0000' }} onClick={guardar}>
+                {enEdicion ? "Actualizar Reseña" : "Publicar Experiencia"}
               </button>
               {enEdicion && (
-                <button className="btn btn-secondary w-100 mt-2" onClick={limpiar}>Cancelar</button>
+                <button className="btn btn-light text-secondary fw-bold w-100 mt-2" onClick={limpiar}>Cancelar Edición</button>
               )}
             </div>
           </div>
 
+          {/* MURO DE TARJETAS (CARDS) */}
           <div className="col-md-8">
-            <div className="card border-0 shadow-sm overflow-hidden">
-              <div className="p-3 border-bottom">
-                <input type="text" className="form-control"
-                  placeholder=" Buscar por usuario o comentario..."
+            <div className="card border-0 bg-transparent">
+              <div className="mb-4">
+                <input type="text" className="form-control form-control-lg shadow-sm border-0"
+                  placeholder="🔍 Buscar palabras, referencias o un nombre de cliente..."
                   value={busqueda} onChange={e => setBusqueda(e.target.value)} />
               </div>
-              <table className="table table-hover mb-0">
-                <thead className="table-dark">
-                  <tr>
-                    <th>Usuario</th>
-                    <th>Comentario</th>
-                    <th>Fecha</th>
-                    <th>Acciones</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white">
-                  {comentarios.filter(c =>
-                    String(c.ID_Usuario || '').toLowerCase().includes(busqueda.toLowerCase()) ||
-                    String(c.Comentario || '').toLowerCase().includes(busqueda.toLowerCase())
-                  ).map(c => (
-                    <tr key={c.Codigo_Comentario}>
-                      <td>{c.ID_Usuario}</td>
-                      <td>{c.Comentario}</td>
-                      <td>{new Date(c.Fecha_Comentario).toLocaleDateString()}</td>
-                      <td>
-                        {(miRol === 3 || c.ID_Usuario === miUsuario) ? (
-                          <>
-                            <button 
-                              className="btn btn-sm me-1 text-white" 
-                              style={{ backgroundColor: '#121212' }} 
-                              onClick={() => { setForm(c); setEnEdicion(true); }}
-                            >
-                              Editar
-                            </button>
-                            <button 
-                              className="btn btn-sm text-white" 
-                              style={{ backgroundColor: '#DB0000' }} 
-                              onClick={() => eliminar(c.Codigo_Comentario)}
-                            >
-                              Borrar
-                            </button>
-                          </>
-                        ) : (
-                          <span className="badge bg-secondary">Sin permisos</span>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+
+              {comentariosFiltrados.length === 0 ? (
+                <div className="text-center py-5">
+                  <h5 className="text-muted mt-3">Aún no hay reseñas para mostrar</h5>
+                  <p className="text-muted">¡Anímate a ser el primero en dejar un testimonio estelar!</p>
+                </div>
+              ) : (
+                <div className="d-flex flex-column gap-3">
+                  {comentariosFiltrados.map(c => {
+                    const inicial = c.ID_Usuario ? c.ID_Usuario.charAt(0).toUpperCase() : '?';
+                    return (
+                      <div key={c.Codigo_Comentario} className="card shadow-sm border-0 p-4" style={{ backgroundColor: '#ffffff' }}>
+                        <div className="d-flex justify-content-between align-items-start mb-2">
+                          <div className="d-flex align-items-center">
+                            {/* Avatar Generator */}
+                            <div className="rounded-circle d-flex justify-content-center align-items-center text-white fw-bold me-3 shadow-sm"
+                                 style={{ width: '48px', height: '48px', backgroundColor: '#DB0000', fontSize: '1.2rem' }}>
+                              {inicial}
+                            </div>
+                            <div>
+                               <h6 className="fw-bold mb-0 d-flex align-items-center">
+                                 {c.ID_Usuario} <VerifiedBadge />
+                               </h6>
+                               <span className="text-muted small">
+                                 Hace un momento • {new Date(c.Fecha_Comentario).toLocaleDateString()}
+                               </span>
+                            </div>
+                          </div>
+                          
+                          {/* BOTONES DE EDICIÓN FLOTANTES */}
+                          <div className="d-flex gap-2">
+                            {(miRol === 3 || c.ID_Usuario === miUsuario) && (
+                              <>
+                                <button className="btn btn-sm btn-light fw-bold text-secondary" onClick={() => { setForm(c); setEnEdicion(true); }}>
+                                  Editar
+                                </button>
+                                <button className="btn btn-sm btn-light fw-bold text-danger" onClick={() => eliminar(c.Codigo_Comentario)}>
+                                  Borrar
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        </div>
+
+                        <Estrellas />
+                        <p className="mb-0 text-dark" style={{ lineHeight: '1.6' }}>
+                          "{c.Comentario}"
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -50,7 +50,7 @@ const Roles = ({ cerrarSesion, setVista }) => {
 
   return (
     <div>
-      <Navbar titulo="CELUACCEL — Gestión" cerrarSesion={cerrarSesion} />
+      <Navbar titulo="CELUACCEL — Privilegios y Roles" cerrarSesion={cerrarSesion} />
 
       <div className="container mt-4">
         <div className="row">

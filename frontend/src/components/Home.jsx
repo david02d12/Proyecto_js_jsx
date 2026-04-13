@@ -11,6 +11,7 @@ const Home = ({ cerrarSesion, setVista }) => {
   });
   const [serviciosRecientes, setServiciosRecientes] = useState([]);
   const usuario = localStorage.getItem('user') || 'Usuario';
+  const role = Number(localStorage.getItem('role')) || 2;
 
   const config = () => ({
     headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
@@ -19,19 +20,19 @@ const Home = ({ cerrarSesion, setVista }) => {
   useEffect(() => {
     const cargarDatos = async () => {
       try {
-        const [svcRes, usrRes, prdRes, hisRes] = await Promise.all([
+        const reqs = await Promise.allSettled([
           axios.get('http://localhost:3000/api/servicios/listar', config()),
           axios.get('http://localhost:3000/api/usuarios/listar', config()),
           axios.get('http://localhost:3000/api/productos/listar', config()),
           axios.get('http://localhost:3000/api/historial/listar', config()),
         ]);
         setStats({
-          servicios: svcRes.data.length,
-          usuarios: usrRes.data.length,
-          productos: prdRes.data.length,
-          historial: hisRes.data.length,
+          servicios: reqs[0].status === 'fulfilled' ? reqs[0].value.data.length : 0,
+          usuarios: reqs[1].status === 'fulfilled' ? reqs[1].value.data.length : 0,
+          productos: reqs[2].status === 'fulfilled' ? reqs[2].value.data.length : 0,
+          historial: reqs[3].status === 'fulfilled' ? reqs[3].value.data.length : 0,
         });
-        setServiciosRecientes(svcRes.data.slice(0, 5));
+        if (reqs[0].status === 'fulfilled') setServiciosRecientes(reqs[0].value.data.slice(0, 5));
       } catch (err) {
         console.error('Error al cargar estadísticas:', err);
       }
@@ -46,6 +47,16 @@ const Home = ({ cerrarSesion, setVista }) => {
     return { texto: 'Listo', color: '#198754' };
   };
 
+  const menuAccesoFiltro = [
+    { label: ' Nuevo Servicio', vista: role === 2 ? 'miServicio' : 'servicios' },
+    { label: ' Mis Servicios', vista: 'miServicio' },
+    { label: ' Chat', vista: 'chatVista' },
+    { label: ' Catálogo', vista: 'catalogo' },
+    ...(role !== 2 ? [{ label: ' Notificaciones', vista: 'notificaciones' }] : []),
+    { label: ' Comentarios', vista: 'comentarios' },
+    ...(role !== 2 ? [{ label: ' Historial', vista: 'historial' }] : []),
+  ];
+
   return (
     <div>
       {/* NAVBAR */}
@@ -55,18 +66,18 @@ const Home = ({ cerrarSesion, setVista }) => {
         {/* BIENVENIDA */}
         <div className="mb-4 p-4 rounded-3 text-white" style={{ background: 'linear-gradient(135deg, #DB0000, #8B0000)' }}>
           <h4 className="fw-bold mb-1"> Bienvenido, {usuario}</h4>
-          <p className="mb-0 opacity-75">Este es tu panel de control del sistema Celuaccel.</p>
+          <p className="mb-0 opacity-75">Este es tu panel del sistema Celuaccel.</p>
         </div>
 
-        {/* TARJETAS DE ESTADÍSTICAS */}
+        {/* TARJETAS DE ESTADÍSTICAS Ocultas lógicamente según rol */}
         <div className="row g-3 mb-4">
           {[
-            { titulo: 'Servicios Activos', valor: stats.servicios, icono: '', vista: 'servicios', color: '#DB0000' },
-            { titulo: 'Usuarios', valor: stats.usuarios, icono: '', vista: 'usuarios', color: '#121212' },
-            { titulo: 'Productos', valor: stats.productos, icono: '', vista: 'productos', color: '#DB0000' },
-            { titulo: 'Eventos Historial', valor: stats.historial, icono: '', vista: 'historial', color: '#121212' },
+            { titulo: 'Servicios', valor: stats.servicios, icono: '', vista: role === 2 ? 'miServicio' : 'servicios', color: '#DB0000' },
+            ...(role === 3 ? [{ titulo: 'Usuarios', valor: stats.usuarios, icono: '', vista: 'usuarios', color: '#121212' }] : []),
+            { titulo: 'Productos', valor: stats.productos, icono: '', vista: role === 2 ? 'catalogo' : 'productos', color: '#DB0000' },
+            ...(role !== 2 ? [{ titulo: 'Eventos', valor: stats.historial, icono: '', vista: 'historial', color: '#121212' }] : []),
           ].map((card, i) => (
-            <div key={i} className="col-6 col-md-3">
+            <div key={i} className="col-6 col-md flex-grow-1">
               <div className="card border-0 shadow-sm h-100" style={{ cursor: 'pointer' }}
                 onClick={() => setVista(card.vista)}>
                 <div className="card-body text-center py-4">
@@ -79,7 +90,7 @@ const Home = ({ cerrarSesion, setVista }) => {
           ))}
         </div>
 
-        {/* ACCESOS RÁPIDOS */}
+        {/* ACCESOS RÁPIDOS ADAPTADOS */}
         <div className="row g-3 mb-4">
           <div className="col-12">
             <div className="card border-0 shadow-sm">
@@ -88,15 +99,7 @@ const Home = ({ cerrarSesion, setVista }) => {
               </div>
               <div className="card-body">
                 <div className="d-flex flex-wrap gap-2">
-                  {[
-                    { label: ' Nuevo Servicio', vista: 'servicios' },
-                    { label: ' Mis Servicios', vista: 'miServicio' },
-                    { label: ' Chat', vista: 'chatVista' },
-                    { label: ' Catálogo', vista: 'catalogo' },
-                    { label: ' Notificaciones', vista: 'notificaciones' },
-                    { label: ' Comentarios', vista: 'comentarios' },
-                    { label: ' Historial', vista: 'historial' },
-                  ].map((acc, i) => (
+                  {menuAccesoFiltro.map((acc, i) => (
                     <button key={i} className="btn text-white fw-bold"
                       style={{ backgroundColor: i % 2 === 0 ? '#DB0000' : '#121212' }}
                       onClick={() => setVista(acc.vista)}>
@@ -109,58 +112,60 @@ const Home = ({ cerrarSesion, setVista }) => {
           </div>
         </div>
 
-        {/* SERVICIOS RECIENTES */}
-        <div className="card border-0 shadow-sm">
-          <div className="card-header fw-bold d-flex justify-content-between align-items-center"
-            style={{ backgroundColor: '#f8f9fa' }}>
-            <span> Servicios Recientes</span>
-            <button className="btn btn-sm text-white fw-bold" style={{ backgroundColor: '#DB0000' }}
-              onClick={() => setVista('servicios')}>Ver todos</button>
+        {/* SERVICIOS RECIENTES (SOLO PARA TÉCNICOS/ADMIN) */}
+        {role !== 2 && (
+          <div className="card border-0 shadow-sm">
+            <div className="card-header fw-bold d-flex justify-content-between align-items-center"
+              style={{ backgroundColor: '#f8f9fa' }}>
+              <span> Servicios Generales Recientes</span>
+              <button className="btn btn-sm text-white fw-bold" style={{ backgroundColor: '#DB0000' }}
+                onClick={() => setVista('servicios')}>Ver todos</button>
+            </div>
+            <div className="card-body p-0">
+              {serviciosRecientes.length === 0 ? (
+                <p className="text-muted text-center py-4 mb-0">No hay servicios registrados aún.</p>
+              ) : (
+                <table className="table table-hover mb-0">
+                  <thead className="table-dark">
+                    <tr>
+                      <th>ID</th>
+                      <th>Descripción</th>
+                      <th>Dispositivo</th>
+                      <th>Progreso</th>
+                      <th>Estado</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {serviciosRecientes.map(s => {
+                      const etapa = Number(s.Etapa) || 0;
+                      const label = etapaLabel(etapa);
+                      return (
+                        <tr key={s.ID_Servicio}>
+                          <td className="fw-bold">{s.ID_Servicio}</td>
+                          <td>{s.Descripcion}</td>
+                          <td>{s.Movil_Nombre}</td>
+                          <td style={{ minWidth: '120px' }}>
+                            <div className="progress" style={{ height: '8px' }}>
+                              <div className="progress-bar" role="progressbar"
+                                style={{ width: `${etapa}%`, backgroundColor: label.color }}
+                                aria-valuenow={etapa} aria-valuemin="0" aria-valuemax="100" />
+                            </div>
+                            <small className="text-muted">{etapa}%</small>
+                          </td>
+                          <td>
+                            <span className="badge" style={{ backgroundColor: label.color }}>
+                              {label.texto}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
+            </div>
           </div>
-          <div className="card-body p-0">
-            {serviciosRecientes.length === 0 ? (
-              <p className="text-muted text-center py-4 mb-0">No hay servicios registrados aún.</p>
-            ) : (
-              <table className="table table-hover mb-0">
-                <thead className="table-dark">
-                  <tr>
-                    <th>ID</th>
-                    <th>Descripción</th>
-                    <th>Dispositivo</th>
-                    <th>Progreso</th>
-                    <th>Estado</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {serviciosRecientes.map(s => {
-                    const etapa = Number(s.Etapa) || 0;
-                    const label = etapaLabel(etapa);
-                    return (
-                      <tr key={s.ID_Servicio}>
-                        <td className="fw-bold">{s.ID_Servicio}</td>
-                        <td>{s.Descripcion}</td>
-                        <td>{s.Movil_Nombre}</td>
-                        <td style={{ minWidth: '120px' }}>
-                          <div className="progress" style={{ height: '8px' }}>
-                            <div className="progress-bar" role="progressbar"
-                              style={{ width: `${etapa}%`, backgroundColor: label.color }}
-                              aria-valuenow={etapa} aria-valuemin="0" aria-valuemax="100" />
-                          </div>
-                          <small className="text-muted">{etapa}%</small>
-                        </td>
-                        <td>
-                          <span className="badge" style={{ backgroundColor: label.color }}>
-                            {label.texto}
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            )}
-          </div>
-        </div>
+        )}
       </div>
 
       {/* MENÚ LATERAL */}
@@ -170,7 +175,7 @@ const Home = ({ cerrarSesion, setVista }) => {
           <button type="button" className="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
         </div>
         <Sidebar setVista={setVista} />
-    </div>
+      </div>
     </div>
   );
 };

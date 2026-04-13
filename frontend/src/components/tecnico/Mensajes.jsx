@@ -73,7 +73,7 @@ const Mensajes = ({ cerrarSesion, setVista }) => {
   return (
     <div>
       {/* NAVBAR */}
-      <Navbar titulo="CELUACCEL — Gestión" cerrarSesion={cerrarSesion} />
+      <Navbar titulo="CELUACCEL — Bandeja de Mensajes" cerrarSesion={cerrarSesion} />
 
       <div className="container mt-4">
         <div className="row">

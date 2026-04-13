@@ -96,7 +96,7 @@ const Usuarios = ({ cerrarSesion, setVista }) => {
   return (
     <div>
       {/* NAVBAR */}
-      <Navbar titulo="CELUACCEL — Gestión" cerrarSesion={cerrarSesion} />
+      <Navbar titulo="CELUACCEL — Directorio de Usuarios" cerrarSesion={cerrarSesion} />
 
       <div className="container-fluid mt-4">
         <div className="row">

@@ -62,7 +62,7 @@ const Notificaciones = ({ cerrarSesion, setVista }) => {
   return (
     <div>
       {/* NAVBAR */}
-      <Navbar titulo="CELUACCEL — Gestión" cerrarSesion={cerrarSesion} />
+      <Navbar titulo="CELUACCEL — Central de Notificaciones" cerrarSesion={cerrarSesion} />
 
       <div className="container mt-4">
         <div className="row">

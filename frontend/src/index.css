@@ -47,17 +47,12 @@ body {
 }
 
 /* =================================================================
-   TARJETAS E INTERFACES FLOTANTES
+   TARJETAS E INTERFACES FLOTANTES (ESTÁTICAS POR USABILIDAD)
 ================================================================= */
 .card {
   border-radius: 12px !important;
   border: 1px solid rgba(0, 0, 0, 0.04) !important;
-  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
-}
-
-.card:hover {
-  transform: translateY(-4px); /* Se levanta suavemente */
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.06) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03) !important;
 }
 
 /* =================================================================

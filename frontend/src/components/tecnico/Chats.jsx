@@ -64,7 +64,7 @@ const Chats = ({ cerrarSesion, setVista }) => {
   return (
     <div>
       {/* NAVBAR */}
-      <Navbar titulo="CELUACCEL — Gestión" cerrarSesion={cerrarSesion} />
+      <Navbar titulo="CELUACCEL — Administración de Canales" cerrarSesion={cerrarSesion} />
 
       <div className="container mt-4">
         <div className="row">

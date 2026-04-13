@@ -78,11 +78,11 @@ router.post('/chats/agregar', validarToken, chatController.agregar);
 router.put('/chats/actualizar', validarToken, chatController.actualizar);
 router.delete('/chats/eliminar/:id', validarToken, validarRol(1, 3), chatController.eliminar);
 
-// COMENTARIOS — todos escriben; técnico y admin editan/eliminan
+// COMENTARIOS — todos escriben; dueño edita/elimina; técnico y admin editan/eliminan
 router.get('/comentarios/listar', validarToken, comentarioController.listar);
 router.post('/comentarios/agregar', validarToken, comentarioController.agregar);
-router.put('/comentarios/actualizar', validarToken, validarRol(1, 3), comentarioController.actualizar);
-router.delete('/comentarios/eliminar/:id', validarToken, validarRol(1, 3), comentarioController.eliminar);
+router.put('/comentarios/actualizar', validarToken, comentarioController.actualizar);
+router.delete('/comentarios/eliminar/:id', validarToken, comentarioController.eliminar);
 
 // MENSAJES — todos envían; técnico y admin eliminan
 router.get('/mensajes/listar', validarToken, mensajeController.listar);

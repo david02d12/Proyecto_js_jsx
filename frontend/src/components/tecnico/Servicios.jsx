@@ -54,7 +54,7 @@ const Servicios = ({ cerrarSesion, setVista }) => {
 
   return (
     <div>
-      <Navbar titulo="CELUACCEL — Gestión" cerrarSesion={cerrarSesion} />
+      <Navbar titulo="CELUACCEL — Control de Reparaciones" cerrarSesion={cerrarSesion} />
 
       <div className="container mt-4">
         <div className="row">

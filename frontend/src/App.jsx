@@ -70,6 +70,13 @@ function App() {
     localStorage.setItem('ultimaVista', nuevaVista);
   };
 
+  // Antena Receptora global para atajo del Logotipo
+  useEffect(() => {
+    const irAlInicio = () => cambiarVista('home');
+    window.addEventListener('navigateHome', irAlInicio);
+    return () => window.removeEventListener('navigateHome', irAlInicio);
+  }, []);
+
   if (!logueado) {
     return modoRegistro
       ? <Registro setModoRegistro={setModoRegistro} />

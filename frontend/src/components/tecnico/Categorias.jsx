@@ -37,7 +37,7 @@ const Categorias = ({ cerrarSesion, setVista }) => {
 
   return (
     <div>
-      <Navbar titulo="CELUACCEL — Gestión" cerrarSesion={cerrarSesion} />
+      <Navbar titulo="CELUACCEL — Categorías de Sistema" cerrarSesion={cerrarSesion} />
 
       <div className="container mt-4">
         <div className="row">

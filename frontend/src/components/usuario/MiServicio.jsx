@@ -192,7 +192,10 @@ const MiServicio = ({ cerrarSesion, setVista }) => {
                       <div className="d-flex gap-2 mt-3">
                         <button className="btn btn-sm text-white fw-bold"
                           style={{ backgroundColor: '#121212' }}
-                          onClick={() => setVista('chatVista')}>
+                          onClick={() => {
+                            localStorage.setItem('chatInfo', JSON.stringify({ ID_Servicio: s.ID_Servicio }));
+                            setVista('chatVista');
+                          }}>
                            Chat con Asesor
                         </button>
                         {cancelable && (
