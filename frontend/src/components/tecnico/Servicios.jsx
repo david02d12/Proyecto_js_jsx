@@ -6,12 +6,12 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 const ETAPAS = [
-  { valor: '0',   label: '📥 Recibido'           },
-  { valor: '25',  label: '🔍 En Diagnóstico'     },
-  { valor: '50',  label: '🔧 En Reparación'      },
-  { valor: '75',  label: '✅ Control de Calidad' },
-  { valor: '100', label: '🎉 Listo para Retirar' },
-  { valor: '-1',  label: '❌ Cancelado'           },
+  { valor: '0',   label: 'Recibido'           },
+  { valor: '25',  label: 'En Diagnóstico'     },
+  { valor: '50',  label: 'En Reparación'      },
+  { valor: '75',  label: 'Control de Calidad' },
+  { valor: '100', label: 'Listo para Retirar' },
+  { valor: '-1',  label: 'Cancelado'           },
 ];
 
 const Servicios = ({ cerrarSesion, setVista }) => {
@@ -49,7 +49,7 @@ const Servicios = ({ cerrarSesion, setVista }) => {
       const metodo = enEdicion ? 'put' : 'post';
       const data = enEdicion ? { ...formServicio, ID_Servicio: idServicioSel } : formServicio;
       await axios[metodo](`http://localhost:3000/api/servicios/${url}`, data, config());
-      mostrarToast(enEdicion ? 'Servicio actualizado correctamente. ✔' : 'Nuevo servicio registrado. ✔');
+      mostrarToast(enEdicion ? 'Servicio actualizado correctamente.' : 'Nuevo servicio registrado.');
       listar();
       limpiarServicio();
     } catch (err) { mostrarToast("Error al procesar la solicitud. Verifica los datos.", false); }
@@ -88,7 +88,7 @@ const Servicios = ({ cerrarSesion, setVista }) => {
         <div className="mb-4 p-4 rounded-3 text-white d-flex justify-content-between align-items-center flex-wrap gap-2"
           style={{ background: 'linear-gradient(135deg, #DB0000, #8B0000)' }}>
           <div>
-            <h4 className="fw-bold mb-1">🔧 Gestión de Reparaciones</h4>
+            <h4 className="fw-bold mb-1">Gestión de Reparaciones</h4>
             <p className="mb-0 opacity-75">Registra y actualiza el seguimiento de cada servicio técnico</p>
           </div>
           <span className="badge bg-light text-danger fw-bold fs-6">{servicios.length} servicios</span>
@@ -96,8 +96,8 @@ const Servicios = ({ cerrarSesion, setVista }) => {
 
         <div className="row">
           <div className="col-md-4 mb-4">
-            <div className="card p-3 shadow-sm border-0">
-              <h5 className="mb-3 fw-bold">{enEdicion ? "✏️ Editar Servicio" : "➕ Nuevo Registro"}</h5>
+            <div className="card p-3 shadow-sm">
+              <h5 className="mb-3 fw-bold">{enEdicion ? "Editar Servicio" : "Nuevo Registro"}</h5>
               <input className="form-control mb-2" value={formServicio.Descripcion} placeholder="Descripción del problema" onChange={e => setFormServicio({...formServicio, Descripcion: e.target.value})} />
               <input className="form-control mb-2" value={formServicio.ID_Usuario} placeholder="Documento del cliente" onChange={e => setFormServicio({...formServicio, ID_Usuario: e.target.value})} />
               <input className="form-control mb-2" type="number" value={formServicio.Precio} placeholder="Precio ($)" onChange={e => setFormServicio({...formServicio, Precio: e.target.value})} />
@@ -117,10 +117,10 @@ const Servicios = ({ cerrarSesion, setVista }) => {
           </div>
 
           <div className="col-md-8">
-            <div className="card border-0 shadow-sm overflow-hidden">
+            <div className="card shadow-sm overflow-hidden">
               <div className="p-3 border-bottom">
                 <input type="text" className="form-control"
-                  placeholder="🔍 Buscar por descripción, móvil o usuario..."
+                  placeholder="Buscar por descripción, móvil o usuario..."
                   value={busqueda} onChange={e => setBusqueda(e.target.value)} />
               </div>
               <table className="table table-hover mb-0">

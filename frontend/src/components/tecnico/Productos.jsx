@@ -42,7 +42,7 @@ const Productos = ({ cerrarSesion, setVista }) => {
       const url = enEdicion ? 'actualizar' : 'agregar';
       const metodo = enEdicion ? 'put' : 'post';
       await axios[metodo](`http://localhost:3000/api/productos/${url}`, form, config());
-      mostrarToast(enEdicion ? 'Producto actualizado correctamente. ✔' : 'Producto registrado en el inventario. ✔');
+      mostrarToast(enEdicion ? 'Producto actualizado correctamente.' : 'Producto registrado en el inventario.');
       listar();
       limpiar();
     } catch (err) { mostrarToast("Error al procesar el producto. Verifica los datos.", false); }
@@ -81,7 +81,7 @@ const Productos = ({ cerrarSesion, setVista }) => {
         <div className="mb-4 p-4 rounded-3 text-white d-flex justify-content-between align-items-center flex-wrap gap-2"
           style={{ background: 'linear-gradient(135deg, #DB0000, #8B0000)' }}>
           <div>
-            <h4 className="fw-bold mb-1">📦 Inventario de Productos</h4>
+            <h4 className="fw-bold mb-1">Inventario de Productos</h4>
             <p className="mb-0 opacity-75">Controla el stock, precios y visibilidad en el catálogo</p>
           </div>
           <span className="badge bg-light text-danger fw-bold fs-6">{productos.length} productos</span>
@@ -89,8 +89,8 @@ const Productos = ({ cerrarSesion, setVista }) => {
 
         <div className="row">
           <div className="col-md-4 mb-4">
-            <div className="card p-3 shadow-sm border-0">
-              <h5 className="fw-bold mb-3">{enEdicion ? "✏️ Editar Producto" : "➕ Nuevo Producto"}</h5>
+            <div className="card p-3 shadow-sm">
+              <h5 className="fw-bold mb-3">{enEdicion ? "Editar Producto" : "Nuevo Producto"}</h5>
               <input className="form-control mb-2" placeholder="Código del producto" value={form.Codigo_Producto} disabled={enEdicion} onChange={e => setForm({...form, Codigo_Producto: e.target.value})} />
               <input className="form-control mb-2" placeholder="Nombre del producto" value={form.Nombre} onChange={e => setForm({...form, Nombre: e.target.value})} />
               <input className="form-control mb-2" type="number" placeholder="Cantidad en stock" value={form.Cantidad} onChange={e => setForm({...form, Cantidad: e.target.value})} />
@@ -106,8 +106,8 @@ const Productos = ({ cerrarSesion, setVista }) => {
               </select>
               <label className="small text-muted fw-bold mb-1">Visibilidad en catálogo</label>
               <select className="form-select mb-3" value={form.Activo_Catalogo} onChange={e => setForm({...form, Activo_Catalogo: Number(e.target.value)})}>
-                <option value={1}>👁 Visible en Catálogo</option>
-                <option value={0}>🚫 Oculto del Catálogo</option>
+                <option value={1}>Visible en Catálogo</option>
+                <option value={0}>Oculto del Catálogo</option>
               </select>
               <button className="btn w-100 text-white fw-bold" style={{ backgroundColor: '#DB0000' }} onClick={guardar}>
                 {enEdicion ? "Actualizar Producto" : "Guardar Producto"}
@@ -117,10 +117,10 @@ const Productos = ({ cerrarSesion, setVista }) => {
           </div>
 
           <div className="col-md-8">
-            <div className="card border-0 shadow-sm overflow-hidden">
+            <div className="card shadow-sm overflow-hidden">
               <div className="p-3 border-bottom">
                 <input type="text" className="form-control"
-                  placeholder="🔍 Buscar por código, nombre o descripción..."
+                  placeholder="Buscar por código, nombre o descripción..."
                   value={busqueda} onChange={e => setBusqueda(e.target.value)} />
               </div>
               <table className="table table-hover mb-0">

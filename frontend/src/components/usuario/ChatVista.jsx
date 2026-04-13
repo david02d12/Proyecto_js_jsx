@@ -228,10 +228,9 @@ const ChatVista = ({ cerrarSesion, setVista }) => {
                           <div className={`d-flex mt-1 gap-2 ${esMio ? 'justify-content-end' : ''}`}>
                             <small className="text-muted">{m.Fecha_Mensaje}</small>
                             {esMio && (
-                              <small className="text-danger" style={{ cursor: 'pointer' }}
-                                onClick={() => eliminarMensaje(m.Codigo_Mensaje)}>
-                                🗑 Eliminar
-                              </small>
+                              <button className="btn btn-sm text-white fw-bold" style={{ backgroundColor: '#DB0000' }} onClick={() => eliminarMensaje(m.Codigo_Mensaje)}>
+                                Eliminar
+                              </button>
                             )}
                           </div>
                         </div>

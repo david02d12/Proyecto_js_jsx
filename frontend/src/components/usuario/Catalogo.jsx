@@ -84,7 +84,7 @@ const Catalogo = ({ cerrarSesion, setVista }) => {
           <div className="col-md-8">
             <div className="input-group">
               <span className="input-group-text bg-white border-end-0">
-                🔍
+                
               </span>
               <input
                 type="text"
@@ -132,8 +132,8 @@ const Catalogo = ({ cerrarSesion, setVista }) => {
                       />
                     : null}
                   <div className="d-flex align-items-center justify-content-center"
-                    style={{ height: '160px', backgroundColor: '#f8f9fa', borderRadius: '0.375rem 0.375rem 0 0', fontSize: '3.5rem', display: p.Imagen ? 'none' : 'flex' }}>
-                    📱
+                    style={{ height: '160px', backgroundColor: '#f0f0f0', borderRadius: '0.375rem 0.375rem 0 0', fontSize: '0.9rem', color: '#aaa', display: p.Imagen ? 'none' : 'flex' }}>
+                    Sin imagen
                   </div>
                   <div className="card-body d-flex flex-column">
                     <span className="badge mb-2" style={{ backgroundColor: '#DB0000', width: 'fit-content' }}>

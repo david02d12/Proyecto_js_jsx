@@ -37,7 +37,7 @@ const Historial = ({ cerrarSesion, setVista }) => {
       const url = enEdicion ? "actualizar" : "agregar";
       const metodo = enEdicion ? 'put' : 'post';
       await axios[metodo](`http://localhost:3000/api/historial/${url}`, form, config());
-      mostrarToast(enEdicion ? 'Evento actualizado correctamente. ✔' : 'Evento registrado en el historial. ✔');
+      mostrarToast(enEdicion ? 'Evento actualizado correctamente.' : 'Evento registrado en el historial.');
       listar();
       limpiar();
     } catch (err) { mostrarToast("Error al procesar la solicitud.", false); }
@@ -58,7 +58,6 @@ const Historial = ({ cerrarSesion, setVista }) => {
     setEnEdicion(false);
   };
 
-  // RF008 — Exportar historial a PDF
   const exportarPDF = () => {
     const doc = new jsPDF();
     doc.setFontSize(18);
@@ -100,7 +99,7 @@ const Historial = ({ cerrarSesion, setVista }) => {
 
       <Navbar titulo="CELUACCEL — Historial de Servicios" cerrarSesion={cerrarSesion}>
         <button className="btn btn-sm fw-bold text-white" style={{ backgroundColor: '#198754' }} onClick={exportarPDF}>
-          📄 Exportar PDF
+          Exportar PDF
         </button>
       </Navbar>
 
@@ -108,7 +107,7 @@ const Historial = ({ cerrarSesion, setVista }) => {
         <div className="mb-4 p-4 rounded-3 text-white d-flex justify-content-between align-items-center flex-wrap gap-2"
           style={{ background: 'linear-gradient(135deg, #DB0000, #8B0000)' }}>
           <div>
-            <h4 className="fw-bold mb-1">📜 Historial de Eventos</h4>
+            <h4 className="fw-bold mb-1">Historial de Eventos</h4>
             <p className="mb-0 opacity-75">Registro cronológico de cada paso técnico en los servicios</p>
           </div>
           <span className="badge bg-light text-danger fw-bold fs-6">{datos.length} eventos</span>
@@ -116,8 +115,8 @@ const Historial = ({ cerrarSesion, setVista }) => {
 
         <div className="row">
           <div className="col-md-4 mb-4">
-            <div className="card p-3 shadow-sm border-0">
-              <h5 className="mb-3 fw-bold">{enEdicion ? "✏️ Editar Evento" : "➕ Nuevo Evento"}</h5>
+            <div className="card p-3 shadow-sm">
+              <h5 className="mb-3 fw-bold">{enEdicion ? "Editar Evento" : "Nuevo Evento"}</h5>
               <input className="form-control mb-2" disabled={enEdicion} value={form.ID_Historial} placeholder="ID Historial" onChange={e => setForm({...form, ID_Historial: e.target.value})} />
               <input className="form-control mb-2" type="number" value={form.ID_Servicio} placeholder="ID del Servicio asociado" onChange={e => setForm({...form, ID_Servicio: e.target.value})} />
               <label className="small text-muted fw-bold mb-1">Fecha del evento</label>
@@ -125,8 +124,8 @@ const Historial = ({ cerrarSesion, setVista }) => {
               <input className="form-control mb-2" value={form.Descripcion_Evento} placeholder="Descripción del evento técnico" onChange={e => setForm({...form, Descripcion_Evento: e.target.value})} />
               <label className="small text-muted fw-bold mb-1">Estado del evento</label>
               <select className="form-select mb-3" value={form.Estado} onChange={e => setForm({...form, Estado: e.target.value})}>
-                <option value="1">✅ Activo</option>
-                <option value="0">❌ Inactivo</option>
+                <option value="1">Activo</option>
+                <option value="0">Inactivo</option>
               </select>
               <button className="btn w-100 text-white fw-bold" style={{ backgroundColor: '#DB0000' }} onClick={guardar}>
                 {enEdicion ? "Actualizar Evento" : "Guardar Evento"}
@@ -136,10 +135,10 @@ const Historial = ({ cerrarSesion, setVista }) => {
           </div>
 
           <div className="col-md-8">
-            <div className="card border-0 shadow-sm overflow-hidden">
+            <div className="card shadow-sm overflow-hidden">
               <div className="p-3 border-bottom">
                 <input type="text" className="form-control"
-                  placeholder="🔍 Buscar por ID, servicio, estado o descripción..."
+                  placeholder="Buscar por ID, servicio, estado o descripción..."
                   value={busqueda} onChange={e => setBusqueda(e.target.value)} />
               </div>
               <table className="table table-hover mb-0">
@@ -159,7 +158,7 @@ const Historial = ({ cerrarSesion, setVista }) => {
                       <td>{d.Fecha_Evento ? d.Fecha_Evento.split('T')[0] : ''}</td>
                       <td>
                         <span className={`badge ${d.Estado === '1' || d.Estado === 1 ? 'bg-success' : 'bg-secondary'}`}>
-                          {d.Estado === '1' || d.Estado === 1 ? '✅ Activo' : '❌ Inactivo'}
+                          {d.Estado === '1' || d.Estado === 1 ? 'Activo' : 'Inactivo'}
                         </span>
                       </td>
                       <td>

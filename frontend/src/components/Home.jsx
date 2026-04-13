@@ -51,37 +51,34 @@ const Home = ({ cerrarSesion, setVista }) => {
     return { texto: 'Listo', color: '#198754' };
   };
 
-  // Accesos rápidos diferenciados por rol — sin mezclar módulos de gestión con módulos de cliente
+  // Accesos rápidos diferenciados por rol
   const menuAccesoFiltro = role === 2
-    // ── CLIENTE: solo su propio ecosistema ──
     ? [
-        { label: '📋 Mis Servicios',     vista: 'miServicio' },
-        { label: '💬 Chat con Asesor',   vista: 'chatVista'  },
-        { label: '🛒 Catálogo',          vista: 'catalogo'   },
-        { label: '⭐ Comentarios',       vista: 'comentarios'},
+        { label: 'Mis Servicios',       vista: 'miServicio' },
+        { label: 'Chat con Asesor',     vista: 'chatVista'  },
+        { label: 'Catálogo',           vista: 'catalogo'   },
+        { label: 'Comentarios',         vista: 'comentarios'},
       ]
     : role === 1
-    // ── TÉCNICO: módulos operativos ──
     ? [
-        { label: '🔧 Gestión Servicios', vista: 'servicios'      },
-        { label: '📜 Historial',         vista: 'historial'      },
-        { label: '📦 Productos',         vista: 'productos'      },
-        { label: '🏷️ Categorías',        vista: 'categorias'     },
-        { label: '💬 Chats',             vista: 'chats'          },
-        { label: '🔔 Notificaciones',    vista: 'notificaciones' },
-        { label: '⭐ Comentarios',       vista: 'comentarios'    },
-        { label: '🛒 Catálogo',          vista: 'catalogo'       },
+        { label: 'Gestión de Servicios', vista: 'servicios'      },
+        { label: 'Historial',            vista: 'historial'      },
+        { label: 'Productos',            vista: 'productos'      },
+        { label: 'Categorías',          vista: 'categorias'     },
+        { label: 'Chats',               vista: 'chats'          },
+        { label: 'Notificaciones',      vista: 'notificaciones' },
+        { label: 'Comentarios',         vista: 'comentarios'    },
+        { label: 'Catálogo',           vista: 'catalogo'       },
       ]
-    // ── ADMINISTRADOR: acceso total ──
     : [
-        { label: '🔧 Gestión Servicios', vista: 'servicios'      },
-        { label: '👥 Usuarios',          vista: 'usuarios'       },
-        { label: '📜 Historial',         vista: 'historial'      },
-        { label: '📦 Productos',         vista: 'productos'      },
-        { label: '🏷️ Categorías',        vista: 'categorias'     },
-        { label: '🔔 Notificaciones',    vista: 'notificaciones' },
-        { label: '🛡️ Roles',             vista: 'roles'          },
-        { label: '🪪 Tipos Documento',   vista: 'tipo'           },
+        { label: 'Gestión de Servicios', vista: 'servicios'      },
+        { label: 'Usuarios',             vista: 'usuarios'       },
+        { label: 'Historial',            vista: 'historial'      },
+        { label: 'Productos',            vista: 'productos'      },
+        { label: 'Categorías',          vista: 'categorias'     },
+        { label: 'Notificaciones',      vista: 'notificaciones' },
+        { label: 'Roles',               vista: 'roles'          },
+        { label: 'Tipos de Documento',  vista: 'tipo'           },
       ];
 
   return (

@@ -77,12 +77,12 @@ const MiServicio = ({ cerrarSesion, setVista }) => {
 
   const etapaInfo = (etapa) => {
     const e = Number(etapa);
-    if (e === -1) return { texto: ' Cancelado', color: '#6c757d', porcentaje: 0 };
-    if (e === 0)  return { texto: ' Recibido', color: '#0d6efd', porcentaje: 10 };
-    if (e <= 25)  return { texto: ' En Diagnóstico', color: '#0dcaf0', porcentaje: 25 };
-    if (e <= 50)  return { texto: ' En Reparación', color: '#ffc107', porcentaje: 50 };
-    if (e <= 75)  return { texto: ' Control de Calidad', color: '#fd7e14', porcentaje: 75 };
-    if (e === 100) return { texto: ' Listo para Retirar', color: '#198754', porcentaje: 100 };
+    if (e === -1) return { texto: 'Cancelado',          color: '#6c757d', porcentaje: 0  };
+    if (e === 0)  return { texto: 'Recibido',            color: '#0d6efd', porcentaje: 10 };
+    if (e <= 25)  return { texto: 'En Diagnóstico',      color: '#0dcaf0', porcentaje: 25 };
+    if (e <= 50)  return { texto: 'En Reparación',       color: '#ffc107', porcentaje: 50 };
+    if (e <= 75)  return { texto: 'Control de Calidad',  color: '#fd7e14', porcentaje: 75 };
+    if (e === 100) return { texto: 'Listo para Retirar', color: '#198754', porcentaje: 100 };
     return { texto: `En proceso (${e}%)`, color: '#6c757d', porcentaje: e };
   };
 
@@ -101,7 +101,7 @@ const MiServicio = ({ cerrarSesion, setVista }) => {
         {/* ENCABEZADO CON BOTÓN DESPLEGABLE REPARADO */}
         <div className="mb-4 p-4 rounded-3 text-white d-flex justify-content-between align-items-center flex-wrap gap-3" style={{ background: 'linear-gradient(135deg, #DB0000, #8B0000)' }}>
           <div>
-            <h4 className="fw-bold mb-1"> Seguimiento de mis Servicios</h4>
+            <h4 className="fw-bold mb-1">Seguimiento de mis Servicios</h4>
             <p className="mb-0 opacity-75">Usuario: <strong>{usuario}</strong> — {servicios.length} servicio(s) registrado(s)</p>
           </div>
           <button className="btn btn-light fw-bold text-danger px-4" onClick={() => setMostrarFormulario(!mostrarFormulario)} style={{ transition: 'all 0.3s ease' }}>
@@ -162,11 +162,11 @@ const MiServicio = ({ cerrarSesion, setVista }) => {
                       <span className="badge" style={{ backgroundColor: info.color }}>{info.texto}</span>
                     </div>
                     <div className="card-body">
-                      <p className="mb-1"><strong> Dispositivo:</strong> {s.Movil_Nombre}</p>
-                      <p className="mb-1"><strong> Descripción:</strong> {s.Descripcion}</p>
-                      <p className="mb-1"><strong> Especificación:</strong> {s.Movil_Especificacion}</p>
-                      <p className="mb-1"><strong> Costo Actual:</strong> ${s.Precio}</p>
-                      <p className="mb-3"><strong> Fecha de Entrada:</strong> {s.Fecha ? String(s.Fecha).split('T')[0] : '—'}</p>
+                      <p className="mb-1"><strong>Dispositivo:</strong> {s.Movil_Nombre}</p>
+                      <p className="mb-1"><strong>Descripción:</strong> {s.Descripcion}</p>
+                      <p className="mb-1"><strong>Especificación:</strong> {s.Movil_Especificacion}</p>
+                      <p className="mb-1"><strong>Costo Actual:</strong> ${s.Precio}</p>
+                      <p className="mb-3"><strong>Fecha de Entrada:</strong> {s.Fecha ? String(s.Fecha).split('T')[0] : '—'}</p>
 
                       {Number(s.Etapa) !== -1 && (
                         <div className="mb-3">
@@ -180,11 +180,11 @@ const MiServicio = ({ cerrarSesion, setVista }) => {
                               aria-valuenow={info.porcentaje} aria-valuemin="0" aria-valuemax="100" />
                           </div>
                           <div className="d-flex justify-content-between mt-2" style={{ fontSize: '0.65rem', color: '#6c757d' }}>
-                            <span> Recibido</span>
-                            <span> Diagnóstico</span>
-                            <span> Reparación</span>
-                            <span> Calidad</span>
-                            <span> Listo</span>
+                            <span>Recibido</span>
+                            <span>Diagnóstico</span>
+                            <span>Reparación</span>
+                            <span>Calidad</span>
+                            <span>Listo</span>
                           </div>
                         </div>
                       )}
@@ -196,13 +196,13 @@ const MiServicio = ({ cerrarSesion, setVista }) => {
                             localStorage.setItem('chatInfo', JSON.stringify({ ID_Servicio: s.ID_Servicio }));
                             setVista('chatVista');
                           }}>
-                           Chat con Asesor
+                            Chat con Asesor
                         </button>
                         {cancelable && (
                           <button className="btn btn-sm text-white fw-bold"
                             style={{ backgroundColor: '#DB0000' }}
                             onClick={() => cancelarServicio(s.ID_Servicio)}>
-                             Cancelar Solicitud
+                            Cancelar Solicitud
                           </button>
                         )}
                       </div>

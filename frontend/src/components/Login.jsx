@@ -39,7 +39,7 @@ const Login = ({ setLogueado, setModoRegistro }) => {
 
   return (
     <div className="vh-100 d-flex justify-content-center align-items-center"
-      style={{ background: 'linear-gradient(135deg, #121212 0%, #3d0000 50%, #121212 100%)' }}>
+      style={{ backgroundColor: '#f4f6f8' }}>
 
       {toast.visible && (
         <div className={`toast show position-fixed top-0 end-0 m-3 text-white ${toast.ok ? 'bg-success' : 'bg-danger'}`}
@@ -48,11 +48,12 @@ const Login = ({ setLogueado, setModoRegistro }) => {
         </div>
       )}
 
-      <div className="card p-4 shadow-lg border-0" style={{ width: '380px', borderRadius: '18px' }}>
+      <div className="card p-4 bg-white"
+        style={{ width: '390px', borderRadius: '14px', border: '1px solid rgba(0,0,0,0.13)', boxShadow: '0 4px 24px rgba(0,0,0,0.08)' }}>
         <div className="text-center mb-4">
-          <div style={{ fontSize: '3rem' }}>📱</div>
-          <h3 className="fw-bold mt-2 mb-0" style={{ color: '#DB0000' }}>Celuaccel</h3>
-          <p className="text-muted small mb-0">Sistema de Gestión de Reparaciones</p>
+          <div className="fw-bold" style={{ color: '#DB0000', fontSize: '1.6rem', letterSpacing: '2px' }}>CELUACCEL</div>
+          <p className="text-muted small mb-0 mt-1">Sistema de Gestión de Reparaciones</p>
+          <hr className="mt-3 mb-0" style={{ borderColor: 'rgba(0,0,0,0.08)' }} />
         </div>
 
         <label className="form-label fw-bold small text-muted mb-1">Número de Documento</label>
@@ -68,7 +69,7 @@ const Login = ({ setLogueado, setModoRegistro }) => {
         <input
           className="form-control mb-4"
           type="password"
-          placeholder="Tu contraseña..."
+          placeholder="Ingresa tu contraseña"
           value={loginPass}
           onChange={e => setLoginPass(e.target.value)}
           onKeyDown={handleKeyDown}
@@ -76,14 +77,17 @@ const Login = ({ setLogueado, setModoRegistro }) => {
 
         <button
           className="btn w-100 mb-2 text-white fw-bold py-2"
-          style={{ backgroundColor: '#DB0000' }}
+          style={{ backgroundColor: '#DB0000', borderRadius: '8px' }}
           onClick={acceder}
           disabled={cargando}>
-          {cargando ? <span className="spinner-border spinner-border-sm me-2" role="status" /> : null}
-          {cargando ? 'Verificando...' : 'Ingresar al Sistema'}
+          {cargando
+            ? <><span className="spinner-border spinner-border-sm me-2" role="status" />Verificando...</>
+            : 'Ingresar al Sistema'}
         </button>
 
-        <button className="btn w-100 fw-bold" style={{ color: '#121212', borderColor: '#121212' }}
+        <button
+          className="btn w-100 fw-bold"
+          style={{ color: '#121212', borderColor: '#c0c0c0', backgroundColor: 'transparent' }}
           onClick={() => setModoRegistro(true)}>
           Crear cuenta nueva
         </button>

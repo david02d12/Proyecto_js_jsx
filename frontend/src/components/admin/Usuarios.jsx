@@ -29,9 +29,7 @@ const Usuarios = ({ cerrarSesion, setVista }) => {
     setTimeout(() => setToast({ visible: false, msg: '', ok: true }), 3500);
   };
 
-  useEffect(() => {
-    listar();
-  }, []);
+  useEffect(() => { listar(); }, []);
 
   const listar = async () => {
     try {
@@ -44,13 +42,10 @@ const Usuarios = ({ cerrarSesion, setVista }) => {
 
   const guardar = async () => {
     try {
-      // Si estamos editando usamos 'actualizar' (PUT), si es nuevo usamos 'registro' (POST)
       const url = enEdicion ? 'usuarios/actualizar' : 'registro';
       const metodo = enEdicion ? 'put' : 'post';
-      
       await axios[metodo](`http://localhost:3000/api/${url}`, form, config());
-      
-      mostrarToast(enEdicion ? 'Usuario actualizado correctamente. ✔' : 'Usuario registrado en el sistema. ✔');
+      mostrarToast(enEdicion ? 'Usuario actualizado correctamente.' : 'Usuario registrado en el sistema.');
       listar();
       limpiar();
     } catch (err) {
@@ -71,25 +66,12 @@ const Usuarios = ({ cerrarSesion, setVista }) => {
   };
 
   const limpiar = () => {
-    setForm({
-      ID_Usuario: '',
-      Codigo_Documento: '',
-      Nombre: '',
-      Fecha_Nacimiento: '',
-      Direccion: '',
-      Telefono: '',
-      Correo: '',
-      Clave: '',
-      Codigo_Rol: 2
-    });
+    setForm({ ID_Usuario: '', Codigo_Documento: '', Nombre: '', Fecha_Nacimiento: '', Direccion: '', Telefono: '', Correo: '', Clave: '', Codigo_Rol: 2 });
     setEnEdicion(false);
   };
 
   const prepararEdicion = (u) => {
-    setForm({
-      ...u,
-      Clave: '' // Dejamos la clave vacía por seguridad al editar
-    });
+    setForm({ ...u, Clave: '' });
     setEnEdicion(true);
   };
 
@@ -102,7 +84,6 @@ const Usuarios = ({ cerrarSesion, setVista }) => {
 
   return (
     <div>
-      {/* NAVBAR */}
       {toast.visible && (
         <div className={`toast show position-fixed top-0 end-0 m-3 text-white ${toast.ok ? 'bg-success' : 'bg-danger'}`}
           style={{ zIndex: 9999, minWidth: '280px' }} role="alert">
@@ -116,15 +97,16 @@ const Usuarios = ({ cerrarSesion, setVista }) => {
         <div className="mb-4 p-4 rounded-3 text-white d-flex justify-content-between align-items-center flex-wrap gap-2"
           style={{ background: 'linear-gradient(135deg, #DB0000, #8B0000)' }}>
           <div>
-            <h4 className="fw-bold mb-1">👥 Directorio de Usuarios</h4>
+            <h4 className="fw-bold mb-1">Directorio de Usuarios</h4>
             <p className="mb-0 opacity-75">Gestiona cuentas, roles y datos personales de cada persona en el sistema</p>
           </div>
           <span className="badge bg-light text-danger fw-bold fs-6">{usuarios.length} usuarios</span>
         </div>
+
         <div className="row">
           {/* FORMULARIO */}
           <div className="col-md-4 mb-4">
-            <div className="card p-3 shadow-sm border-0">
+            <div className="card p-3 shadow-sm">
               <h5 className="fw-bold">{enEdicion ? "Editar Perfil" : "Registrar Usuario"}</h5>
               <hr />
               <div className="row">
@@ -141,7 +123,7 @@ const Usuarios = ({ cerrarSesion, setVista }) => {
               <input className="form-control mb-2" placeholder="Teléfono" value={form.Telefono} onChange={e => setForm({...form, Telefono: e.target.value})} />
               <input className="form-control mb-2" type="email" placeholder="Correo Electrónico" value={form.Correo} onChange={e => setForm({...form, Correo: e.target.value})} />
               <input className="form-control mb-2" type="password" placeholder={enEdicion ? "Nueva Clave (opcional)" : "Contraseña"} value={form.Clave} onChange={e => setForm({...form, Clave: e.target.value})} />
-              
+
               <select className="form-select mb-3" value={form.Codigo_Rol} onChange={e => setForm({...form, Codigo_Rol: Number(e.target.value)})}>
                 <option value={1}>Técnico</option>
                 <option value={2}>Cliente</option>
@@ -157,12 +139,12 @@ const Usuarios = ({ cerrarSesion, setVista }) => {
 
           {/* TABLA DE USUARIOS */}
           <div className="col-md-8">
-            <div className="card border-0 shadow-sm overflow-hidden">
+            <div className="card shadow-sm overflow-hidden">
               <div className="p-3 border-bottom">
                 <input
                   type="text"
                   className="form-control"
-                  placeholder=" Buscar por ID, nombre, correo o rol..."
+                  placeholder="Buscar por ID, nombre, correo o rol..."
                   value={busqueda}
                   onChange={e => setBusqueda(e.target.value)}
                 />
@@ -179,7 +161,7 @@ const Usuarios = ({ cerrarSesion, setVista }) => {
                     </tr>
                   </thead>
                   <tbody className="bg-white">
-                     {usuarios.filter(u =>
+                    {usuarios.filter(u =>
                       String(u.ID_Usuario).toLowerCase().includes(busqueda.toLowerCase()) ||
                       String(u.Nombre || '').toLowerCase().includes(busqueda.toLowerCase()) ||
                       String(u.Correo || '').toLowerCase().includes(busqueda.toLowerCase()) ||
@@ -211,13 +193,13 @@ const Usuarios = ({ cerrarSesion, setVista }) => {
         </div>
       </div>
 
-<div className="offcanvas offcanvas-start text-white" tabIndex="-1" id="menuGlobal" style={{ backgroundColor: '#121212' }}>
-  <div className="offcanvas-header">
-    <h5 className="offcanvas-title fw-bold">Menú de Navegación</h5>
-    <button type="button" className="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
-  </div>
-  <Sidebar setVista={setVista} />
-    </div>
+      <div className="offcanvas offcanvas-start text-white" tabIndex="-1" id="menuGlobal" style={{ backgroundColor: '#121212' }}>
+        <div className="offcanvas-header">
+          <h5 className="offcanvas-title fw-bold">Menú de Navegación</h5>
+          <button type="button" className="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <Sidebar setVista={setVista} />
+      </div>
     </div>
   );
 };
