@@ -1,111 +1,89 @@
-:root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+/* Importación de tipografía Premium tipo Startup (Google Fonts) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
-
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
+/* Regla maestra: Forzar la fuente en todos los elementos de Bootstrap */
+body, h1, h2, h3, h4, h5, h6, input, button, select, p, span, table, a, div {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
 }
 
 body {
-  margin: 0;
+  background-color: #f4f6f8; /* Un gris sumamente claro para que las tarjetas blancas resalten */
 }
 
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
+/* =================================================================
+   EFECTO GLASSMORFISMO (CRISTAL) PARA LA CABECERA
+================================================================= */
+.navbar {
+  background-color: rgba(219, 0, 0, 0.92) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 20px rgba(219, 0, 0, 0.25) !important;
+  transition: all 0.3s ease;
 }
 
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
+/* =================================================================
+   MENÚ LATERAL (OFFCANVAS) PREMIUM
+================================================================= */
+.offcanvas {
+  background-color: rgba(18, 18, 18, 0.95) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
-  margin: 0;
+.offcanvas .btn {
+  transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  border: 1px solid transparent;
 }
 
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
+.offcanvas .btn:hover {
+  transform: translateX(6px); /* Pequeño empuje a la derecha */
+  background-color: #e51a1a !important; /* Rojo un poco más vivo */
+  box-shadow: 0 4px 12px rgba(219, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+/* =================================================================
+   TARJETAS E INTERFACES FLOTANTES
+================================================================= */
+.card {
+  border-radius: 12px !important;
+  border: 1px solid rgba(0, 0, 0, 0.04) !important;
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+}
+
+.card:hover {
+  transform: translateY(-4px); /* Se levanta suavemente */
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* =================================================================
+   TABLAS MÁS SUBTILES Y DINÁMICAS
+================================================================= */
+.table {
+  vertical-align: middle;
+}
+
+.table-hover tbody tr {
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(219, 0, 0, 0.04) !important; /* Destello rojizo */
+  cursor: pointer;
+}
+
+/* =================================================================
+   ANIMACIONES MICRO-INTERACTIVAS PARA LOS BOTONES GLOBALES
+================================================================= */
+.btn {
+  border-radius: 8px !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+.btn:active {
+  transform: scale(0.96) !important; /* Efecto de rebote al hacer click */
 }

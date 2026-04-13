@@ -4,12 +4,15 @@ import Sidebar from '../Sidebar';
 import axios from 'axios';
 
 const Comentarios = ({ cerrarSesion, setVista }) => {
+  const miUsuario = localStorage.getItem('user') || '';
+  const miRol = Number(localStorage.getItem('role')) || 2;
+
   const [comentarios, setComentarios] = useState([]);
   const [busqueda, setBusqueda] = useState('');
   const [enEdicion, setEnEdicion] = useState(false);
   const [form, setForm] = useState({
     Codigo_Comentario: '',
-    ID_Usuario: '',
+    ID_Usuario: miUsuario,
     Comentario: '',
     Fecha_Comentario: ''
   });
@@ -25,7 +28,11 @@ const Comentarios = ({ cerrarSesion, setVista }) => {
   const listar = async () => {
     try {
       const res = await axios.get('http://localhost:3000/api/comentarios/listar', config());
-      setComentarios(res.data);
+      if (miRol === 2) {
+        setComentarios(res.data.filter(c => c.ID_Usuario === miUsuario));
+      } else {
+        setComentarios(res.data);
+      }
     } catch (err) {
       console.error(err);
     }
@@ -36,8 +43,6 @@ const Comentarios = ({ cerrarSesion, setVista }) => {
       const url = enEdicion ? 'actualizar' : 'agregar';
       const metodo = enEdicion ? 'put' : 'post';
       
-      // Si es agregar, el backend genera la fecha si va vacía, 
-      // pero enviamos el form completo para mantener la lógica.
       await axios[metodo](`http://localhost:3000/api/comentarios/${url}`, form, config());
       
       listar();
@@ -59,18 +64,16 @@ const Comentarios = ({ cerrarSesion, setVista }) => {
   };
 
   const limpiar = () => {
-    setForm({ Codigo_Comentario: '', ID_Usuario: '', Comentario: '', Fecha_Comentario: '' });
+    setForm({ Codigo_Comentario: '', ID_Usuario: miUsuario, Comentario: '', Fecha_Comentario: '' });
     setEnEdicion(false);
   };
 
   return (
     <div>
-      {/* NAVBAR */}
       <Navbar titulo="CELUACCEL — Gestión" cerrarSesion={cerrarSesion} />
 
       <div className="container mt-4">
         <div className="row">
-          {/* FORMULARIO */}
           <div className="col-md-4 mb-4">
             <div className="card p-3 shadow-sm border-0">
               <h5>{enEdicion ? "Editar Comentario" : "Nuevo Comentario"}</h5>
@@ -78,7 +81,7 @@ const Comentarios = ({ cerrarSesion, setVista }) => {
                 className="form-control mb-2" 
                 placeholder="ID Usuario" 
                 value={form.ID_Usuario} 
-                disabled={enEdicion}
+                disabled={enEdicion || miRol === 2}
                 onChange={e => setForm({...form, ID_Usuario: e.target.value})} 
               />
               <textarea 
@@ -103,7 +106,6 @@ const Comentarios = ({ cerrarSesion, setVista }) => {
             </div>
           </div>
 
-          {/* TABLA DE DATOS */}
           <div className="col-md-8">
             <div className="card border-0 shadow-sm overflow-hidden">
               <div className="p-3 border-bottom">
@@ -130,20 +132,26 @@ const Comentarios = ({ cerrarSesion, setVista }) => {
                       <td>{c.Comentario}</td>
                       <td>{new Date(c.Fecha_Comentario).toLocaleDateString()}</td>
                       <td>
-                        <button 
-                          className="btn btn-sm me-1 text-white" 
-                          style={{ backgroundColor: '#121212' }} 
-                          onClick={() => { setForm(c); setEnEdicion(true); }}
-                        >
-                          Editar
-                        </button>
-                        <button 
-                          className="btn btn-sm text-white" 
-                          style={{ backgroundColor: '#DB0000' }} 
-                          onClick={() => eliminar(c.Codigo_Comentario)}
-                        >
-                          Borrar
-                        </button>
+                        {(miRol === 3 || c.ID_Usuario === miUsuario) ? (
+                          <>
+                            <button 
+                              className="btn btn-sm me-1 text-white" 
+                              style={{ backgroundColor: '#121212' }} 
+                              onClick={() => { setForm(c); setEnEdicion(true); }}
+                            >
+                              Editar
+                            </button>
+                            <button 
+                              className="btn btn-sm text-white" 
+                              style={{ backgroundColor: '#DB0000' }} 
+                              onClick={() => eliminar(c.Codigo_Comentario)}
+                            >
+                              Borrar
+                            </button>
+                          </>
+                        ) : (
+                          <span className="badge bg-secondary">Sin permisos</span>
+                        )}
                       </td>
                     </tr>
                   ))}
@@ -154,13 +162,13 @@ const Comentarios = ({ cerrarSesion, setVista }) => {
         </div>
       </div>
 
-<div className="offcanvas offcanvas-start text-white" tabIndex="-1" id="menuGlobal" style={{ backgroundColor: '#121212' }}>
-  <div className="offcanvas-header">
-    <h5 className="offcanvas-title fw-bold">Menú de Navegación</h5>
-    <button type="button" className="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
-  </div>
-  <Sidebar setVista={setVista} />
-    </div>
+      <div className="offcanvas offcanvas-start text-white" tabIndex="-1" id="menuGlobal" style={{ backgroundColor: '#121212' }}>
+        <div className="offcanvas-header">
+          <h5 className="offcanvas-title fw-bold">Menú de Navegación</h5>
+          <button type="button" className="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <Sidebar setVista={setVista} />
+      </div>
     </div>
   );
 };

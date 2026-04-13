@@ -24,8 +24,8 @@ const Login = ({ setLogueado, setModoRegistro }) => {
   return (
     <div className="container vh-100 d-flex justify-content-center align-items-center">
       <div className="card p-4 shadow-sm border-0" style={{width: '320px', background: '#f8f9fa'}}>
-        <h3 className="text-center mb-4 fw-bold" style={{ color: '#DB0000' }}>Sistema Celuaccel</h3>
-        <h3 className="text-center mb-4 fw-bold" style={{ color: '#DB0000' }}>Iniciar Sesión</h3>
+        <h3 className="text-center mb-1 fw-bold" style={{ color: '#DB0000' }}>Celuaccel</h3>
+        <h5 className="text-center mb-4 pt-1 fw-bold text-muted">Iniciar Sesión</h5>
         <input className="form-control mb-2" placeholder="Documento" onChange={e => setLoginUser(e.target.value)} />
         <input className="form-control mb-3" type="password" placeholder="Contraseña" onChange={e => setLoginPass(e.target.value)} />
         <button className="btn w-100 mb-2 text-white fw-bold" style={{ backgroundColor: '#DB0000' }} onClick={acceder}>Entrar</button>
