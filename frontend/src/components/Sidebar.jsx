@@ -44,7 +44,6 @@ const Sidebar = ({ setVista }) => {
           <>
             <hr className="border-secondary" />
             <button className="btn text-white fw-bold text-start" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('usuarios')} data-bs-dismiss="offcanvas"> Gestión de Usuarios</button>
-            <button className="btn text-white fw-bold text-start" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('roles')} data-bs-dismiss="offcanvas"> Roles</button>
             <button className="btn text-white fw-bold text-start" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('tipo')} data-bs-dismiss="offcanvas"> Tipos de Documento</button>
           </>
         )}

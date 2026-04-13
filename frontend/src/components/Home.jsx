@@ -85,7 +85,6 @@ const Home = ({ cerrarSesion, setVista }) => {
         { label: 'Productos',            vista: 'productos'      },
         { label: 'Categorías',          vista: 'categorias'     },
         { label: 'Notificaciones',      vista: 'notificaciones' },
-        { label: 'Roles',               vista: 'roles'          },
         { label: 'Tipos de Documento',  vista: 'tipo'           },
       ];
 

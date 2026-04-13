@@ -165,7 +165,7 @@ const Usuarios = ({ cerrarSesion, setVista }) => {
                       String(u.ID_Usuario).toLowerCase().includes(busqueda.toLowerCase()) ||
                       String(u.Nombre || '').toLowerCase().includes(busqueda.toLowerCase()) ||
                       String(u.Correo || '').toLowerCase().includes(busqueda.toLowerCase()) ||
-                      String(u.Codigo_Rol || '').includes(busqueda)
+                      nombreRol(u.Codigo_Rol).toLowerCase().includes(busqueda.toLowerCase())
                     ).map(u => (
                       <tr key={u.ID_Usuario}>
                         <td className="fw-bold">{u.ID_Usuario}</td>
