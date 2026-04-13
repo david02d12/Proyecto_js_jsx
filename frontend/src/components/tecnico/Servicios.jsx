@@ -84,6 +84,21 @@ const Servicios = ({ cerrarSesion, setVista }) => {
     setIdServicioSel(null);
   };
 
+  // Actualizacion rápida de etapa directamente desde la tabla
+  const actualizarEtapa = async (servicio, nuevaEtapa) => {
+    try {
+      await axios.put('http://localhost:3000/api/servicios/actualizar', {
+        ...servicio,
+        Etapa: nuevaEtapa,
+        Fecha: servicio.Fecha ? servicio.Fecha.split('T')[0] : ''
+      }, config());
+      mostrarToast(`Etapa actualizada a: ${etapaLabel(nuevaEtapa)}`);
+      listar();
+    } catch (err) {
+      mostrarToast('Error al actualizar la etapa.', false);
+    }
+  };
+
   const enviarNotificacion = async () => {
     if (!mensajeNotif.trim() || !modalNotif) return;
     setEnviandoNotif(true);
@@ -182,7 +197,24 @@ const Servicios = ({ cerrarSesion, setVista }) => {
                         </button>
                       </td>
                       <td className="text-success fw-bold">${s.Precio}</td>
-                      <td><small>{etapaLabel(s.Etapa)}</small></td>
+                      <td style={{ minWidth: '150px' }}>
+                        {/* Selector de etapa directo — actualiza sin abrir formulario */}
+                        <select
+                          className="form-select form-select-sm"
+                          value={String(s.Etapa)}
+                          style={{
+                            borderColor: String(s.Etapa) === '-1' ? '#dc3545' :
+                                         String(s.Etapa) === '100' ? '#198754' : '#0d6efd',
+                            fontWeight: '600',
+                            fontSize: '0.78rem'
+                          }}
+                          onChange={e => actualizarEtapa(s, e.target.value)}
+                        >
+                          {ETAPAS.map(e => (
+                            <option key={e.valor} value={e.valor}>{e.label}</option>
+                          ))}
+                        </select>
+                      </td>
                       <td>
                         <div className="d-flex gap-1 flex-wrap">
                           {/* Abrir chat con el cliente de este servicio */}
