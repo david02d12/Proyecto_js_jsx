@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Navbar from '../Navbar';
 import Sidebar from '../Sidebar';
 import axios from 'axios';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 const Preguntas = ({ cerrarSesion, setVista }) => {
   const [preguntas, setPreguntas] = useState([]);
@@ -17,25 +19,38 @@ const Preguntas = ({ cerrarSesion, setVista }) => {
     try {
       const res = await axios.get('http://localhost:3000/api/preguntas/listar', config());
       setPreguntas(res.data);
-    } catch (err) { console.error('Error al listar preguntas:', err); }
-  };
-
-  const guardar = async () => {
-    const url = enEdicion ? 'actualizar' : 'agregar';
-    const metodo = enEdicion ? 'put' : 'post';
-    await axios[metodo](`http://localhost:3000/api/preguntas/${url}`, form, config());
-    listar();
-    limpiar();
-  };
-
-  const eliminar = async (id) => {
-    if (window.confirm("¿Eliminar pregunta?")) {
-      await axios.delete(`http://localhost:3000/api/preguntas/eliminar/${id}`, config());
-      listar();
+    } catch (err) {
+      console.error('Error al listar preguntas:', err);
     }
   };
 
-  const limpiar = () => { setForm({ ID_Consulta: '', ID_Usuario: '', Codigo_Producto: '', Pregunta: '', Fecha: '' }); setEnEdicion(false); };
+  const guardar = async () => {
+    try {
+      const url = enEdicion ? 'actualizar' : 'agregar';
+      const metodo = enEdicion ? 'put' : 'post';
+      await axios[metodo](`http://localhost:3000/api/preguntas/${url}`, form, config());
+      listar();
+      limpiar();
+    } catch (err) {
+      alert('Error al procesar la pregunta');
+    }
+  };
+
+  const eliminar = async (id) => {
+    if (window.confirm('¿Eliminar pregunta?')) {
+      try {
+        await axios.delete(`http://localhost:3000/api/preguntas/eliminar/${id}`, config());
+        listar();
+      } catch (err) {
+        alert('Error al eliminar pregunta');
+      }
+    }
+  };
+
+  const limpiar = () => {
+    setForm({ ID_Consulta: '', ID_Usuario: '', Codigo_Producto: '', Pregunta: '', Fecha: '' });
+    setEnEdicion(false);
+  };
 
   return (
     <div>
@@ -43,18 +58,35 @@ const Preguntas = ({ cerrarSesion, setVista }) => {
 
       <div className="container mt-4">
         <div className="row">
+          {/* FORMULARIO */}
           <div className="col-md-4 mb-4">
             <div className="card p-3 shadow-sm border-0">
-              <h5>{enEdicion ? "Editar Consulta" : "Nueva Consulta"}</h5>
-              <input className="form-control mb-2" type="number" placeholder="ID Consulta" value={form.ID_Consulta} disabled={enEdicion} onChange={e => setForm({...form, ID_Consulta: e.target.value})} />
-              <input className="form-control mb-2" placeholder="ID Usuario" value={form.ID_Usuario} onChange={e => setForm({...form, ID_Usuario: e.target.value})} />
-              <input className="form-control mb-2" placeholder="Cód. Producto" value={form.Codigo_Producto} onChange={e => setForm({...form, Codigo_Producto: e.target.value})} />
-              <textarea className="form-control mb-2" placeholder="Pregunta" value={form.Pregunta} onChange={e => setForm({...form, Pregunta: e.target.value})} />
-              <input className="form-control mb-2" type="date" value={form.Fecha} onChange={e => setForm({...form, Fecha: e.target.value})} />
-              <button className="btn w-100 text-white fw-bold" style={{ backgroundColor: '#DB0000' }} onClick={guardar}>{enEdicion ? "Actualizar" : "Guardar"}</button>
-              {enEdicion && <button className="btn btn-secondary w-100 mt-2" onClick={limpiar}>Cancelar</button>}
+              <h5>{enEdicion ? 'Editar Consulta' : 'Nueva Consulta'}</h5>
+              <input className="form-control mb-2" type="number" placeholder="ID Consulta"
+                value={form.ID_Consulta} disabled={enEdicion}
+                onChange={e => setForm({...form, ID_Consulta: e.target.value})} />
+              <input className="form-control mb-2" placeholder="ID Usuario"
+                value={form.ID_Usuario}
+                onChange={e => setForm({...form, ID_Usuario: e.target.value})} />
+              <input className="form-control mb-2" placeholder="Cód. Producto"
+                value={form.Codigo_Producto}
+                onChange={e => setForm({...form, Codigo_Producto: e.target.value})} />
+              <textarea className="form-control mb-2" placeholder="Pregunta"
+                value={form.Pregunta}
+                onChange={e => setForm({...form, Pregunta: e.target.value})} />
+              <input className="form-control mb-2" type="date"
+                value={form.Fecha}
+                onChange={e => setForm({...form, Fecha: e.target.value})} />
+              <button className="btn w-100 text-white fw-bold" style={{ backgroundColor: '#DB0000' }} onClick={guardar}>
+                {enEdicion ? 'Actualizar' : 'Guardar'}
+              </button>
+              {enEdicion && (
+                <button className="btn btn-secondary w-100 mt-2" onClick={limpiar}>Cancelar</button>
+              )}
             </div>
           </div>
+
+          {/* TABLA */}
           <div className="col-md-8">
             <div className="card border-0 shadow-sm overflow-hidden">
               <div className="p-3 border-bottom">
@@ -63,7 +95,9 @@ const Preguntas = ({ cerrarSesion, setVista }) => {
                   value={busqueda} onChange={e => setBusqueda(e.target.value)} />
               </div>
               <table className="table table-hover mb-0 bg-white">
-                <thead className="table-dark"><tr><th>ID</th><th>Usuario</th><th>Prod</th><th>Pregunta</th><th>Acciones</th></tr></thead>
+                <thead className="table-dark">
+                  <tr><th>ID</th><th>Usuario</th><th>Prod</th><th>Pregunta</th><th>Acciones</th></tr>
+                </thead>
                 <tbody>
                   {preguntas.filter(p =>
                     String(p.ID_Consulta).includes(busqueda) ||
@@ -77,8 +111,10 @@ const Preguntas = ({ cerrarSesion, setVista }) => {
                       <td>{p.Codigo_Producto}</td>
                       <td>{p.Pregunta}</td>
                       <td>
-                        <button className="btn btn-sm me-1 text-white" style={{ backgroundColor: '#121212' }} onClick={() => { setForm({...p, Fecha: p.Fecha ? p.Fecha.split('T')[0] : ''}); setEnEdicion(true); }}>Editar</button>
-                        <button className="btn btn-sm text-white" style={{ backgroundColor: '#DB0000' }} onClick={() => eliminar(p.ID_Consulta)}>Borrar</button>
+                        <button className="btn btn-sm me-1 text-white" style={{ backgroundColor: '#121212' }}
+                          onClick={() => { setForm({...p, Fecha: p.Fecha ? p.Fecha.split('T')[0] : ''}); setEnEdicion(true); }}>Editar</button>
+                        <button className="btn btn-sm text-white" style={{ backgroundColor: '#DB0000' }}
+                          onClick={() => eliminar(p.ID_Consulta)}>Borrar</button>
                       </td>
                     </tr>
                   ))}
@@ -89,14 +125,15 @@ const Preguntas = ({ cerrarSesion, setVista }) => {
         </div>
       </div>
 
-<div className="offcanvas offcanvas-start text-white" tabIndex="-1" id="menuGlobal" style={{ backgroundColor: '#121212' }}>
-  <div className="offcanvas-header">
-    <h5 className="offcanvas-title fw-bold">Menú de Navegación</h5>
-    <button type="button" className="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
-  </div>
-  <Sidebar setVista={setVista} />
-    </div>
+      <div className="offcanvas offcanvas-start text-white" tabIndex="-1" id="menuGlobal" style={{ backgroundColor: '#121212' }}>
+        <div className="offcanvas-header">
+          <h5 className="offcanvas-title fw-bold">Menú de Navegación</h5>
+          <button type="button" className="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <Sidebar setVista={setVista} />
+      </div>
     </div>
   );
 };
+
 export default Preguntas;

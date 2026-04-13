@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Navbar from '../Navbar';
 import Sidebar from '../Sidebar';
 import axios from 'axios';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 const Mensajes = ({ cerrarSesion, setVista }) => {
   const [mensajes, setMensajes] = useState([]);
@@ -37,42 +39,32 @@ const Mensajes = ({ cerrarSesion, setVista }) => {
     try {
       const url = enEdicion ? 'actualizar' : 'agregar';
       const metodo = enEdicion ? 'put' : 'post';
-      
       await axios[metodo](`http://localhost:3000/api/mensajes/${url}`, form, config());
-      
       listar();
       limpiar();
     } catch (err) {
-      alert("Error al procesar el mensaje");
+      alert('Error al procesar el mensaje');
     }
   };
 
   const eliminar = async (id) => {
-    if (window.confirm("¿Eliminar este mensaje?")) {
+    if (window.confirm('¿Eliminar este mensaje?')) {
       try {
         await axios.delete(`http://localhost:3000/api/mensajes/eliminar/${id}`, config());
         listar();
       } catch (err) {
-        alert("Error al eliminar el mensaje");
+        alert('Error al eliminar el mensaje');
       }
     }
   };
 
   const limpiar = () => {
-    setForm({ 
-      Codigo_Mensaje: '', 
-      Codigo_Chat: '', 
-      ID_Usuario: '', 
-      Fecha_Mensaje: '', 
-      Mensaje: '', 
-      Estado: 0 
-    });
+    setForm({ Codigo_Mensaje: '', Codigo_Chat: '', ID_Usuario: '', Fecha_Mensaje: '', Mensaje: '', Estado: 0 });
     setEnEdicion(false);
   };
 
   return (
     <div>
-      {/* NAVBAR */}
       <Navbar titulo="CELUACCEL — Bandeja de Mensajes" cerrarSesion={cerrarSesion} />
 
       <div className="container mt-4">
@@ -80,44 +72,43 @@ const Mensajes = ({ cerrarSesion, setVista }) => {
           {/* FORMULARIO */}
           <div className="col-md-4 mb-4">
             <div className="card p-3 shadow-sm border-0">
-              <h5>{enEdicion ? "Editar Mensaje" : "Nuevo Mensaje"}</h5>
-              <input 
-                className="form-control mb-2" 
+              <h5>{enEdicion ? 'Editar Mensaje' : 'Nuevo Mensaje'}</h5>
+              <input
+                className="form-control mb-2"
                 type="number"
-                placeholder="Código Chat" 
-                value={form.Codigo_Chat} 
-                onChange={e => setForm({...form, Codigo_Chat: e.target.value})} 
+                placeholder="Código Chat"
+                value={form.Codigo_Chat}
+                onChange={e => setForm({...form, Codigo_Chat: e.target.value})}
               />
-              <input 
-                className="form-control mb-2" 
-                placeholder="ID Usuario" 
-                value={form.ID_Usuario} 
-                onChange={e => setForm({...form, ID_Usuario: e.target.value})} 
+              <input
+                className="form-control mb-2"
+                placeholder="ID Usuario"
+                value={form.ID_Usuario}
+                onChange={e => setForm({...form, ID_Usuario: e.target.value})}
               />
-              <textarea 
-                className="form-control mb-2" 
-                placeholder="Escribe el mensaje..." 
-                value={form.Mensaje} 
+              <textarea
+                className="form-control mb-2"
+                placeholder="Escribe el mensaje..."
+                value={form.Mensaje}
                 onChange={e => setForm({...form, Mensaje: e.target.value})}
                 rows="3"
               />
-              <input 
-                className="form-control mb-2" 
-                type="date" 
-                value={form.Fecha_Mensaje} 
-                onChange={e => setForm({...form, Fecha_Mensaje: e.target.value})} 
+              <input
+                className="form-control mb-2"
+                type="date"
+                value={form.Fecha_Mensaje}
+                onChange={e => setForm({...form, Fecha_Mensaje: e.target.value})}
               />
-              <select 
-                className="form-select mb-2" 
-                value={form.Estado} 
+              <select
+                className="form-select mb-2"
+                value={form.Estado}
                 onChange={e => setForm({...form, Estado: e.target.value})}
               >
                 <option value="0">No leído (0)</option>
                 <option value="1">Leído (1)</option>
               </select>
-              
               <button className="btn w-100 text-white fw-bold" style={{ backgroundColor: '#DB0000' }} onClick={guardar}>
-                {enEdicion ? "Actualizar" : "Enviar"}
+                {enEdicion ? 'Actualizar' : 'Enviar'}
               </button>
               {enEdicion && (
                 <button className="btn btn-secondary w-100 mt-2" onClick={limpiar}>Cancelar</button>
@@ -125,7 +116,7 @@ const Mensajes = ({ cerrarSesion, setVista }) => {
             </div>
           </div>
 
-          {/* TABLA DE DATOS */}
+          {/* TABLA */}
           <div className="col-md-8">
             <div className="card border-0 shadow-sm overflow-hidden">
               <div className="p-3 border-bottom">
@@ -159,18 +150,12 @@ const Mensajes = ({ cerrarSesion, setVista }) => {
                         </span>
                       </td>
                       <td>
-                        <button 
-                          className="btn btn-sm me-1 text-white" 
-                          style={{ backgroundColor: '#121212' }} 
-                          onClick={() => { setForm(m); setEnEdicion(true); }}
-                        >
+                        <button className="btn btn-sm me-1 text-white" style={{ backgroundColor: '#121212' }}
+                          onClick={() => { setForm(m); setEnEdicion(true); }}>
                           Editar
                         </button>
-                        <button 
-                          className="btn btn-sm text-white" 
-                          style={{ backgroundColor: '#DB0000' }} 
-                          onClick={() => eliminar(m.Codigo_Mensaje)}
-                        >
+                        <button className="btn btn-sm text-white" style={{ backgroundColor: '#DB0000' }}
+                          onClick={() => eliminar(m.Codigo_Mensaje)}>
                           Borrar
                         </button>
                       </td>
@@ -183,13 +168,13 @@ const Mensajes = ({ cerrarSesion, setVista }) => {
         </div>
       </div>
 
-<div className="offcanvas offcanvas-start text-white" tabIndex="-1" id="menuGlobal" style={{ backgroundColor: '#121212' }}>
-  <div className="offcanvas-header">
-    <h5 className="offcanvas-title fw-bold">Menú de Navegación</h5>
-    <button type="button" className="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
-  </div>
-  <Sidebar setVista={setVista} />
-    </div>
+      <div className="offcanvas offcanvas-start text-white" tabIndex="-1" id="menuGlobal" style={{ backgroundColor: '#121212' }}>
+        <div className="offcanvas-header">
+          <h5 className="offcanvas-title fw-bold">Menú de Navegación</h5>
+          <button type="button" className="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <Sidebar setVista={setVista} />
+      </div>
     </div>
   );
 };

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Navbar from '../Navbar';
 import Sidebar from '../Sidebar';
 import axios from 'axios';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 const Chats = ({ cerrarSesion, setVista }) => {
   const [chats, setChats] = useState([]);
@@ -34,24 +36,21 @@ const Chats = ({ cerrarSesion, setVista }) => {
     try {
       const url = enEdicion ? 'actualizar' : 'agregar';
       const metodo = enEdicion ? 'put' : 'post';
-      
-      // En el backend, 'agregar' no requiere Codigo_Chat, pero 'actualizar' sí.
       await axios[metodo](`http://localhost:3000/api/chats/${url}`, form, config());
-      
       listar();
       limpiar();
     } catch (err) {
-      alert("Error al procesar el chat");
+      alert('Error al procesar el chat');
     }
   };
 
   const eliminar = async (id) => {
-    if (window.confirm("¿Eliminar chat?")) {
+    if (window.confirm('¿Eliminar chat?')) {
       try {
         await axios.delete(`http://localhost:3000/api/chats/eliminar/${id}`, config());
         listar();
       } catch (err) {
-        alert("Error al eliminar chat");
+        alert('Error al eliminar chat');
       }
     }
   };
@@ -63,7 +62,6 @@ const Chats = ({ cerrarSesion, setVista }) => {
 
   return (
     <div>
-      {/* NAVBAR */}
       <Navbar titulo="CELUACCEL — Administración de Canales" cerrarSesion={cerrarSesion} />
 
       <div className="container mt-4">
@@ -71,29 +69,29 @@ const Chats = ({ cerrarSesion, setVista }) => {
           {/* FORMULARIO */}
           <div className="col-md-4 mb-4">
             <div className="card p-3 shadow-sm border-0">
-              <h5>{enEdicion ? "Editar Chat" : "Nuevo Chat"}</h5>
-              <input 
-                className="form-control mb-2" 
-                placeholder="Código Chat" 
-                value={form.Codigo_Chat} 
-                disabled 
-                readOnly 
+              <h5>{enEdicion ? 'Editar Chat' : 'Nuevo Chat'}</h5>
+              <input
+                className="form-control mb-2"
+                placeholder="Código Chat"
+                value={form.Codigo_Chat}
+                disabled
+                readOnly
               />
-              <input 
-                className="form-control mb-2" 
-                placeholder="ID Usuario (Email/Username)" 
-                value={form.ID_Usuario} 
-                onChange={e => setForm({...form, ID_Usuario: e.target.value})} 
+              <input
+                className="form-control mb-2"
+                placeholder="ID Usuario (Email/Username)"
+                value={form.ID_Usuario}
+                onChange={e => setForm({...form, ID_Usuario: e.target.value})}
               />
-              <input 
-                className="form-control mb-2" 
-                type="number" 
-                placeholder="ID Servicio" 
-                value={form.ID_Servicio} 
-                onChange={e => setForm({...form, ID_Servicio: e.target.value})} 
+              <input
+                className="form-control mb-2"
+                type="number"
+                placeholder="ID Servicio"
+                value={form.ID_Servicio}
+                onChange={e => setForm({...form, ID_Servicio: e.target.value})}
               />
               <button className="btn w-100 text-white fw-bold" style={{ backgroundColor: '#DB0000' }} onClick={guardar}>
-                {enEdicion ? "Actualizar" : "Guardar"}
+                {enEdicion ? 'Actualizar' : 'Guardar'}
               </button>
               {enEdicion && (
                 <button className="btn btn-secondary w-100 mt-2" onClick={limpiar}>Cancelar</button>
@@ -101,7 +99,7 @@ const Chats = ({ cerrarSesion, setVista }) => {
             </div>
           </div>
 
-          {/* TABLA DE DATOS */}
+          {/* TABLA */}
           <div className="col-md-8">
             <div className="card border-0 shadow-sm overflow-hidden">
               <div className="p-3 border-bottom">
@@ -129,18 +127,12 @@ const Chats = ({ cerrarSesion, setVista }) => {
                       <td>{c.ID_Usuario}</td>
                       <td>{c.ID_Servicio}</td>
                       <td>
-                        <button 
-                          className="btn btn-sm me-1 text-white" 
-                          style={{ backgroundColor: '#121212' }} 
-                          onClick={() => { setForm(c); setEnEdicion(true); }}
-                        >
+                        <button className="btn btn-sm me-1 text-white" style={{ backgroundColor: '#121212' }}
+                          onClick={() => { setForm(c); setEnEdicion(true); }}>
                           Editar
                         </button>
-                        <button 
-                          className="btn btn-sm text-white" 
-                          style={{ backgroundColor: '#DB0000' }} 
-                          onClick={() => eliminar(c.Codigo_Chat)}
-                        >
+                        <button className="btn btn-sm text-white" style={{ backgroundColor: '#DB0000' }}
+                          onClick={() => eliminar(c.Codigo_Chat)}>
                           Borrar
                         </button>
                       </td>
@@ -153,13 +145,13 @@ const Chats = ({ cerrarSesion, setVista }) => {
         </div>
       </div>
 
-<div className="offcanvas offcanvas-start text-white" tabIndex="-1" id="menuGlobal" style={{ backgroundColor: '#121212' }}>
-  <div className="offcanvas-header">
-    <h5 className="offcanvas-title fw-bold">Menú de Navegación</h5>
-    <button type="button" className="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
-  </div>
-  <Sidebar setVista={setVista} />
-    </div>
+      <div className="offcanvas offcanvas-start text-white" tabIndex="-1" id="menuGlobal" style={{ backgroundColor: '#121212' }}>
+        <div className="offcanvas-header">
+          <h5 className="offcanvas-title fw-bold">Menú de Navegación</h5>
+          <button type="button" className="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <Sidebar setVista={setVista} />
+      </div>
     </div>
   );
 };

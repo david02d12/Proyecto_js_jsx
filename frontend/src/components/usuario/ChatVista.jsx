@@ -127,61 +127,72 @@ const ChatVista = ({ cerrarSesion, setVista }) => {
       {/* CUERPO DEL CHAT */}
       <div className="d-flex flex-grow-1" style={{ overflow: 'hidden' }}>
 
-        {/* PANEL IZQUIERDO — LISTA DE CHATS (SOLO PARA TÉCNICOS Y ADMIN) */}
-        {role !== 2 && (
-          <div className="d-flex flex-column border-end" style={{ width: '300px', minWidth: '260px', backgroundColor: '#f8f9fa' }}>
-            <div className="p-3 border-bottom" style={{ backgroundColor: '#121212' }}>
-              <p className="text-white fw-bold mb-2 small">Conversaciones Abiertas</p>
-              <input
-                type="text"
-                className="form-control form-control-sm"
-                placeholder=" Buscar chat (ID o Usuario)..."
-                value={busquedaChat}
-                onChange={e => setBusquedaChat(e.target.value)}
-              />
-            </div>
-            <div style={{ overflowY: 'auto', flexGrow: 1 }}>
-              {chatsFiltrados.length === 0 ? (
-                <p className="text-muted text-center small p-3">No hay chats disponibles.</p>
-              ) : (
-                chatsFiltrados.map(c => (
-                  <div
-                    key={c.Codigo_Chat}
-                    className="p-3 border-bottom"
-                    style={{
-                      cursor: 'pointer',
-                      backgroundColor: chatSel?.Codigo_Chat === c.Codigo_Chat ? '#DB0000' : 'transparent',
-                      color: chatSel?.Codigo_Chat === c.Codigo_Chat ? 'white' : 'inherit',
-                      transition: 'background-color .15s'
-                    }}
-                    onClick={() => setChatSel(c)}
+        {/* PANEL IZQUIERDO — LISTA DE CHATS (Para todos los roles) */}
+        <div className="d-flex flex-column border-end" style={{ width: '300px', minWidth: '260px', backgroundColor: '#f8f9fa' }}>
+          <div className="p-3 border-bottom" style={{ backgroundColor: '#121212' }}>
+            <p className="text-white fw-bold mb-2 small">
+              {role === 2 ? 'Mis Conversaciones' : 'Conversaciones Abiertas'}
+            </p>
+            <input
+              type="text"
+              className="form-control form-control-sm"
+              placeholder=" Buscar chat (ID o Servicio)..."
+              value={busquedaChat}
+              onChange={e => setBusquedaChat(e.target.value)}
+            />
+          </div>
+          <div style={{ overflowY: 'auto', flexGrow: 1 }}>
+            {chatsFiltrados.length === 0 ? (
+              <div className="text-center p-4">
+                <p className="text-muted small mb-2">No tienes chats activos.</p>
+                {role === 2 && (
+                  <button
+                    className="btn btn-sm text-white fw-bold"
+                    style={{ backgroundColor: '#DB0000' }}
+                    onClick={() => setVista('miServicio')}
                   >
-                    <div className="d-flex align-items-center gap-2">
-                      <div className="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold"
-                        style={{ width: '40px', height: '40px', minWidth: '40px', backgroundColor: '#121212', fontSize: '0.8rem' }}>
-                        {String(c.ID_Usuario).substring(0, 2).toUpperCase()}
-                      </div>
-                      <div>
-                        <div className="fw-bold small">Chat #{c.Codigo_Chat}</div>
-                        <div className="small opacity-75">Servicio #{c.ID_Servicio} · {c.ID_Usuario}</div>
-                      </div>
+                    Ir a Mis Servicios
+                  </button>
+                )}
+              </div>
+            ) : (
+              chatsFiltrados.map(c => (
+                <div
+                  key={c.Codigo_Chat}
+                  className="p-3 border-bottom"
+                  style={{
+                    cursor: 'pointer',
+                    backgroundColor: chatSel?.Codigo_Chat === c.Codigo_Chat ? '#DB0000' : 'transparent',
+                    color: chatSel?.Codigo_Chat === c.Codigo_Chat ? 'white' : 'inherit',
+                    transition: 'background-color .15s'
+                  }}
+                  onClick={() => setChatSel(c)}
+                >
+                  <div className="d-flex align-items-center gap-2">
+                    <div className="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold"
+                      style={{ width: '40px', height: '40px', minWidth: '40px', backgroundColor: '#121212', fontSize: '0.8rem' }}>
+                      {String(c.ID_Servicio).substring(0, 2).toUpperCase()}
+                    </div>
+                    <div>
+                      <div className="fw-bold small">Chat #{c.Codigo_Chat}</div>
+                      <div className="small opacity-75">Servicio #{c.ID_Servicio}</div>
                     </div>
                   </div>
-                ))
-              )}
-            </div>
+                </div>
+              ))
+            )}
           </div>
-        )}
+        </div>
 
         {/* PANEL DERECHO — MENSAJES */}
         <div className="d-flex flex-column flex-grow-1" style={{ overflow: 'hidden', backgroundColor: '#fff' }}>
           {!chatSel ? (
             <div className="d-flex flex-column align-items-center justify-content-center h-100 text-muted">
               <div style={{ fontSize: '4rem' }}></div>
-              <h5 className="mt-3">{role === 2 ? 'Accede desde "Mis Servicios"' : 'Selecciona un chat'}</h5>
+              <h5 className="mt-3">Selecciona un chat</h5>
               <p className="small text-center px-4">
-                {role === 2 
-                  ? 'Dirígete a tu Panel de Servicios y haz clic en "Chat con Asesor" sobre el equipo del que deseas hablar.' 
+                {role === 2
+                  ? 'Elige una de tus conversaciones activas de la lista lateral.'
                   : 'Elige una conversación de la lista lateral para ver los mensajes y responder al cliente.'}
               </p>
             </div>

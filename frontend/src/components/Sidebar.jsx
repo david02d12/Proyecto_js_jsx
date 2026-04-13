@@ -1,19 +1,26 @@
 import React from 'react';
 
 const Sidebar = ({ setVista }) => {
-  const role = Number(localStorage.getItem('role')) || 2; // Si no hay rol, asume cliente por seguridad
+  const role = Number(localStorage.getItem('role')) || 2;
 
   return (
     <div className="offcanvas-body">
       <div className="d-grid gap-3">
+        {/* Inicio — accesible para todos */}
         <button className="btn text-white fw-bold text-start" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('home')} data-bs-dismiss="offcanvas"> Inicio</button>
-        <hr className="border-secondary" />
-        <button className="btn text-white fw-bold text-start" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('miServicio')} data-bs-dismiss="offcanvas"> Mis Servicios</button>
-        <button className="btn text-white fw-bold text-start" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('catalogo')} data-bs-dismiss="offcanvas"> Catálogo</button>
-        <button className="btn text-white fw-bold text-start" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('chatVista')} data-bs-dismiss="offcanvas"> Chat</button>
-        <button className="btn text-white fw-bold text-start" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('comentarios')} data-bs-dismiss="offcanvas"> Comentarios</button>
-        
-        {/* MODULOS DE SERVICIO Y PRODUCTOS (Para Técnico y Administrador) */}
+
+        {/* MÓDULOS EXCLUSIVOS DEL CLIENTE (Rol 2) */}
+        {role === 2 && (
+          <>
+            <hr className="border-secondary" />
+            <button className="btn text-white fw-bold text-start" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('miServicio')} data-bs-dismiss="offcanvas"> Mis Servicios</button>
+            <button className="btn text-white fw-bold text-start" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('chatVista')} data-bs-dismiss="offcanvas"> Chat con Asesor</button>
+            <button className="btn text-white fw-bold text-start" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('catalogo')} data-bs-dismiss="offcanvas"> Catálogo</button>
+            <button className="btn text-white fw-bold text-start" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('comentarios')} data-bs-dismiss="offcanvas"> Comentarios</button>
+          </>
+        )}
+
+        {/* MÓDULOS DE TÉCNICO Y ADMINISTRADOR (Roles 1 y 3) */}
         {(role === 1 || role === 3) && (
           <>
             <hr className="border-secondary" />
@@ -25,10 +32,12 @@ const Sidebar = ({ setVista }) => {
             <button className="btn text-white fw-bold text-start" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('chats')} data-bs-dismiss="offcanvas"> Chats</button>
             <button className="btn text-white fw-bold text-start" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('mensajes')} data-bs-dismiss="offcanvas"> Mensajes</button>
             <button className="btn text-white fw-bold text-start" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('notificaciones')} data-bs-dismiss="offcanvas"> Notificaciones</button>
+            <button className="btn text-white fw-bold text-start" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('comentarios')} data-bs-dismiss="offcanvas"> Comentarios</button>
+            <button className="btn text-white fw-bold text-start" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('catalogo')} data-bs-dismiss="offcanvas"> Catálogo</button>
           </>
         )}
 
-        {/* MODULOS DE RESTRICCION TOTAL (Solo para Administrador) */}
+        {/* MÓDULOS EXCLUSIVOS DEL ADMINISTRADOR (Rol 3) */}
         {role === 3 && (
           <>
             <hr className="border-secondary" />
