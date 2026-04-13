@@ -15,7 +15,7 @@ exports.registro = async (req, res) => {
     const saltRounds = 10;
     try {
         const hashedClave = await bcrypt.hash(Clave, saltRounds);
-        const rolAsignado = Codigo_Rol || 3;
+        const rolAsignado = Codigo_Rol || 2; // 2 corresponde al rol de Cliente/Usuario
 
         const sql = `INSERT INTO Usuario (ID_Usuario, Codigo_Documento, Nombre, Fecha_Nacimiento, Direccion, Telefono, Correo, Contraseña, Codigo_Rol) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
@@ -50,7 +50,7 @@ exports.login = (req, res) => {
             const match = await bcrypt.compare(password, results[0].Contraseña);
             if (match) {
                 const token = jwt.sign({ id: results[0].ID_Usuario }, SECRET_KEY, { expiresIn: '2h' });
-                return res.status(200).json({ auth: true, token, user: results[0].ID_Usuario });
+                return res.status(200).json({ auth: true, token, user: results[0].ID_Usuario, role: results[0].Codigo_Rol });
             }
         }
         res.status(401).json({ auth: false, message: 'Credenciales incorrectas.' });

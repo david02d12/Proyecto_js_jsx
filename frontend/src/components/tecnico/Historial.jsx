@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import Navbar from './Navbar';
-import Sidebar from './Sidebar';
+import Navbar from '../Navbar';
+import Sidebar from '../Sidebar';
 import axios from 'axios';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';

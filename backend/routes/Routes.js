@@ -54,17 +54,17 @@ router.post('/historial/agregar', validarToken, validarRol(1, 3), historialContr
 router.put('/historial/actualizar', validarToken, validarRol(1, 3), historialController.actualizarHistorial);
 router.delete('/historial/eliminar/:id', validarToken, validarRol(1, 3), historialController.eliminarHistorial);
 
-// PRODUCTOS — todos ven; solo Admin modifica
+// PRODUCTOS — todos ven; Técnico y Admin modifican
 router.get('/productos/listar', validarToken, productoController.listar);
-router.post('/productos/agregar', validarToken, validarRol(3), productoController.agregar);
-router.put('/productos/actualizar', validarToken, validarRol(3), productoController.actualizar);
-router.delete('/productos/eliminar/:id', validarToken, validarRol(3), productoController.eliminar);
+router.post('/productos/agregar', validarToken, validarRol(1, 3), productoController.agregar);
+router.put('/productos/actualizar', validarToken, validarRol(1, 3), productoController.actualizar);
+router.delete('/productos/eliminar/:id', validarToken, validarRol(1, 3), productoController.eliminar);
 
-// CATEGORIAS — todos ven; solo Admin modifica
+// CATEGORIAS — todos ven; Técnico y Admin modifican
 router.get('/categorias/listar', validarToken, categoriaController.listar);
-router.post('/categorias/agregar', validarToken, validarRol(3), categoriaController.agregar);
-router.put('/categorias/actualizar', validarToken, validarRol(3), categoriaController.actualizar);
-router.delete('/categorias/eliminar/:id', validarToken, validarRol(3), categoriaController.eliminar);
+router.post('/categorias/agregar', validarToken, validarRol(1, 3), categoriaController.agregar);
+router.put('/categorias/actualizar', validarToken, validarRol(1, 3), categoriaController.actualizar);
+router.delete('/categorias/eliminar/:id', validarToken, validarRol(1, 3), categoriaController.eliminar);
 
 // PREGUNTAS — todos logueados
 router.get('/preguntas/listar', validarToken, preguntaController.listar);
@@ -90,10 +90,10 @@ router.post('/mensajes/agregar', validarToken, mensajeController.agregar);
 router.put('/mensajes/actualizar', validarToken, mensajeController.actualizar);
 router.delete('/mensajes/eliminar/:id', validarToken, validarRol(1, 3), mensajeController.eliminar);
 
-// NOTIFICACIONES — todos ven; solo Admin gestiona
+// NOTIFICACIONES — todos ven; Técnico y Admin modifican
 router.get('/notificaciones/listar', validarToken, notificacionController.listar);
-router.post('/notificaciones/agregar', validarToken, validarRol(3), notificacionController.agregar);
-router.put('/notificaciones/actualizar', validarToken, validarRol(3), notificacionController.actualizar);
-router.delete('/notificaciones/eliminar/:id', validarToken, validarRol(3), notificacionController.eliminar);
+router.post('/notificaciones/agregar', validarToken, validarRol(1, 3), notificacionController.agregar);
+router.put('/notificaciones/actualizar', validarToken, validarRol(1, 3), notificacionController.actualizar);
+router.delete('/notificaciones/eliminar/:id', validarToken, validarRol(1, 3), notificacionController.eliminar);
 
 module.exports = router;

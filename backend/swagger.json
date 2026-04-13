@@ -44,6 +44,9 @@
                 },
                 "Clave": {
                   "example": "any"
+                },
+                "Codigo_Rol": {
+                  "example": "any"
                 }
               }
             }
@@ -89,6 +92,52 @@
           "500": {
             "description": "Internal Server Error"
           }
+        }
+      }
+    },
+    "/api/servicios/mis-servicios/{idUsuario}": {
+      "get": {
+        "description": "Obtiene los servicios exclusivos de un cliente",
+        "parameters": [
+          {
+            "name": "idUsuario",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": { "description": "OK" },
+          "401": { "description": "Unauthorized" },
+          "500": { "description": "Internal Server Error" }
+        }
+      }
+    },
+    "/api/servicios/cancelar/{id}": {
+      "patch": {
+        "description": "Permite a un cliente cancelar su servicio en espera",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": { "description": "OK" },
+          "401": { "description": "Unauthorized" },
+          "500": { "description": "Internal Server Error" }
         }
       }
     },

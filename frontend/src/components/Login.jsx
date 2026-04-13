@@ -15,6 +15,7 @@ const Login = ({ setLogueado, setModoRegistro }) => {
       if (res.data.auth) {
         localStorage.setItem('token', res.data.token);
         localStorage.setItem('user', res.data.user);
+        localStorage.setItem('role', res.data.role);
         setLogueado(true);
       }
     } catch (err) { alert("Usuario o contraseña incorrectos."); }

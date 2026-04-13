@@ -4,21 +4,21 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Login from './components/Login';
 import Registro from './components/Registro';
 import Home from './components/Home';
-import Servicios from './components/Servicios';
-import Roles from './components/Roles';
-import Historial from './components/Historial';
-import Tipo from './components/Tipo';
-import Productos from './components/Productos';
-import Categorias from './components/Categorias';
-import Preguntas from './components/Preguntas';
-import Chats from './components/Chats';
-import Comentarios from './components/Comentarios';
-import Mensajes from './components/Mensajes';
-import Notificaciones from './components/Notificaciones';
-import Usuarios from './components/Usuarios';
-import Catalogo from './components/Catalogo';
-import ChatVista from './components/ChatVista';
-import MiServicio from './components/MiServicio';
+import Servicios from './components/tecnico/Servicios';
+import Roles from './components/admin/Roles';
+import Historial from './components/tecnico/Historial';
+import Tipo from './components/admin/Tipo';
+import Productos from './components/tecnico/Productos';
+import Categorias from './components/tecnico/Categorias';
+import Preguntas from './components/tecnico/Preguntas';
+import Chats from './components/tecnico/Chats';
+import Comentarios from './components/usuario/Comentarios';
+import Mensajes from './components/tecnico/Mensajes';
+import Notificaciones from './components/tecnico/Notificaciones';
+import Usuarios from './components/admin/Usuarios';
+import Catalogo from './components/usuario/Catalogo';
+import ChatVista from './components/usuario/ChatVista';
+import MiServicio from './components/usuario/MiServicio';
 
 // RNF007 — Tiempo de inactividad antes del cierre automático de sesión (15 min)
 const INACTIVIDAD_MS = 15 * 60 * 1000;
@@ -77,39 +77,50 @@ function App() {
   }
 
   // SWITCH PARA LAS VISTAS
+  const role = Number(localStorage.getItem('role')) || 2;
+
   switch (vista) {
     case 'home':
       return <Home cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
+      
+    // CLIENTE / USUARIO PUBLICO (Cualquier rol accede)
     case 'miServicio':
       return <MiServicio cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
-    case 'roles':
-      return <Roles cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
-    case 'historial':
-      return <Historial cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
-    case 'tipo':
-      return <Tipo cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
-    case 'productos':
-      return <Productos cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
-    case 'categorias':
-      return <Categorias cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
-    case 'preguntas':
-      return <Preguntas cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
-    case 'usuarios':
-      return <Usuarios cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
-    case 'chats':
-      return <Chats cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
-    case 'comentarios':
-      return <Comentarios cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
-    case 'mensajes':
-      return <Mensajes cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
-    case 'notificaciones':
-      return <Notificaciones cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
     case 'catalogo':
       return <Catalogo cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
     case 'chatVista':
       return <ChatVista cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
+    case 'comentarios':
+      return <Comentarios cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
+
+    // TECNICO Y ADMINISTRADOR (Roles 1 y 3)
+    case 'servicios':
+      return (role === 1 || role === 3) ? <Servicios cerrarSesion={cerrarSesion} setVista={cambiarVista} /> : <Home cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
+    case 'historial':
+      return (role === 1 || role === 3) ? <Historial cerrarSesion={cerrarSesion} setVista={cambiarVista} /> : <Home cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
+    case 'productos':
+      return (role === 1 || role === 3) ? <Productos cerrarSesion={cerrarSesion} setVista={cambiarVista} /> : <Home cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
+    case 'categorias':
+      return (role === 1 || role === 3) ? <Categorias cerrarSesion={cerrarSesion} setVista={cambiarVista} /> : <Home cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
+    case 'preguntas':
+      return (role === 1 || role === 3) ? <Preguntas cerrarSesion={cerrarSesion} setVista={cambiarVista} /> : <Home cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
+    case 'chats':
+      return (role === 1 || role === 3) ? <Chats cerrarSesion={cerrarSesion} setVista={cambiarVista} /> : <Home cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
+    case 'mensajes':
+      return (role === 1 || role === 3) ? <Mensajes cerrarSesion={cerrarSesion} setVista={cambiarVista} /> : <Home cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
+    case 'notificaciones':
+      return (role === 1 || role === 3) ? <Notificaciones cerrarSesion={cerrarSesion} setVista={cambiarVista} /> : <Home cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
+
+    // EXCLUSIVO ADMINISTRADOR (Rol 3)
+    case 'usuarios':
+      return (role === 3) ? <Usuarios cerrarSesion={cerrarSesion} setVista={cambiarVista} /> : <Home cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
+    case 'roles':
+      return (role === 3) ? <Roles cerrarSesion={cerrarSesion} setVista={cambiarVista} /> : <Home cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
+    case 'tipo':
+      return (role === 3) ? <Tipo cerrarSesion={cerrarSesion} setVista={cambiarVista} /> : <Home cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
+
     default:
-      return <Servicios cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
+      return <Home cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
   }
 }
 
