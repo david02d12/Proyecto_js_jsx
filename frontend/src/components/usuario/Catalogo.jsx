@@ -25,8 +25,10 @@ const Catalogo = ({ cerrarSesion, setVista }) => {
           axios.get('http://localhost:3000/api/productos/listar', config()),
           axios.get('http://localhost:3000/api/categorias/listar', config()),
         ]);
-        setProductos(pRes.data.filter(p => Number(p.Activo_Catalogo) === 1));
+        // RNF002: Solo mostrar activos en catálogo Y con stock disponible
+        setProductos(pRes.data.filter(p => Number(p.Activo_Catalogo) === 1 && Number(p.Cantidad) > 0));
         setCategorias(cRes.data);
+
       } catch (err) {
         console.error('Error al cargar catálogo:', err);
       }

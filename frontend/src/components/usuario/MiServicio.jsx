@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Navbar from '../Navbar';
 import Sidebar from '../Sidebar';
 import axios from 'axios';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
@@ -21,6 +23,44 @@ const MiServicio = ({ cerrarSesion, setVista }) => {
   const mostrarToast = (mensaje, tipo = 'success') => {
     setToast({ visible: true, mensaje, tipo });
     setTimeout(() => setToast({ visible: false, mensaje: '', tipo: 'success' }), 3500);
+  };
+
+  // RF018 — El cliente descarga su historial en PDF
+  const generarPDF = () => {
+    if (servicios.length === 0) return mostrarToast('No tienes servicios para exportar.', 'danger');
+    const doc = new jsPDF();
+
+    doc.setFillColor(219, 0, 0);
+    doc.rect(0, 0, 210, 28, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('CELUACCEL — Mi Historial de Servicios', 14, 12);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Cliente: ${usuario}    Generado: ${new Date().toLocaleDateString('es-CO')}`, 14, 22);
+
+    const ETAPAS_MAP = { '0': 'Recibido', '25': 'En Diagnóstico', '50': 'En Reparación', '75': 'Control de Calidad', '100': 'Listo', '-1': 'Cancelado' };
+
+    autoTable(doc, {
+      startY: 35,
+      head: [['ID', 'Móvil', 'Descripción', 'Especificación', 'Estado', 'Precio', 'Fecha']],
+      body: servicios.map(s => [
+        s.ID_Servicio,
+        s.Movil_Nombre || '—',
+        s.Descripcion || '—',
+        s.Movil_Especificacion || '—',
+        ETAPAS_MAP[String(s.Etapa)] || `Etapa ${s.Etapa}`,
+        s.Precio ? `$${s.Precio}` : '—',
+        s.Fecha ? String(s.Fecha).split('T')[0] : '—',
+      ]),
+      headStyles: { fillColor: [219, 0, 0], textColor: [255, 255, 255], fontStyle: 'bold' },
+      alternateRowStyles: { fillColor: [245, 245, 245] },
+      styles: { fontSize: 9, cellPadding: 3 },
+    });
+
+    doc.save(`historial_servicios_${usuario}_${new Date().toISOString().split('T')[0]}.pdf`);
+    mostrarToast('PDF generado y descargado.');
   };
 
   useEffect(() => {
@@ -104,9 +144,15 @@ const MiServicio = ({ cerrarSesion, setVista }) => {
             <h4 className="fw-bold mb-1">Seguimiento de mis Servicios</h4>
             <p className="mb-0 opacity-75">Usuario: <strong>{usuario}</strong> — {servicios.length} servicio(s) registrado(s)</p>
           </div>
-          <button className="btn btn-light fw-bold text-danger px-4" onClick={() => setMostrarFormulario(!mostrarFormulario)} style={{ transition: 'all 0.3s ease' }}>
-            {mostrarFormulario ? "Cancelar Solicitud" : "+ Nuevo Servicio"}
-          </button>
+          <div className="d-flex gap-2 flex-wrap">
+            {/* RF018 — Descargar historial */}
+            <button className="btn btn-outline-light fw-bold px-3" onClick={generarPDF} title="Descargar historial en PDF">
+              Descargar PDF
+            </button>
+            <button className="btn btn-light fw-bold text-danger px-4" onClick={() => setMostrarFormulario(!mostrarFormulario)} style={{ transition: 'all 0.3s ease' }}>
+              {mostrarFormulario ? "Cancelar Solicitud" : "+ Nuevo Servicio"}
+            </button>
+          </div>
         </div>
 
         {/* FORMULARIO INYECTADO (VISIBLE SOLO SI SE EXPANDE) */}

@@ -17,8 +17,10 @@ const Sidebar = ({ setVista }) => {
             <button className="btn text-white fw-bold text-start" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('chatVista')} data-bs-dismiss="offcanvas"> Chat con Asesor</button>
             <button className="btn text-white fw-bold text-start" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('catalogo')} data-bs-dismiss="offcanvas"> Catálogo</button>
             <button className="btn text-white fw-bold text-start" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('comentarios')} data-bs-dismiss="offcanvas"> Comentarios</button>
+            <button className="btn text-white fw-bold text-start" style={{ backgroundColor: '#DB0000' }} onClick={() => setVista('perfil')} data-bs-dismiss="offcanvas"> Mi Perfil</button>
           </>
         )}
+
 
         {/* MÓDULOS DE TÉCNICO Y ADMINISTRADOR (Roles 1 y 3) */}
         {(role === 1 || role === 3) && (

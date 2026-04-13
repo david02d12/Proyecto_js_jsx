@@ -125,7 +125,7 @@ const Servicios = ({ cerrarSesion, setVista }) => {
               </div>
               <table className="table table-hover mb-0">
                 <thead className="table-dark">
-                  <tr><th>ID</th><th>Descripción</th><th>Móvil</th><th>Precio</th><th>Etapa</th><th>Acciones</th></tr>
+                  <tr><th>ID</th><th>Descripción</th><th>Móvil</th><th>Cliente</th><th>Precio</th><th>Etapa</th><th>Acciones</th></tr>
                 </thead>
                 <tbody className="bg-white">
                   {servicios.filter(s =>
@@ -138,6 +138,17 @@ const Servicios = ({ cerrarSesion, setVista }) => {
                       <td className="fw-bold">{s.ID_Servicio}</td>
                       <td>{s.Descripcion}</td>
                       <td>{s.Movil_Nombre}</td>
+                      <td>
+                        {/* RF016 — Ver perfil del cliente */}
+                        <button
+                          className="btn btn-link btn-sm p-0 text-decoration-none fw-bold"
+                          style={{ color: '#DB0000' }}
+                          title="Ver perfil del cliente"
+                          onClick={() => setVista('perfil', { perfilId: s.ID_Usuario })}
+                        >
+                          {s.ID_Usuario}
+                        </button>
+                      </td>
                       <td className="text-success fw-bold">${s.Precio}</td>
                       <td><small>{etapaLabel(s.Etapa)}</small></td>
                       <td>

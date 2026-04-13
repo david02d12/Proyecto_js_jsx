@@ -108,3 +108,58 @@ exports.eliminar = (req, res) => {
         res.status(200).json({ message: 'Usuario eliminado correctamente.' });
     });
 };
+
+// RF002 / RF016 / RF017 — Ver perfil de un usuario por ID
+// Accesible por: el propio usuario, técnicos (rol 1) y administradores (rol 3)
+exports.perfilPublico = (req, res) => {
+    const { id } = req.params;
+    if (!id) return res.status(400).json({ error: 'El ID del usuario es obligatorio.' });
+
+    // Verificar que el solicitante tiene permiso
+    db.query('SELECT Codigo_Rol FROM Usuario WHERE ID_Usuario = ?', [req.userId], (errRol, resRol) => {
+        if (errRol || resRol.length === 0) return res.status(403).json({ error: 'No autorizado.' });
+        const rol = resRol[0].Codigo_Rol;
+
+        // Solo el propio usuario, técnicos (1) o admin (3) pueden ver
+        if (req.userId !== id && rol !== 1 && rol !== 3) {
+            return res.status(403).json({ error: 'No tienes permiso para ver este perfil.' });
+        }
+
+        const sql = 'SELECT ID_Usuario, Codigo_Documento, Nombre, Fecha_Nacimiento, Direccion, Telefono, Correo, Codigo_Rol FROM Usuario WHERE ID_Usuario = ?';
+        db.query(sql, [id], (err, results) => {
+            if (err) return res.status(500).json({ error: 'Error al obtener el perfil.' });
+            if (results.length === 0) return res.status(404).json({ error: 'Usuario no encontrado.' });
+            res.status(200).json(results[0]);
+        });
+    });
+};
+
+// RF002 — El propio usuario actualiza su perfil sin requerir rol Admin
+exports.actualizarMiPerfil = async (req, res) => {
+    const { Nombre, Fecha_Nacimiento, Direccion, Telefono, Correo, Clave } = req.body;
+    const idSolicitante = req.userId;
+
+    if (!Nombre || !Correo) {
+        return res.status(400).json({ error: 'Nombre y correo son obligatorios.' });
+    }
+
+    try {
+        let sql, params;
+        if (Clave && Clave.trim()) {
+            const hashedClave = await bcrypt.hash(Clave, 10);
+            sql = `UPDATE Usuario SET Nombre=?, Fecha_Nacimiento=?, Direccion=?, Telefono=?, Correo=?, Contraseña=? WHERE ID_Usuario=?`;
+            params = [Nombre, Fecha_Nacimiento, Direccion, Telefono, Correo, hashedClave, idSolicitante];
+        } else {
+            sql = `UPDATE Usuario SET Nombre=?, Fecha_Nacimiento=?, Direccion=?, Telefono=?, Correo=? WHERE ID_Usuario=?`;
+            params = [Nombre, Fecha_Nacimiento, Direccion, Telefono, Correo, idSolicitante];
+        }
+
+        db.query(sql, params, (err, result) => {
+            if (err) return res.status(500).json({ error: 'Error al actualizar el perfil.' });
+            if (result.affectedRows === 0) return res.status(404).json({ error: 'Usuario no encontrado.' });
+            res.status(200).json({ message: 'Perfil actualizado correctamente.' });
+        });
+    } catch (error) {
+        res.status(500).json({ error: 'Error interno.' });
+    }
+};

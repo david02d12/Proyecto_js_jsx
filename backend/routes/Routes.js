@@ -28,6 +28,12 @@ router.get('/usuarios/listar', validarToken, validarRol(3), authController.lista
 router.put('/usuarios/actualizar', validarToken, validarRol(3), authController.actualizar);
 router.delete('/usuarios/eliminar/:id', validarToken, validarRol(3), authController.eliminar);
 
+// RF002 / RF016 / RF017 — Perfil de usuario (propio usuario + técnico + admin)
+router.get('/usuarios/perfil/:id', validarToken, authController.perfilPublico);
+// RF002 — El cliente edita su propio perfil (sin requerir admin)
+router.put('/usuarios/mi-perfil', validarToken, authController.actualizarMiPerfil);
+
+
 // ROLES — listar libre; modificar solo Admin
 router.get('/roles/listar', validarToken, rolesController.listarRoles);
 router.post('/roles/agregar', validarToken, validarRol(3), rolesController.agregarRol);

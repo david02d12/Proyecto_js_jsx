@@ -19,6 +19,7 @@ import Usuarios from './components/admin/Usuarios';
 import Catalogo from './components/usuario/Catalogo';
 import ChatVista from './components/usuario/ChatVista';
 import MiServicio from './components/usuario/MiServicio';
+import Perfil from './components/usuario/Perfil';
 
 // RNF007 — Tiempo de inactividad antes del cierre automático de sesión (15 min)
 const INACTIVIDAD_MS = 15 * 60 * 1000;
@@ -27,6 +28,8 @@ function App() {
   const [logueado, setLogueado] = useState(false);
   const [modoRegistro, setModoRegistro] = useState(false);
   const [vista, setVista] = useState(localStorage.getItem('ultimaVista') || 'home');
+  // RF016/RF017 — ID del perfil a consultar (null = propio perfil)
+  const [perfilTarget, setPerfilTarget] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -65,9 +68,15 @@ function App() {
     };
   }, [logueado, cerrarSesion]);
 
-  const cambiarVista = (nuevaVista) => {
+  const cambiarVista = (nuevaVista, extra) => {
     setVista(nuevaVista);
     localStorage.setItem('ultimaVista', nuevaVista);
+    // Si se navega a 'perfil' con un ID específico, guardarlo
+    if (nuevaVista === 'perfil' && extra?.perfilId) {
+      setPerfilTarget(extra.perfilId);
+    } else if (nuevaVista !== 'perfil') {
+      setPerfilTarget(null);
+    }
   };
 
   // Antena Receptora global para atajo del Logotipo
@@ -99,6 +108,8 @@ function App() {
       return <ChatVista cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
     case 'comentarios':
       return <Comentarios cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
+    case 'perfil':
+      return <Perfil cerrarSesion={cerrarSesion} setVista={cambiarVista} perfilObjetivoId={perfilTarget} />;
 
     // TECNICO Y ADMINISTRADOR (Roles 1 y 3)
     case 'servicios':
