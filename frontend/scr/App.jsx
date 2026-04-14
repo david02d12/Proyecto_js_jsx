@@ -1,100 +1,77 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import './App.css';
+import React, { useState, useEffect } from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 import Login from './components/Login';
-import Home from './components/Home';
-import Listar from './components/Listar';
-
-const API_URL = 'http://localhost:3000/productos';
+import Registro from './components/Registro';
+import Servicios from './components/Servicios';
+import Roles from './components/Roles';
+import Historial from './components/Historial';
+import Tipo from './components/Tipo';
+import Productos from './components/Productos';
+import Categorias from './components/Categorias';
+import Preguntas from './components/Preguntas';
+import Chats from './components/Chats';
+import Comentarios from './components/Comentarios';
+import Mensajes from './components/Mensajes';
+import Notificaciones from './components/Notificaciones';
+import Usuarios from './components/Usuarios';
 
 function App() {
-  const [view, setView] = useState('login'); 
-  const [productos, setProductos] = useState([]);
-  const [auth, setAuth] = useState({ email: '', pass: '' });
-  const [userLabel, setUserLabel] = useState('Administrador');
+  const [logueado, setLogueado] = useState(false);
+  const [modoRegistro, setModoRegistro] = useState(false);
+  
+  const [vista, setVista] = useState(localStorage.getItem('ultimaVista') || 'servicios');
 
-  const fetchProductos = async (nombre = '') => {
-    try {
-      const url = nombre ? `${API_URL}?nombre=${nombre}` : API_URL;
-      const res = await axios.get(url);
-      setProductos(res.data);
-      if (view !== 'listar') setView('listar');
-    } catch (err) {
-      console.error("Error:", err);
-      alert("Error al conectar con el servidor de productos");
-    }
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) setLogueado(true);
+  }, []);
+
+  const cambiarVista = (nuevaVista) => {
+    setVista(nuevaVista);
+    localStorage.setItem('ultimaVista', nuevaVista);
   };
 
-  const handleLogin = () => {
-    if (auth.email && auth.pass) {
-      setUserLabel(auth.email.split('@')[0]);
-      setView('home');
-    } else {
-      alert("Por favor, ingrese credenciales válidas");
-    }
+  const cerrarSesion = () => {
+    localStorage.clear();
+    setLogueado(false);
+    setVista('servicios');
   };
 
-  if (view === 'login') {
-    return <Login auth={auth} setAuth={setAuth} handleLogin={handleLogin} />;
+  if (!logueado) {
+    return modoRegistro 
+      ? <Registro setModoRegistro={setModoRegistro} /> 
+      : <Login setLogueado={setLogueado} setModoRegistro={setModoRegistro} />;
   }
 
-  return (
-    <div className="dashboard-layout">
-      <header className="main-header">
-        <div className="logo-section">
-          <h2>Celuaccel</h2>
-        </div>
-        <div className="user-section">
-          <span>Hola, {userLabel}</span>
-          <button className="logout-btn" onClick={() => setView('login')}>
-            Cerrar sesión
-          </button>
-        </div>
-      </header>
+  // SWITCH PARA LAS VISTAS
+  switch (vista) {
+    case 'roles':
+      return <Roles cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
+    case 'historial':
+      return <Historial cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
+    case 'tipo':
+      return <Tipo cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
+    case 'productos': 
+      return <Productos cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
+    case 'categorias': 
+      return <Categorias cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
+    case 'preguntas': 
+      return <Preguntas cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
+    case 'usuarios':
+      return <Usuarios cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
+    case 'chats':
+      return <Chats cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
+    case 'comentarios':
+      return <Comentarios cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
+    case 'mensajes':
+      return <Mensajes cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
+    case 'notificaciones':
+      return <Notificaciones cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
 
-      <div className="main-container">
-        <aside className="sidebar">
-          <nav>
-            <ul>
-              <li className={view === 'home' ? 'active' : ''} onClick={() => setView('home')}>
-                Panel Principal
-              </li>
-              <li className={view === 'listar' ? 'active' : ''} onClick={() => fetchProductos()}>
-                Catálogo de Productos
-              </li>
-              <li onClick={() => alert("Próximamente: Gestión de Servicios")}>
-                Estado del servicio
-              </li>
-              <li onClick={() => alert("Próximamente: Historial")}>
-                Historial
-              </li>
-            </ul>
-          </nav>
-        </aside>
-
-        <main className="content-area">
-          <div className="view-card">
-            {view === 'home' && (
-              <Home setView={setView} fetchProductos={fetchProductos} />
-            )}
-            
-            {view === 'listar' && (
-              <Listar 
-                productos={productos} 
-                setView={setView} 
-                onRefresh={fetchProductos} 
-              />
-            )}
-          </div>
-        </main>
-      </div>
-
-      <footer className="footer-slim">
-        &copy; 2026 CeluAccel System | Base de datos: celuaccel
-      </footer>
-    </div>
-  );
+    default:
+      return <Servicios cerrarSesion={cerrarSesion} setVista={cambiarVista} />;
+  }
 }
 
 export default App;
