@@ -134,7 +134,7 @@ const Catalogo = ({ cerrarSesion, setVista }) => {
                       />
                     : null}
                   <div className="d-flex align-items-center justify-content-center"
-                    style={{ height: '160px', backgroundColor: '#f0f0f0', borderRadius: '0.375rem 0.375rem 0 0', fontSize: '0.9rem', color: '#aaa', display: p.Imagen ? 'none' : 'flex' }}>
+                    style={{ height: '160px', backgroundColor: '#272727', borderRadius: '0.375rem 0.375rem 0 0', fontSize: '0.9rem', color: '#868686', display: p.Imagen ? 'none' : 'flex' }}>
                     Sin imagen
                   </div>
                   <div className="card-body d-flex flex-column">
