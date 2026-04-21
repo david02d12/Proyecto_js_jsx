@@ -17,12 +17,7 @@ exports.listarMios = (req, res) => {
 
     // JOIN con Servicio para incluir chats aunque ID_Usuario en Chat no coincida exactamente
     const sql = `
-        SELECT c.* FROM Chat c
-        INNER JOIN Servicio s ON c.ID_Servicio = s.ID_Servicio
-        WHERE TRIM(s.ID_Usuario) = TRIM(?)
-        UNION
-        SELECT * FROM Chat WHERE TRIM(ID_Usuario) = TRIM(?)
-    `;
+        SELECT c.* FROM Chat c INNER JOIN Servicio s ON c.ID_Servicio = s.ID_Servicio WHERE TRIM(s.ID_Usuario) = TRIM(?) UNION SELECT * FROM Chat WHERE TRIM(ID_Usuario) = TRIM(?)`;
     db.query(sql, [idUsuario, idUsuario], (err, results) => {
         if (err) return res.status(500).json({ error: 'Error al obtener tus chats.' });
         // Eliminar duplicados por Codigo_Chat
