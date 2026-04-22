@@ -114,7 +114,13 @@ const Usuarios = ({ cerrarSesion, setVista }) => {
                   <input className="form-control mb-2" placeholder="ID Usuario" value={form.ID_Usuario} disabled={enEdicion} onChange={e => setForm({...form, ID_Usuario: e.target.value})} />
                 </div>
                 <div className="col-6">
-                  <input className="form-control mb-2" type="number" placeholder="Cód. Documento" value={form.Codigo_Documento} onChange={e => setForm({...form, Codigo_Documento: e.target.value})} />
+                  <select className="form-select mb-3" placeholder="Cód. Documento" value={form.Codigo_Documento} onChange={e => setForm({...form, Codigo_Documento: e.target.value})} >
+                  <option value="1">Cedula</option>
+                  <option value="2">Tarjeta de Identidad</option>
+                  <option value="3">Cedula de Extranjeria</option>
+                  <option value="4">Pasaporte</option>
+                  <option value="5">PEP</option>
+                  </select>
                 </div>
               </div>
               <input className="form-control mb-2" placeholder="Nombre Completo" value={form.Nombre} onChange={e => setForm({...form, Nombre: e.target.value})} />
