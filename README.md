@@ -84,6 +84,5 @@ Proyecto_js_jsx-nicolas/
 
 ## Equipo de desarrollo
 - Juan Nicolás Montenegro Mariño
-- Javienny Michelle Escalona Bocaranda
 - Jhonatan Julian Comezaquira Ochoca
 - Anderson David Joya Peña
