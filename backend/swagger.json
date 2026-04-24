@@ -885,7 +885,7 @@
     },
     "/servicios/eliminar/{id}": {
       "delete": {
-        "description": "",
+        "description": "Elimina un servicio del sistema. Requiere un token de autenticación válido y el ID del servicio a eliminar.",
         "parameters": [
           {
             "name": "id",
@@ -923,7 +923,7 @@
     },
     "/historial/listar": {
       "get": {
-        "description": "",
+        "description": "Lista todos los registros del historial. Requiere un token de autenticación válido.",
         "parameters": [
           {
             "name": "authorization",
@@ -949,7 +949,7 @@
     },
     "/historial/agregar": {
       "post": {
-        "description": "",
+        "description": "Agrega una nueva entrada al historial. Requiere un token de autenticación válido y un objeto JSON con los datos a agregar.",
         "parameters": [
           {
             "name": "authorization",
@@ -1002,7 +1002,7 @@
     },
     "/historial/actualizar": {
       "put": {
-        "description": "",
+        "description": "Actualiza la informacion de una entrada del historial. Requiere un token de autenticación válido y un objeto JSON con los datos a actualizar, incluyendo el ID del historial.",
         "parameters": [
           {
             "name": "authorization",
@@ -1058,7 +1058,7 @@
     },
     "/historial/eliminar/{id}": {
       "delete": {
-        "description": "",
+        "description": "Elimina una entrada del historial. Requiere un token de autenticación válido y el ID de la entrada a eliminar.",
         "parameters": [
           {
             "name": "id",
@@ -1096,7 +1096,7 @@
     },
     "/productos/listar": {
       "get": {
-        "description": "",
+        "description": "Lista todos los productos que esten activos en el catálogo. Requiere un token de autenticación válido.",
         "parameters": [
           {
             "name": "authorization",
@@ -1122,7 +1122,7 @@
     },
     "/productos/agregar": {
       "post": {
-        "description": "",
+        "description": "Agrega un nuevo producto al catálogo. Requiere un token de autenticación válido y un objeto JSON con los datos del producto a agregar.",
         "parameters": [
           {
             "name": "authorization",
@@ -1187,7 +1187,7 @@
     },
     "/productos/actualizar": {
       "put": {
-        "description": "",
+        "description": "Actualiza los datos de un producto existente en el catálogo. Requiere un token de autenticación válido y un objeto JSON con los datos a actualizar, incluyendo el ID del producto.",
         "parameters": [
           {
             "name": "authorization",
@@ -1252,7 +1252,7 @@
     },
     "/productos/eliminar/{id}": {
       "delete": {
-        "description": "",
+        "description": "Elimina un producto del catálogo. Requiere un token de autenticación válido y el ID del producto a eliminar.",
         "parameters": [
           {
             "name": "id",
@@ -1290,7 +1290,7 @@
     },
     "/categorias/listar": {
       "get": {
-        "description": "",
+        "description": "Lista todas las categorías disponibles en el sistema. Requiere un token de autenticación válido.",
         "parameters": [
           {
             "name": "authorization",
@@ -1316,7 +1316,7 @@
     },
     "/categorias/agregar": {
       "post": {
-        "description": "",
+        "description": "Agrega una nueva categoría al sistema. Requiere un token de autenticación válido y un objeto JSON con los datos de la categoría a agregar.",
         "parameters": [
           {
             "name": "authorization",
@@ -1363,7 +1363,7 @@
     },
     "/categorias/actualizar": {
       "put": {
-        "description": "",
+        "description": "Actualiza la información de una categoría existente en el sistema. Requiere un token de autenticación válido y un objeto JSON con los datos a actualizar, incluyendo el ID de la categoría.",
         "parameters": [
           {
             "name": "authorization",
@@ -1410,7 +1410,7 @@
     },
     "/categorias/eliminar/{id}": {
       "delete": {
-        "description": "",
+        "description": "Elimina una categoría del sistema. Requiere un token de autenticación válido y el ID de la categoría a eliminar.",
         "parameters": [
           {
             "name": "id",
@@ -1448,7 +1448,7 @@
     },
     "/preguntas/listar": {
       "get": {
-        "description": "",
+        "description": "Lista todas las preguntas de productos realizadas por los usuarios. Requiere un token de autenticación válido.",
         "parameters": [
           {
             "name": "authorization",
@@ -1474,7 +1474,7 @@
     },
     "/preguntas/agregar": {
       "post": {
-        "description": "",
+        "description": "Agrega una nueva pregunta sobre un producto. Requiere un token de autenticación válido y un objeto JSON con los datos de la pregunta a agregar.",
         "parameters": [
           {
             "name": "authorization",
@@ -1527,7 +1527,7 @@
     },
     "/preguntas/actualizar": {
       "put": {
-        "description": "",
+        "description": "Actualiza la información de una pregunta existente. Requiere un token de autenticación válido y un objeto JSON con los datos a actualizar, incluyendo el ID de la pregunta.",
         "parameters": [
           {
             "name": "authorization",
@@ -1583,7 +1583,7 @@
     },
     "/preguntas/eliminar/{id}": {
       "delete": {
-        "description": "",
+        "description": "Elimina una pregunta del sistema. Requiere un token de autenticación válido y el ID de la pregunta a eliminar.",
         "parameters": [
           {
             "name": "id",
@@ -1621,7 +1621,7 @@
     },
     "/chats/listar-mios": {
       "get": {
-        "description": "",
+        "description": "Lista todos los chats creados por el usuario autenticado. Requiere un token de autenticación válido.",
         "parameters": [
           {
             "name": "authorization",
@@ -1647,7 +1647,7 @@
     },
     "/chats/listar": {
       "get": {
-        "description": "",
+        "description": "Lista todos los chats disponibles en el sistema. Requiere un token de autenticación válido.",
         "parameters": [
           {
             "name": "authorization",
@@ -1673,7 +1673,7 @@
     },
     "/chats/agregar": {
       "post": {
-        "description": "",
+        "description": "Agrega un nuevo chat al sistema. Requiere un token de autenticación válido y un objeto JSON con los datos del chat a agregar.",
         "parameters": [
           {
             "name": "authorization",
@@ -1720,7 +1720,7 @@
     },
     "/chats/actualizar": {
       "put": {
-        "description": "",
+        "description": "Actualiza la información de un chat existente en el sistema. Requiere un token de autenticación válido y un objeto JSON con los datos a actualizar, incluyendo el ID del chat.",
         "parameters": [
           {
             "name": "authorization",
@@ -1770,7 +1770,7 @@
     },
     "/chats/eliminar/{id}": {
       "delete": {
-        "description": "",
+        "description": "Elimina un chat del sistema. Requiere un token de autenticación válido y el ID del chat a eliminar.",
         "parameters": [
           {
             "name": "id",
@@ -1808,7 +1808,7 @@
     },
     "/comentarios/listar": {
       "get": {
-        "description": "",
+        "description": "Lista todos los comentarios realizados por los usuarios autenticados. Requiere un token de autenticación válido.",
         "parameters": [
           {
             "name": "authorization",
@@ -1834,7 +1834,7 @@
     },
     "/comentarios/agregar": {
       "post": {
-        "description": "",
+        "description": "Agrega un nuevo comentario al sistema. Requiere un token de autenticación válido y un objeto JSON con los datos del comentario a agregar.",
         "parameters": [
           {
             "name": "authorization",
@@ -1881,7 +1881,7 @@
     },
     "/comentarios/actualizar": {
       "put": {
-        "description": "",
+        "description": "Actualiza la información de un comentario existente. Requiere un token de autenticación válido y un objeto JSON con los datos a actualizar, incluyendo el ID del comentario.",
         "parameters": [
           {
             "name": "authorization",
@@ -1931,7 +1931,7 @@
     },
     "/comentarios/eliminar/{id}": {
       "delete": {
-        "description": "",
+        "description": "Elimina un comentario del sistema. Requiere un token de autenticación válido y el ID del comentario a eliminar.",
         "parameters": [
           {
             "name": "id",
@@ -1969,7 +1969,7 @@
     },
     "/mensajes/listar": {
       "get": {
-        "description": "",
+        "description": "Lista todos los mensajes del sistema. Requiere un token de autenticación válido.",
         "parameters": [
           {
             "name": "authorization",
@@ -1995,7 +1995,7 @@
     },
     "/mensajes/agregar": {
       "post": {
-        "description": "",
+        "description": "Agrega un nuevo mensaje al sistema. Requiere un token de autenticación válido y un objeto JSON con los datos del mensaje a agregar.",
         "parameters": [
           {
             "name": "authorization",
@@ -2048,7 +2048,7 @@
     },
     "/mensajes/actualizar": {
       "put": {
-        "description": "",
+        "description": "Actualiza el texto o el estado de un mensaje existente. Requiere un token de autenticación válido y un objeto JSON con los datos a actualizar, incluyendo el ID del mensaje.",
         "parameters": [
           {
             "name": "authorization",
@@ -2107,7 +2107,7 @@
     },
     "/mensajes/eliminar/{id}": {
       "delete": {
-        "description": "",
+        "description": "Elimina un mensaje del sistema. Requiere un token de autenticación válido y el ID del mensaje a eliminar.",
         "parameters": [
           {
             "name": "id",
@@ -2145,7 +2145,7 @@
     },
     "/notificaciones/listar": {
       "get": {
-        "description": "",
+        "description": "Lista todos los tipos de notificaciones disponibles en el sistema. Requiere un token de autenticación válido.",
         "parameters": [
           {
             "name": "authorization",
@@ -2171,7 +2171,7 @@
     },
     "/notificaciones/agregar": {
       "post": {
-        "description": "",
+        "description": "Agrega un nueva notificación al sistema. Requiere un token de autenticación válido y un objeto JSON con los datos de la notificación a agregar.",
         "parameters": [
           {
             "name": "authorization",
@@ -2218,7 +2218,7 @@
     },
     "/notificaciones/actualizar": {
       "put": {
-        "description": "",
+        "description": "Actualiza la informacion de una notificación existente en el sistema. Requiere un token de autenticación válido y un objeto JSON con los datos a actualizar, incluyendo el ID de la notificación.",
         "parameters": [
           {
             "name": "authorization",
@@ -2265,7 +2265,7 @@
     },
     "/notificaciones/eliminar/{id}": {
       "delete": {
-        "description": "",
+        "description": "Elimina una notificación del sistema. Requiere un token de autenticación válido y el ID de la notificación a eliminar.",
         "parameters": [
           {
             "name": "id",
@@ -2303,7 +2303,7 @@
     },
     "/notificaciones/enviar": {
       "post": {
-        "description": "",
+        "description": "Envia na notificacion a un usuario específico. Requiere un token de autenticación válido y un objeto JSON con los datos de la notificación a enviar, incluyendo el ID del usuario destino, el ID del servicio relacionado y el mensaje de la notificación.",
         "parameters": [
           {
             "name": "authorization",
@@ -2350,7 +2350,7 @@
     },
     "/notificaciones/mis-notificaciones": {
       "get": {
-        "description": "",
+        "description": "Lista todas las notificaciones del usuario autenticado. Requiere un token de autenticación válido.",
         "parameters": [
           {
             "name": "authorization",
@@ -2376,7 +2376,7 @@
     },
     "/notificaciones/marcar-leida/{id}": {
       "patch": {
-        "description": "",
+        "description": "Marca una notificación como leída. Requiere un token de autenticación válido y el ID de la notificación a marcar como leída.",
         "parameters": [
           {
             "name": "id",
